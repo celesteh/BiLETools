@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="1038.35">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
+p.p7 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
+p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #d40000}
+p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000}
+p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #008900}
+p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #000000}
+span.s3 {color: #1100d0}
+span.s4 {font: 9.0px Monaco; color: #000000}
+span.s5 {font: 9.0px Monaco; color: #008900}
+span.s6 {color: #008900}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>OscSlot<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>A wrapper class for OSCresponderNodes</b></p>
+<p class="p2"><br></p>
+<p class="p1"><b>Inherits from: Object</b></p>
+<p class="p3"><br></p>
+<p class="p1">Sets up an OSCresponderNode for a given key and optionally scales it based on minimum and maximum input received so far.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p1">This class is designed to mimmic GeneralHIDSlot</p>
+<p class="p2"><br></p>
+<p class="p1"><b>See also:</b> OSCHID GeneralHIDSlot OSCresponderNode</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4"><b>Creation / Class Methods</b></p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>*new (type, osckey, action, index )</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Create a new Slot</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>type </b>- \relative for inputs that should be scaled. \button for inputs that should not be.<span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>osckey </b>- The OSC message to listen for.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>action </b>- The action to call upon receiving a new OSC message. Default value is nil.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>index </b>- The index of the message to listen for. In most cases this will be one, but if your device bundles x, y z coordinates together and you want to listen for y, this would be 2. Or for z, it would be 3.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Example</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s3">OSCHID</span>.new.spec_((</p>
+<p class="p11"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ax: </span><span class="s3">OscSlot</span><span class="s2">(</span>\relative<span class="s2">, </span>'/wii/acc'<span class="s2">, </span><span class="s3">nil</span><span class="s2">, 1),</span></p>
+<p class="p11"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ay: </span><span class="s3">OscSlot</span><span class="s2">(</span>\relative<span class="s2">, </span>'/wii/acc'<span class="s2">, </span><span class="s3">nil</span><span class="s2">, 2),</span></p>
+<p class="p11"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>az: </span><span class="s3">OscSlot</span><span class="s2">(</span>\relative<span class="s2">, </span>'/wii/acc'<span class="s2">, </span><span class="s3">nil</span><span class="s2">, 3)</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>));</p>
+<p class="p5"><br></p>
+<p class="p12"><b>Accessing Instance and Class Variables</b></p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><b>action_(func)</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Sets the action for the slot.<span class="Apple-converted-space">  </span>This will not get called for<span class="s4"> </span><span class="s5">\relative</span> slots until the calibration is set to false</p>
+<p class="p5"><br></p>
+<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// Example</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w = <span class="s3">OSCHID</span>.new.spec_((</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ax: <span class="s3">OscSlot</span>(<span class="s6">\relative</span>, <span class="s6">'/wii/acc'</span>, <span class="s3">nil</span>, 1)));</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.spec[<span class="s6">\ax</span>].action = { <span class="s3">| val |</span> val.value.postln; };</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.calibrate = <span class="s3">false</span>;</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>createBus (s)</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Create a control bus on the specified server, and map the incoming values to this bus.</p>
+<p class="p5"><br></p>
+<p class="p6"><span class="Apple-tab-span">	</span><b>bus</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns the bus to which this slot is mapped, if a bus has been created.</p>
+<p class="p8"><b></b><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>freeBus ()</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Free the bus on the server</p>
+<p class="p5"><br></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span>kr ()</b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>JitLib support</p>
+<p class="p5"><br></p>
+</body>
+</html>

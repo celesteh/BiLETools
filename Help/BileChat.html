@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="1038.36">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {text-decoration: underline ; color: #0000ee}
+span.s3 {color: #1100d0}
+span.s4 {color: #737373}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><br></p>
+<p class="p2"><span class="s1"><b>BileChat<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>a class that does chat and API stuff and communication for BiLE</b><span class="s1"><b><span class="Apple-tab-span">	</span></b></span></p>
+<p class="p1"><br></p>
+<p class="p1"><br></p>
+<p class="p2"><b>Requires:</b></p>
+<p class="p2">•<span class="Apple-converted-space">  </span>ProcessTools, a quark</p>
+<p class="p2">•<span class="Apple-converted-space">  </span>OscGroups, external program, download from http://www.audiomulch.com/~rossb/code/oscgroups/</p>
+<p class="p2">•<span class="Apple-converted-space">  </span>OscGroupClient, Les's altered version</p>
+<p class="p2">•<span class="Apple-converted-space">  </span>NetAPI</p>
+<p class="p3"><br></p>
+<p class="p2"><b>Optional:</b></p>
+<p class="p2">•<span class="Apple-converted-space">  </span>Growl, an external program, download from <a href="http://growl.info/"><span class="s2">http://growl.info</span></a></p>
+<p class="p2">•<span class="Apple-converted-space">  </span>growlnotify, an external program you can find in the extras directory of the Growl install DMG</p>
+<p class="p3"><br></p>
+<p class="p2"><b>Usage</b></p>
+<p class="p3"><br></p>
+<p class="p2">This class handles a GUI for interactive chat.</p>
+<p class="p1"><br></p>
+<p class="p4">a = <span class="s3">NetAPI</span>.broadcast(<span class="s4">"nick"</span>);</p>
+<p class="p4">b = BileChat(a);</p>
+<p class="p1"><br></p>
+<p class="p2">It will open a communication window to allow you to chat with other members of your group. It also shows your API methods and those that they have published. If you do't see any listed APIs, click on the 'API Methonds' text to refresh.<span class="Apple-converted-space">  </span>Or, you can click the name of a particular to get a popup window with the description in it.</p>
+<p class="p1"><br></p>
+<p class="p2">If you have Growl and growlnotify installed, Growl notifications for new chat messages are enabled by default.<span class="Apple-converted-space">  </span>To turn them off:</p>
+<p class="p1"><br></p>
+<p class="p4">b.growl = <span class="s3">false</span>;</p>
+</body>
+</html>

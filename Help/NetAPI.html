@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="1038.36">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #737373}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Helvetica Neue'}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #000000}
+span.s3 {color: #1100d0}
+span.s4 {color: #737373}
+span.s5 {color: #008900}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><br></p>
+<p class="p2"><span class="s1"><b>NetAPI<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>a class that does API stuff and communication for BiLE</b><span class="s1"><b><span class="Apple-tab-span">	</span></b></span></p>
+<p class="p1"><br></p>
+<p class="p1"><br></p>
+<p class="p2"><b>Requires:</b></p>
+<p class="p2">•<span class="Apple-converted-space">  </span>ProcessTools, a quark</p>
+<p class="p2">•<span class="Apple-converted-space">  </span>OscGroups, external program, download from http://www.audiomulch.com/~rossb/code/oscgroups/</p>
+<p class="p2">•<span class="Apple-converted-space">  </span>OscGroupClient, Les's altered version</p>
+<p class="p2">•<span class="Apple-converted-space">  </span>ClockFace, a quark</p>
+<p class="p3"><br></p>
+<p class="p2"><b>Usage</b></p>
+<p class="p3"><br></p>
+<p class="p2">This class handles network ommunication for BiLE.<span class="Apple-converted-space">  </span>This can be done via the the OscGroup server or via multicast.<span class="Apple-converted-space"> </span></p>
+<p class="p3"><br></p>
+<p class="p2">If you want to use the OSCGroup server, the constructor asks for the full path to the client, your username and your password.<span class="Apple-converted-space">  </span>(Group authentication is already included.)</p>
+<p class="p3"><br></p>
+<p class="p4"><span class="s2">a = </span><span class="s3">NetAPI</span><span class="s2">(</span>"/Applications/Media/pro/audio/SuperCollider/OscGroup/OscGroupClient"<span class="s2">, </span>"localhost"<span class="s2">, </span>"nick"<span class="s2">, </span>"passwd"<span class="s2">);</span></p>
+<p class="p1"><br></p>
+<p class="p5">If you want to use multicast, you only need to provide your username.</p>
+<p class="p1"><br></p>
+<p class="p6">a = <span class="s3">NetAPI</span>.broadcast(<span class="s4">"nick"</span>);</p>
+<p class="p3"><br></p>
+<p class="p2">This class<span class="Apple-converted-space">  </span>knows your hostname and ip address, so if you want those:</p>
+<p class="p1"><br></p>
+<p class="p6">a.my_ip</p>
+<p class="p6">a.hostname</p>
+<p class="p1"><br></p>
+<p class="p2">To add an API method, you need a selector, a function and, optionally, a description:</p>
+<p class="p1"><br></p>
+<p class="p6">(</p>
+<p class="p6"><span class="Apple-tab-span">	</span>a.add(<span class="s5">'speak'</span>, { <span class="s3">arg</span> text;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>text.speak;</p>
+<p class="p4"><span class="s2"><span class="Apple-tab-span">	</span>}, </span>"Speak the provided text. Usage: speak, text"<span class="s2">);</span></p>
+<p class="p6">)</p>
+<p class="p1"><br></p>
+<p class="p2">To call this function from anywhere else in your code:</p>
+<p class="p1"><br></p>
+<p class="p6">a.call('speak', "it talks");</p>
+<p class="p1"><br></p>
+<p class="p2">To see the help for it:</p>
+<p class="p3"><br></p>
+<p class="p6">a.help('speak').postln;</p>
+<p class="p1"><br></p>
+<p class="p2">Or you can call it from outside of your current namespace:</p>
+<p class="p3"><br></p>
+<p class="p6">b = NetAPI.default;</p>
+<p class="p1"><br></p>
+<p class="p6">b.speak("It still speaks");</p>
+<p class="p1"><br></p>
+<p class="p2">Anything you add to b will be visible to a and vice versa.</p>
+<p class="p1"><br></p>
+<p class="p2">You can call remote APIs in the same way, however, in the case that you and somebody else have the same selector name (which is a probable conflict), it will call your local API and not go to the network.<span class="Apple-converted-space">  </span>If you want to send something to the network, use sendMsg:</p>
+<p class="p3"><br></p>
+<p class="p6">a.sendMsg('any_symbol', "anything can go here and will go out to the group server")</p>
+<p class="p1"><br></p>
+<p class="p2">Things that you send out to an OSCGroupServer in this way will not echo locally. However, broadcast messages ususally will echo locally.</p>
+<p class="p3"><br></p>
+<p class="p6">a.sendMsg('speak', "this may not speak here");</p>
+<p class="p6">// vs</p>
+<p class="p6">a.call('speak', "this will only speak locally");</p>
+<p class="p1"><br></p>
+<p class="p2">To open a chat window, see [[BileChat]]</p>
+<p class="p1"><br></p>
+<p class="p1"><br></p>
+<p class="p1"><br></p>
+<p class="p2">If you want to a clock, you can ask for one:</p>
+<p class="p3"><br></p>
+<p class="p6">c = a.clock;</p>
+<p class="p6">c.show;</p>
+<p class="p1"><br></p>
+<p class="p2">Start and stop the clock via the API:</p>
+<p class="p3"><br></p>
+<p class="p6">a.call('clock/clock', 'start');</p>
+<p class="p6">a.call('clock/clock', 'stop');</p>
+<p class="p6">a.call('clock/reset');</p>
+</body>
+</html>
