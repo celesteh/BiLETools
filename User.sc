@@ -11,7 +11,9 @@ User {
 	
 	init { arg addr, port, nick;
 		
-		netAddr = NetAddr(addr.asString, port.asString.asInt);
+		//netAddr = NetAddr(addr.asString, port.asString.asInt);
+		this.updateAddress(addr, port);
+		
 		nick.notNil.if ({
 			this.nick = nick.asSymbol;
 		});
@@ -21,7 +23,17 @@ User {
 	}
 	
 	updateAddress{ arg addr, port;
-		netAddr = NetAddr(addr.asString, port.asString);
+		
+		addr = addr.asString;
+		
+		("[a-z]".matchRegexp(addr, 0, addr.size) || 
+			"[A-Z]".matchRegexp(addr, 0, addr.size)).not.if({
+				
+			"no letters".postln;
+			netAddr = NetAddr(addr, port.asString);
+		}, {
+			"letters".postln;
+		});
 	}		
 	
 	addService { arg offer;
@@ -46,7 +58,9 @@ User {
 	
 	sendMsg { arg ... msg;
 		
-		netAddr.sendMsg(*msg);
+		netAddr.notNil.if({
+			netAddr.sendMsg(*msg);
+		});
 	}
 	
 	addFunctionKey { |key, desc|
