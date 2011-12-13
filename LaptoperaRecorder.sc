@@ -3,7 +3,7 @@
 
 LaptoperaRecorder {
 	
-	var <win, api;
+	var <win, api, view;
 	var <buffer, <>bufferAction, <>nilAction, <>startAction, <>stopAction;
 	var oldbuf, menus, section, latest, s;
 	var <>dir, <>synthSampleDir;
@@ -32,15 +32,24 @@ LaptoperaRecorder {
 			^super.new.init(net_api, s, dir, synthSampleDir, show, win)
 	}
 	
-	init { |net_api, serv, directory, syn_dir, show = true, window|
-		
-		var colour, view, dir_gui, section_gui, line_gui;
-		var incButton, button, doMenu, loadFile, play_button;
+	* max { |net_api, s, dir, show = true, win|
+		^super.new.maxinit(net_api, s, dir, show, win)
+	}
+	
+	
+	maxinit {|net_api, serv, directory, show = true, window|
+	
+		var colour, dir_gui, section_gui, line_gui;
+		var incButton, button;
 		
 		api = net_api;
 		s = serv;
+		
+		(directory.last != $/). if({
+			directory = directory ++ "/";
+		});
 		dir = directory.standardizePath;
-		synthSampleDir = syn_dir.standardizePath;
+		
 		recording = false;
 
 		recBuf = Buffer.alloc(s, 65536, 1);
@@ -110,6 +119,25 @@ LaptoperaRecorder {
 				this.stopRecording;
 			})
 		});
+
+		show.if({
+			win.front;
+		});	
+
+		"max is done".postln;
+	}	
+	
+	init { |net_api, serv, directory, syn_dir, show = true, window|
+		
+		var doMenu, loadFile, play_button;
+		
+		
+		this.maxinit(net_api, serv, directory, false, window);
+		
+		(syn_dir.last != $/). if({
+			syn_dir = syn_dir ++ "/";
+		});
+		synthSampleDir = syn_dir.standardizePath;
 
 		menus = IdentityDictionary(know: true);
 		
@@ -211,7 +239,7 @@ LaptoperaRecorder {
 							menu.addItem(filename.asString, {
 								loadFile.(file, index);
 							});
-						})
+						});
 						nil;
 					});
 				//});
@@ -347,21 +375,23 @@ LaptoperaRecorder {
 	
 	mostRecent {
 		var menuindex, men, index;
-			
-		menuindex = latest.asString.at(0).toLower.asSymbol;
-		men = menus.at(menuindex);
-			
-		men.items.do({|assoc, i|
-			(assoc.key.asString.compare(latest.asString) == 0).if({
-				// found it
-				index = i;
-					//break;
-			})
-		});
-			
-		index.notNil.if({
-			AppClock.sched(0, {men.valueAction = index; nil});
-		});
 		
+		latest.notNil.if({
+			
+			menuindex = latest.asString.at(0).toLower.asSymbol;
+			men = menus.at(menuindex);
+			
+			men.items.do({|assoc, i|
+				(assoc.key.asString.compare(latest.asString) == 0).if({
+					// found it
+					index = i;
+					//break;
+				})
+			});
+			
+			index.notNil.if({
+				AppClock.sched(0, {men.valueAction = index; nil});
+			});
+		})
 	}
 }
