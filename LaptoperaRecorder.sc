@@ -1,4 +1,4 @@
-// version 0.014-alpha
+// version 0.015-alpha
 
 
 LaptoperaRecorder {
@@ -123,7 +123,7 @@ LaptoperaRecorder {
 			sampleMenu.addItem("unselected", {
 				
 				dedbuf = oldbuf;
-				oldbuf = ~buffer;
+				oldbuf = buffer;
 				
 				dedbuf.notNil.if({
 					dedbuf.close;
@@ -151,7 +151,7 @@ LaptoperaRecorder {
 				// don't delete the old buffer right away, store it in oldbuf
 				// so your synths using the old buffer won't perish as soon as you switch	
 				dedbuf = oldbuf;
-				oldbuf = ~buffer;
+				oldbuf = buffer;
 				buffer = b;
 				
 				bufferAction.notNil.if({
@@ -177,7 +177,7 @@ LaptoperaRecorder {
 			
 		api.add('newfile', {arg filename;
 			
-			var file, index, menu;
+			var file, index, menu, men_i;
 			
 			"newfile".postln;
 			
@@ -196,10 +196,22 @@ LaptoperaRecorder {
 				
 				//menu.items.includes(filename.asString).not.if({
 					AppClock.sched(0, {
-						"adding".postln;
-						menu.addItem(filename.asString, {
-							loadFile.(file, index);
+						
+						menu.items.do({|assoc, i|
+							(assoc.key.asString.compare(latest.asString) == 0).if({
+								// found it
+								men_i = i;
+								//break;
+							})
 						});
+			
+						men_i.isNil.if({
+
+							"adding".postln;
+							menu.addItem(filename.asString, {
+								loadFile.(file, index);
+							});
+						})
 						nil;
 					});
 				//});
