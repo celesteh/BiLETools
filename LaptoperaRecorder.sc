@@ -1,4 +1,4 @@
-// version 0.015-alpha
+// version 0.016-alpha
 
 
 LaptoperaRecorder {
@@ -6,7 +6,7 @@ LaptoperaRecorder {
 	var <win, api, view;
 	var <buffer, <>bufferAction, <>nilAction, <>startAction, <>stopAction;
 	var oldbuf, menus, section, latest, s;
-	var <>dir, <>synthSampleDir;
+	var <dir, <>synthSampleDir;
 	var line, recording, syn, recBuf, tmpfile;
 	
 	*initClass {
@@ -36,7 +36,13 @@ LaptoperaRecorder {
 		^super.new.maxinit(net_api, s, dir, show, win)
 	}
 	
-	
+	dir_ {|directory|
+		(directory.last != $/). if({
+			directory = directory ++ "/";
+		});
+		dir = directory.standardizePath;
+	}
+			
 	maxinit {|net_api, serv, directory, show = true, window|
 	
 		var colour, dir_gui, section_gui, line_gui;
@@ -45,10 +51,7 @@ LaptoperaRecorder {
 		api = net_api;
 		s = serv;
 		
-		(directory.last != $/). if({
-			directory = directory ++ "/";
-		});
-		dir = directory.standardizePath;
+		this.dir_(directory);
 		
 		recording = false;
 
@@ -59,7 +62,8 @@ LaptoperaRecorder {
 		win.view.background_(colour);
 		win.view.decorator = FlowLayout(win.view.bounds);
 		//view = CompositeView(win, (win.view.bounds.width / 2) @ 30);
-		view = win.view;
+		//view = win.view;
+		view = CompositeView(win, (win.view.bounds.width @ win.view.bounds.height));
 
 		view.decorator = FlowLayout(view.bounds);
 		view.decorator.gap=10@10;
@@ -87,7 +91,7 @@ LaptoperaRecorder {
 		 
 		 line_gui = EZText (view,
 		 	300@30,
-		 	"Line Number");
+		 	"Line Number", {}, line.value, labelWidth:100);
 		 
 		 line_gui.action_(
 		 	{|ez|  
@@ -96,8 +100,7 @@ LaptoperaRecorder {
 			 	}, { // in fact, change back
 				 	ez.value = line.value;
 			 	});
-		 	},
-		 	line.value, labelWidth:100);
+		 	});
 		 
 		 line.action_(line_gui, {|val| 
 			 "line action".postln;
@@ -108,7 +111,7 @@ LaptoperaRecorder {
 
 		incButton = Button(view, 30 @ 30).states_([["+"]]). action_({this.increment});
 		
-		button = Button(view, 300@30).states_([
+		button = Button(view, 200@30).states_([
 			["Record", Color.red, Color.green],
 			["Stop", Color.black, Color.red]
 		])
@@ -119,6 +122,7 @@ LaptoperaRecorder {
 				this.stopRecording;
 			})
 		});
+		//.align_(\center);
 
 		show.if({
 			win.front;
