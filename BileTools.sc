@@ -349,6 +349,7 @@ BileClock {
 			this.pr_stop;
 		});
 		this.master = false;
+		clock.onBeat = nil;
 	}
 	
 	master_ { |is_master|
