@@ -375,7 +375,7 @@ BileClock {
 		
 		master.not.if({
 			time  = (minutes * 60) + seconds;
-			clock.isNil.if({ AppClock.sched(0, {clock = ClockFace.(time); nil}) },
+			clock.isNil.if({ AppClock.sched(0, {clock = ClockFace.new(time); nil}) },
 				{clock.cursecs_(time)});
 		});
 	}		
