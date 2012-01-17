@@ -17,9 +17,10 @@ LaptoperaRecorder {
 			SynthDef.writeOnce("LaptoperaRecorder",{ arg in = 0, bufnum, dur, running=1.0, trigger=0.0; 
 				DiskOut.ar(bufnum, SoundIn.ar(in).tanh);
 				//EnvGen.kr(Env.sine(dur), doneAction: 2);
+				Out.ar(0, 0);
 			});
 	
-			SynthDef.writeOnce(\LaptoperRecordingPlayer, {|out = 0, bufnum = 0, amp =0.2|
+			SynthDef.writeOnce(\LaptoperRecordingPlayer, {|out = 0, bufnum = 0, amp =0.5|
 				var player;
 				player = PlayBuf.ar(1, bufnum, loop:0, doneAction: 2);
 				player = [player, player];
@@ -348,7 +349,7 @@ LaptoperaRecorder {
 				newb = Buffer.read(s, path, action: {|buf|
 					"playing".postln;
 					Synth(\LaptoperRecordingPlayer, args:[\out, 0, \bufnum, buf.bufnum, 
-						\amp, 0.4]);
+						\amp, 0.5]);
 				});
 									
 				(dur + 0.1).wait;
