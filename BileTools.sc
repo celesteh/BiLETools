@@ -9,7 +9,7 @@ BileChat {
 	
 	init { |net_api, show = true|
 		
-		var api_methods, update_action, talk, user_list, user_update_action, side;
+		var api_methods, update_action, talk, user_list, user_update_action, side, flag;
 		
 		
 		exists = true;
@@ -26,7 +26,17 @@ BileChat {
 		// disable remoe query too in case of loop
 		//api.remote_query;
 		
-		color.isNil.if({ color = Color.rand});
+		color.isNil.if({ 
+			flag = true;
+			{flag}.while({
+				color = Color.rand;
+				if (((color.red < 0.5)
+					|| (color.green < 0.5)
+					|| (color.blue < 0.5)), {
+						flag = false;
+				});
+			});
+		});
 
 		win = Window.new("Communication", Rect(128, 64, 510, 370));
 		win.view.background_(color);

@@ -17,18 +17,18 @@ NetAPI {
 		all = IdentityDictionary.new;
 		listeners = Dictionary.new;
 
-		getIP = Ê{arg action;
+		getIP = {arg action;
 			var before = NetAddr.broadcastFlag;
 Ê Ê Ê Ê Ê Ê Ê NetAddr.broadcastFlag = true;
-Ê Ê Ê Ê Ê Ê Ê OSCresponder(nil, '/getMyIP', { arg t,r,msg,addr;
-Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Êaction.(addr);
-Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê ÊNetAddr.broadcastFlag = before;
-Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Êr.remove;
-Ê Ê Ê Ê Ê Ê Ê Ê}).add;
+			OSCresponder(nil, '/getMyIP', { arg t,r,msg,addr;
+				action.(addr);
+				NetAddr.broadcastFlag = before;
+				r.remove;
+			}).add;
 
-Ê Ê Ê Ê Ê Ê Ê ÊNetAddr("255.255.255.255", NetAddr.langPort).sendMsg('/getMyIP');
-Ê Ê Ê Ê Ê Ê Ê Ênil;
-Ê Ê Ê Ê	};
+			NetAddr("255.255.255.255", NetAddr.langPort).sendMsg('/getMyIP');
+			nil;
+		};
 
 		getIP.value({arg addr;
 			ip =  addr.ip;	

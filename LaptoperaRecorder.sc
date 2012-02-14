@@ -14,10 +14,13 @@ LaptoperaRecorder {
 		StartUp.add({
 			
 					
-			SynthDef.writeOnce("LaptoperaRecorder",{ arg in = 0, bufnum, dur, running=1.0, trigger=0.0; 
-				DiskOut.ar(bufnum, SoundIn.ar(in).tanh);
+			SynthDef.writeOnce("LaptoperaRecorder",{ arg in = 0, bufnum, dur, 
+							running=1.0, trigger=0.0, amp = 0.5, gate; 
+				var inner, env;
+				inner = SoundIn.ar(in).tanh;
+				DiskOut.ar(bufnum, inner);
 				//EnvGen.kr(Env.sine(dur), doneAction: 2);
-				Out.ar(0, 0);
+				Out.ar(1, inner * amp);
 			});
 	
 			SynthDef.writeOnce(\LaptoperRecordingPlayer, {|out = 0, bufnum = 0, amp =0.5|
