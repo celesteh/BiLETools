@@ -701,8 +701,9 @@ NetAPI {
 		resource = SharedResource.new;
 		//resource.mountAPI(this, selector);
 		//SharedRemoteListener(selector, this, resource);
-		this.sendMsg('API/registerListener', this.pr_formatTag(selector), nick, this.my_ip, NetAddr.langPort);
-		"subscribing".postln;
+		selector = this.pr_formatTag(selector);
+		this.sendMsg('API/registerListener', selector, nick, this.my_ip, NetAddr.langPort);
+		("subscribing to" + selector).postln;
 		this.add(selector, { |input|
 			resource.value_(input, this);
 			("" + selector ++ ":" + input).postln;

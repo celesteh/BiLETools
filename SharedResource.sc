@@ -67,6 +67,8 @@ SharedResource {
 		
 		var changed, result;
 		
+		"in value".postln;
+
 		changed = false;
 		
 		semaphore.notNil.if({
@@ -84,16 +86,22 @@ SharedResource {
 			
 		
 		changed.if({
+
+			"changed".postln;
 			// notify others
 			dependantsDictionary.at(this).copy.do({ arg dep;
 				(dep === theChanger).not.if({
+					
 					dep.update(this, theChanger, *moreArgs);
-				})
+				});
 			});
 			signed_actions.notNil.if({
 				signed_actions.keysDo({ |key|
 					(key === theChanger).not.if({
 						signed_actions[key].value(this, theChanger, *moreArgs);
+						(""++ theChanger + "is notifying"+ key).postln;
+					}, {
+						(""++ theChanger + "is not notifying"+ key).postln;
 					});
 				});
 			});
