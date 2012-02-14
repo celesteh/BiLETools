@@ -151,19 +151,19 @@ BileChat {
 		growl = File.exists("/usr/local/bin/growlnotify");
 		
 		api.add('msg', { arg user, blah;
-			(win.isClosed.not && exists).if ({
-				AppClock.sched(0, {
+			AppClock.sched(0, {
+				(win.isClosed.not && exists).if ({
 					//disp.string = disp.string ++ "\n buh?";
 					//disp.string = disp.string ++ "\n" + user ++">"+ blah;
 					//string = disp.string;
 					this.add(""++ user ++ ">" + blah);
 					this.growlnotify(user, blah);
-					nil;
+					[user, blah].postln;
+				}, {
+					api.remove('msg');
 				});
-				[user, blah].postln;
-			}, {
-				api.remove('msg');
-			})
+				nil;
+			});
 		}, "For chatting. Usage: msg, nick, text");
 		
 		talk = TextView(view,Rect(10,330, 480,15))
@@ -222,9 +222,11 @@ BileChat {
 				str = str++ c;
 			})
 		});
-		
-		disp.string = disp.string ++ "\n" ++ str;
-		string = disp.string;
+		AppClock.sched(0, {
+			disp.string = disp.string ++ "\n" ++ str;
+			string = disp.string;
+			nil
+		});
 					
 	}
 	
