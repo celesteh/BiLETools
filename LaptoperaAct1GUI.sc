@@ -19,20 +19,20 @@ LaptoperaAct1GUI {
 
 			net = NetAddr("127.0.0.1", port);
 			
-			param1 = gui.addRemote('param1');
+			param1 = gui.addRemote('artificial');
 			param1.sp(0, 0, 1, 0, \lin, gui);
 			param1.guitype_(\voter);
-			param1.action = {|p| net.sendMsg("/param1", p.value)};
+			param1.action = {|p| net.sendMsg("artificial", p.value)};
 
-			param2 = gui.addRemote('param2');
+			param2 = gui.addRemote('resonant');
 			param2.sp(0, 0, 1, 0, \lin, gui);
 			param2.guitype_(\voter);
-			param2.action = {|p| net.sendMsg("/param2", p.value)};
+			param2.action = {|p| net.sendMsg("resonant", p.value)};
 
-			param3 = gui.addRemote('param3');
+			param3 = gui.addRemote('processed');
 			param3.sp(0, 0, 1, 0, \lin, gui);
 			param3.guitype_(\voter);
-			param3.action = {|p| net.sendMsg("/param3", p.value)};
+			param3.action = {|p| net.sendMsg("/processeds", p.value)};
 
 			param4 = gui.addRemote('param4');
 			param4.sp(0, 0, 1, 0, \lin, gui);
