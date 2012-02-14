@@ -143,10 +143,14 @@ NetworkGui : Environment {
 			// first arg is this, next args are local variables, then shared ones
 			1.forBy(size - 1, 1, { arg i;
 				name = names[i];
-				local.includes(name).if({
+				local.notNil.if({
+					local.includes(name).if({
 					//argNames = argNames.add(name);
 					argList = argList.add(this.addLocal(name))
-				} , {
+					} , {
+						argList = argList.add(this.addShared(name));
+					});
+				}, {
 					argList = argList.add(this.addShared(name));
 				});
 				gui_items = gui_items.add(name);

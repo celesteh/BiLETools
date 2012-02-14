@@ -278,10 +278,16 @@ OscSlot {
 		));
 
 		@*/
-		^super.new.init(type, osckey, action, index, scale);
+		^super.new.init(type, osckey, action, index, nil, scale);
 	}
+
+	*match { arg type, osckey, action, index, equals, scale = 256;
+
+		^super.new.init(type, osckey, action, index, equals, scale);
+	}
+
 	
-	init { arg typ, key, act, ind = 1, scl = 256;
+	init { arg typ, key, act, ind = 1, eq, scl = 256;
 		
 		var resp_func;
 		osckey = key;
@@ -293,9 +299,23 @@ OscSlot {
 		calibrate = true;
 		
 		responder = OSCresponderNode(nil, osckey, { |t, r, msg|
+
+
+			var test;
 			
 				//WiiOSCClient.dEBUG.if ({
 					//msg.post; " ".post; msg[index].postln;
+			test = true;
+			eq.notNil.if ({
+				test = false;
+				(eq.size ==2).if ({
+					(msg[eq.first] == eq.last).if ({
+						test = true;
+					});
+				});
+			});
+
+			if (test, {
 					rawValue = msg[index];
 					
 					min.isNil.if({ min = rawValue});
@@ -311,7 +331,7 @@ OscSlot {
 					});
 				//});
 				
-				if (type != \button, {
+				if (type == \relative, {
 					//value = rawValue / scale;
 					value = rawValue - min;
 					(max != min).if({
@@ -322,6 +342,7 @@ OscSlot {
 					this.action.notNil.if({this.action.value(this);});
 					busAction.notNil.if({busAction.value(this);});
 				});
+			})
 		}).add;
 			
 	}
