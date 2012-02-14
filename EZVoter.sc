@@ -187,7 +187,7 @@ EZVoter : EZGui {
 	
 	decrement {
 		//sliderView.value_(sliderView.value - this.indexSize);
-		this.value_(value - this.insexSize);
+		this.value_(value - this.indexSize);
 	}
 	
 	incrementAction {
