@@ -1,7 +1,7 @@
 
 SharedResource {
 	
-	var <value, signed_actions, unsigned_actions, semaphore, spec;
+	var <value, <signed_actions, unsigned_actions, semaphore, spec;
 	//var <>symbol, remote_listeners, api, <>desc;
 	var <>changeFunc, lastAdvertised;
 	
@@ -118,6 +118,7 @@ SharedResource {
 			});
 		
 			signed_actions.put(arg1, arg2);
+			signed_actions.keys.postln;
 		} , {
 			// arg1 is the action
 			if (unsigned_actions.isNil, {
@@ -175,6 +176,7 @@ SharedResource {
 		//desc = description;
 		remote = SharedRemoteListeners(key, api, this, desc, broadcast, symbol);
 		//api.share(symbol, remote, desc);
+		"api mounted".postln;
 		^remote;
 	}
 	
@@ -196,13 +198,14 @@ SharedRemoteListeners {
 		tag = osc_tag;
 		api = netapi;
 		key = symbol;
-		shared = sharedResource;
+		shared = sharedResource; //shared.isNil.if({ shared = SharedResource.new});
 		listeners = Dictionary.new;
 		desc = description;
 		count = 0;
 		n = 1;
 		shared.action_(this, {|val| this.action(val) });
 		api.share(key, this, desc);
+		//api.add(key, {|input| shared.value_(input, this)});
 	}
 	
 	
@@ -217,6 +220,7 @@ SharedRemoteListeners {
 			
 			if (tag.notNil && broadcast, {  // use the tag we passed in
 				api.sendMsg(tag, value.value);
+				"sent to api".postln;
 			} , {
 				if((broadcast && (listeners.size > 0)),{
 					api.shareData(key, value.value);
@@ -228,6 +232,11 @@ SharedRemoteListeners {
 				})
 			});
 		})
+	}
+
+
+	action_ { |...args|
+		shared.action_(*args);
 	}
 	
 	addListener { |punter|
@@ -244,6 +253,10 @@ SharedRemoteListeners {
 	
 	value {
 		shared.value
+	}
+
+	value_ {|...args|
+		shared.value_(*args);
 	}
 	
 	n_ { |new|

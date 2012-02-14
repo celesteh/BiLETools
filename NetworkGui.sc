@@ -60,7 +60,7 @@ NetworkGui : Environment {
 										(view.bounds.width-sub) @ 20,
 										key.asString,
 										cv.spec ? key.asSymbol.asSpec,
-										{|ez| cv.value_(ez.value, netgui)},
+										{|ez| /*"ez change".postln;*/ cv.value_(ez.value, netgui)},
 										cv.value,
 										unitWidth:30
 									).setColors(Color.grey,Color.white, Color.grey
@@ -412,8 +412,13 @@ NetworkGui : Environment {
 		tag = key.asSymbol;
 		
 		remote[tag].isNil.if({
+
+			"adding remote".postln;
+
 			res = api.subscribe(tag);
 			res.action_(this, {this.update});
+			res.action_(api, {|val| "to api".postln; api.sendMsg(tag, val.value)}); // les just added update network
+			//res.action_({"fuck yeah".postln}); // does the res action ever actually get called?   YES!!
 			rcv = SharedCV(this, res);
 			//if( cv.copy_spec, {rcv.spec = cv.spec});
 			split = tag.asString.split($/); // strip the user name from the front
@@ -423,7 +428,8 @@ NetworkGui : Environment {
 			this.put(tag, rcv);
 			keys = keys ++ tag;
 			major_change = true;
-
+			//rcv.action_(this, {"changed".postln; this.update});
+			//this.remote_update_action;
 					
 		});
 		
@@ -575,6 +581,7 @@ NetworkGui : Environment {
 					this.put(tag, rcv);
 					keys = keys ++ tag;
 					major_change = true;
+					//api.add(tag, {|input| shared.value_(input, this)});
 					
 				})
 			})
@@ -722,6 +729,7 @@ SharedCV {
 		});
 		tag = key;
 		copy_spec = true;
+		//shared.action_(container, {|val| container.value_(val.value)}); // Les
 	}
 	
 	spec_{|s, default_value, changer|
@@ -763,6 +771,7 @@ SharedCV {
 	
 	value_{|val, changer ... moreArgs|
 		
+		//"cv changed".postln;
 		shared.value_(val, changer, moreArgs);
 		widget.notNil.if({
 			// save it for the redraw loop!

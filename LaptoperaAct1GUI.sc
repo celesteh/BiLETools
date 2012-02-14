@@ -29,20 +29,20 @@ LaptoperaAct1GUI {
 			param2.guitype_(\voter);
 			param2.action = {|p| net.sendMsg("resonant", p.value)};
 
-			param3 = gui.addRemote('processed');
+			param3 = gui.addRemote('abstract');
 			param3.sp(0, 0, 1, 0, \lin, gui);
 			param3.guitype_(\voter);
-			param3.action = {|p| net.sendMsg("/processeds", p.value)};
+			param3.action = {|p| net.sendMsg("/abstract", p.value)};
 
-			param4 = gui.addRemote('param4');
+			param4 = gui.addRemote('density');
 			param4.sp(0, 0, 1, 0, \lin, gui);
 			param4.guitype_(\voter);
-			param4.action = {|p| net.sendMsg("/param4", p.value)};
+			param4.action = {|p| net.sendMsg("/density", p.value)};
 
-			param5 = gui.addRemote('param5');
+			param5 = gui.addRemote('grain');
 			param5.sp(0, 0, 1, 0, \lin, gui);
 			param5.guitype_(\voter);
-			param5.action = {|p| net.sendMsg("/param5", p.value)};
+			param5.action = {|p| net.sendMsg("/grain", p.value)};
 
 			antisocial = gui.addLocal('antisocial');
 			antisocial.sp(0, 0, 1, 0, \lin, gui);

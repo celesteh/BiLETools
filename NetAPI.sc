@@ -19,7 +19,7 @@ NetAPI {
 
 		getIP = {arg action;
 			var before = NetAddr.broadcastFlag;
-Ê Ê Ê Ê Ê Ê Ê NetAddr.broadcastFlag = true;
+			NetAddr.broadcastFlag = true;
 			OSCresponder(nil, '/getMyIP', { arg t,r,msg,addr;
 				action.(addr);
 				NetAddr.broadcastFlag = before;
@@ -684,7 +684,10 @@ NetAPI {
 		//data.desc = desc; // ditto
 		data.key = selector;			
 		shared.put(selector, data);
-		this.advertiseShared(selector, desc);	
+		// make sure we can update from a network
+		//this.add(selector, {|input| data.value_(input.value, this)});
+		this.advertiseShared(selector, desc);
+		^selector;	
 	}
 	
 	advertiseShared {| selector, desc = ""|
@@ -694,10 +697,15 @@ NetAPI {
 	
 	subscribe { | selector|
 		var resource;
-		resource = SharedResource(symbol: selector);
+		selector = selector.asSymbol;
+		resource = SharedResource.new;
+		//resource.mountAPI(this, selector);
+		//SharedRemoteListener(selector, this, resource);
 		this.sendMsg('API/registerListener', this.pr_formatTag(selector), nick, this.my_ip, NetAddr.langPort);
+		"subscribing".postln;
 		this.add(selector, { |input|
 			resource.value_(input, this);
+			("" + selector ++ ":" + input).postln;
 		});
 		^resource;
 	}
@@ -823,6 +831,7 @@ APIResponder {
 	
 	sendMsg{  arg ... msg;
 		
+		("sending" + msg).postln;
 		client.sendMsg(*msg);
 	}
 	
