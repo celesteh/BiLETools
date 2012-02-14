@@ -217,8 +217,10 @@ EZVoter : EZGui {
 	font_ { arg font;
 
 		labelView.notNil.if{labelView.font=font};
-		sliderView.notNil.if{sliderView.font = font};
+		unitView.notNil.if{unitView.font=font};
+		numberView.font=font;
 	}
+
 	
 
 
@@ -266,9 +268,11 @@ EZVoter : EZGui {
 		buttonColor, buttonTextColor;
 		
 			stringBackground.notNil.if({
-				labelView.notNil.if{labelView.background_(stringBackground)};});
+				labelView.notNil.if{labelView.background_(stringBackground)};
+				unitView.notNil.if{unitView.background_(stringBackground)};});
 			stringColor.notNil.if({
-				labelView.notNil.if{labelView.stringColor_(stringColor)};});
+				labelView.notNil.if{labelView.stringColor_(stringColor)};
+				unitView.notNil.if{unitView.stringColor_(stringColor)};});
 				
 			(buttonColor.notNil && buttonTextColor.notNil).if({
 				plusView.states = [[plusView.states[0][0], buttonTextColor, buttonColor]];
