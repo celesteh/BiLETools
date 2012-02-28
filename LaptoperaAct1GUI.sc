@@ -18,6 +18,8 @@ LaptoperaAct1GUI {
 			var net, param1, param2, param3, param4, param5, antisocial;
 
 			net = NetAddr("127.0.0.1", port);
+
+			amp.action = {|p| net.sendMsg("/amp", p.value)};
 			
 			param1 = gui.addRemote('artificial');
 			param1.sp(0, 0, 1, 0, \lin, gui);
