@@ -22,12 +22,12 @@ LaptoperaAct1GUI {
 			param1 = gui.addRemote('artificial');
 			param1.sp(0, 0, 1, 0, \lin, gui);
 			param1.guitype_(\voter);
-			param1.action = {|p| net.sendMsg("artificial", p.value)};
+			param1.action = {|p| net.sendMsg("/artificial", p.value)};
 
 			param2 = gui.addRemote('resonant');
 			param2.sp(0, 0, 1, 0, \lin, gui);
 			param2.guitype_(\voter);
-			param2.action = {|p| net.sendMsg("resonant", p.value)};
+			param2.action = {|p| net.sendMsg("/resonant", p.value)};
 
 			param3 = gui.addRemote('abstract');
 			param3.sp(0, 0, 1, 0, \lin, gui);
@@ -46,6 +46,7 @@ LaptoperaAct1GUI {
 
 			antisocial = gui.addLocal('antisocial');
 			antisocial.sp(0, 0, 1, 0, \lin, gui);
+			antisocial.action = {|p| net.sendMsg("/antisocial", p.value)};
 		}).show(win);
 	}
 }
