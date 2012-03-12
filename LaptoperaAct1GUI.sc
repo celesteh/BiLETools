@@ -48,7 +48,9 @@ LaptoperaAct1GUI {
 
 			antisocial = gui.addLocal('antisocial');
 			antisocial.sp(0, 0, 1, 0, \lin, gui);
-			antisocial.action = {|p| net.sendMsg("/antisocial", p.value)};
+			antisocial.action = {|p| 
+				net.sendMsg("/antisocial", p.value);
+				api.sendMsg('antisocial', p.value);};
 		}).show(win);
 	}
 }

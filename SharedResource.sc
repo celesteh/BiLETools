@@ -408,11 +408,13 @@ SharedResourceEvent : Event {
 		//activeEvent = evt;
 		//activeEvent.play(*args);
 	}
-	/*
+	
 	stop {|...args|
-		activeEvent.stop(*args);
-		activeEvent = nil;
+		//activeEvent.stop(*args);
+		//activeEvent = nil;
+		this.isPlaying = false;
+		super.stop(*args);
 	}
-	*/	
+	
 	
 }

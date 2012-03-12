@@ -14,21 +14,22 @@ LaptoperaRecorder {
 		StartUp.add({
 			
 					
-			SynthDef.writeOnce("LaptoperaRecorder",{ arg in = 0, bufnum, dur, 
+			SynthDef("LaptoperaRecorder",{ arg in = 0, bufnum, dur, 
 							running=1.0, trigger=0.0, amp = 0.5, gate; 
 				var inner, env;
 				inner = SoundIn.ar(in).tanh;
 				DiskOut.ar(bufnum, inner);
 				//EnvGen.kr(Env.sine(dur), doneAction: 2);
-				Out.ar(1, inner * amp);
-			});
+				env = EnvGen.kr(Env.linen(0.01, dur-0.02, 0.01, amp, \sin), doneAction: 2);
+				Out.ar(1, inner * env);
+			}).store;
 	
-			SynthDef.writeOnce(\LaptoperRecordingPlayer, {|out = 0, bufnum = 0, amp =0.5|
+			SynthDef(\LaptoperRecordingPlayer, {|out = 0, bufnum = 0, amp =0.5|
 				var player;
 				player = PlayBuf.ar(1, bufnum, loop:0, doneAction: 2);
 				player = [player, player];
 				Out.ar(out,  player * amp);
-			})
+			}).store
 		});	
 	}
 	
@@ -61,7 +62,7 @@ LaptoperaRecorder {
 
 		recBuf = Buffer.alloc(s, 65536, 1);
 		
-		colour = Color.new(0.9, 0.1, 0.3);
+		colour = Color(0.6.rand + 0.1, 0.6.rand, 0.6.rand+ 0.1); //Color.new(0.9, 0.1, 0.3);
 		win = window ? Window("Recorder");
 		win.view.background_(colour);
 		win.view.decorator = FlowLayout(win.view.bounds);
@@ -116,8 +117,8 @@ LaptoperaRecorder {
 		incButton = Button(view, 30 @ 30).states_([["+"]]). action_({this.increment});
 		
 		button = Button(view, 200@30).states_([
-			["Record", Color.red, Color.green],
-			["Stop", Color.black, Color.red]
+			["Record", Color.red, Color.green(0.7.rand + 0.3)],
+			["Stop", Color.black, Color.red(0.7.rand + 0.3)]
 		])
 		.action_({|but|
 			(but.value==1).if ({

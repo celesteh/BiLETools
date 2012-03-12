@@ -27,6 +27,7 @@ BileChat {
 		//api.remote_query;
 		
 		color.isNil.if({ 
+			/*
 			flag = true;
 			{flag}.while({
 				color = Color.rand;
@@ -36,6 +37,8 @@ BileChat {
 						flag = false;
 				});
 			});
+			*/
+			color = Color(0.6.rand + 0.1, 0.6.rand, 0.6.rand + 0.1);
 		});
 
 		win = Window.new("Communication", Rect(128, 64, 510, 370));
