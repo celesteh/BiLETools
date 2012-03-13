@@ -190,7 +190,7 @@ NetworkGui : Environment {
 		
 		var startButton, cv;
 		
-		color.isNil.if({ color = Color.rand});
+		color.isNil.if({ color = Color(0.6.rand + 0.1, 0.6.rand, 0.6.rand+ 0.1);});
 		
 		win = w;
 		
@@ -757,9 +757,13 @@ SharedCV {
 	
 	input_ {|val, changer ... moreArgs|
 		
-		shared.value_(spec.map(val), changer, moreArgs);
+		var mapped;
+
+		mapped = spec.map(val);
+		shared.value_(mapped, changer, moreArgs);
 		widget.notNil.if({
-			widget.input = val
+			// save it for the redraw loop!
+			//widget.value = mapped
 		});
 	}
 	

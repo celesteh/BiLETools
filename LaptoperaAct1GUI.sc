@@ -1,4 +1,4 @@
-// version 0.01-alpha
+// version 0.02-alpha
 
 LaptoperaAct1GUI {
 
@@ -24,25 +24,30 @@ LaptoperaAct1GUI {
 			param1 = gui.addRemote('artificial');
 			param1.sp(0, 0, 1, 0, \lin, gui);
 			param1.guitype_(\voter);
+			param1.spec.step = 0.01;
 			param1.action = {|p| net.sendMsg("/artificial", p.value)};
 
 			param2 = gui.addRemote('resonant');
 			param2.sp(0, 0, 1, 0, \lin, gui);
 			param2.guitype_(\voter);
+			param2.spec.step = 0.01;
 			param2.action = {|p| net.sendMsg("/resonant", p.value)};
 
 			param3 = gui.addRemote('abstract');
 			param3.sp(0, 0, 1, 0, \lin, gui);
+			param3.spec.step = 0.01;
 			param3.guitype_(\voter);
 			param3.action = {|p| net.sendMsg("/abstract", p.value)};
 
 			param4 = gui.addRemote('density');
 			param4.sp(0, 0, 1, 0, \lin, gui);
+			param4.spec.step = 0.01;
 			param4.guitype_(\voter);
 			param4.action = {|p| net.sendMsg("/density", p.value)};
 
 			param5 = gui.addRemote('grain');
 			param5.sp(0, 0, 1, 0, \lin, gui);
+			param5.spec.step = 0.01;
 			param5.guitype_(\voter);
 			param5.action = {|p| net.sendMsg("/grain", p.value)};
 
