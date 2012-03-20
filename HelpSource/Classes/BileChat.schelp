@@ -1,0 +1,52 @@
+CLASS:: BileChat
+summary:: a class that does chat and API stuff and communication for BiLE 
+categories:: Libraries>BiLETools
+related:: NetAPI
+
+DESCRIPTION::
+This class handles a GUI for interactive chat.
+
+code::
+a = NetAPI.broadcast("nick");
+b = BileChat(a);
+::
+
+It will open a communication window to allow you to chat with other members of your group. It also shows your API methods and those that they have published. If you do't see any listed APIs, click on the 'API Methonds' text to refresh.  Or, you can click the name of a particular to get a popup window with the description in it.
+
+
+If you have Growl and growlnotify installed, Growl notifications for new chat messages are enabled by default.  To turn them off:
+
+code::
+b.growl = false;
+::
+
+CLASSMETHODS::
+
+METHOD:: new
+
+argument:: net_api
+an instance of NetAPI
+
+argument:: show
+a boolean
+
+
+
+INSTANCEMETHODS::
+
+METHOD:: win
+
+returns:: the window that contains the BileChat
+
+
+METHOD:: growl
+set a boolean flag to enable or disable growl notification
+
+
+
+EXAMPLES::
+
+code::
+a = NetAPI.broadcast("nick");
+b = BileChat(a);
+::

@@ -1,0 +1,188 @@
+CLASS:: LaptoperaRecorder
+summary:: a nice GUI for recording samples for the laptopera 
+categories:: Libraries>BiLETools
+related:: NetAPI, LaptoperaAct1GUI
+
+DESCRIPTION::
+This class handles sampling for the laptopera. There is a mode for MAX users:
+
+code::
+s.waitForBoot({
+	a = NetAPI.broadcast("nick");
+	r = LaptoperaRecorder.max(a, s, "/tmp/");
+	c = BileChat(a);
+	p = ClockPanel(a, c.win).show;
+})
+::
+
+Users should replace "/tmp/" with the path to the shared sample folder.  For apple users, it is possible to select the folder in the finder and just drag it to the SuperCollider window, which will give the user the directory in quote marks, which they can use there.  Users should also replace "nick" with their own name.
+
+
+There is also a more complete version that lists available files and loads them into memory when the user selects them:
+
+code::
+s.waitForBoot({
+	a = NetAPI.broadcast("nick");
+	r = LaptoperaRecorder(a, s, "/tmp/", "/tmp/");
+	c = BileChat(a);
+	p = ClockPanel(a, c.win).show;
+})
+::
+
+The second directory argument is a directory of static synth samples, as specified in the score.
+
+
+When any user on the network records a sample into the shared directory, it will appear in the drop down menu that goes with it's section.
+
+
+If the user selects from any of the menus, the buffer they select will be loaded into memory.  You can set an action function that will be evaulated when this happens:
+
+code::
+r.bufferAction = {|buf|  /* ... */ };
+::
+
+The currently active buffer is also located in r.buffer
+
+
+It's also possible to ask for the most recent reocrding made by anyone on the network.  This will also invoke the bufferAction
+
+code::
+r.mostRecent
+::
+
+Note that this command is asynchronus.  It will not return the buffer.
+
+
+If the user does not select a new sound file, but instead switched to "unselected," this calls the nilAction
+
+code::
+r.nilAction = { /* ... */ }
+::
+
+If the user wants to control this GUI via other code or a control surface, there are several useful methods:
+
+code::
+r.startRecording; // starts recording
+r.stopRecording; // stops recording
+r.increment; // increase the line number by 1
+r.line = 5; // set the line number to 5
+r.dir = "~/Documents/"; // change the sample directory to "~/Documents/"
+::
+
+Finally, there is a play/stop button on the bottom, which does not do anything, but you can opt to use it to control your own sound generation, in case you have written a patch that does not have it's own buttons to control it.
+
+code::
+r.startAction = { /* ... */ }; // gets evaulated when the user clicks start
+r.stopAction = { /* ... */ }; // gets evaulated when the user clicks stop
+::
+
+
+
+CLASSMETHODS::
+
+
+METHOD:: new
+Called by SuperCollider users
+
+argument:: net_api
+an instance of NetAPI
+
+argument:: s
+the Server
+
+argument:: dir
+the shared directory in which to store and find saved samples
+
+argument:: synthSampleDir
+the local directory which holds pre-recorded samples
+
+argument:: show
+an optional boolean which decides whether or not to show the window immmediately
+
+argument:: win
+if this is an instance of Window, the recorder will append itself to the bottom. Otherwise, it will create a new window.
+
+
+
+METHOD:: max
+Called by MAX users to get the smaller GUI that they need
+
+argument:: net_api
+an instance of NetAPI
+
+argument:: s
+the Server
+
+argument:: dir
+the shared directory in which to store and find saved samples
+
+argument:: show
+an optional boolean which decides whether or not to show the window immmediately
+
+argument:: win
+if this is an instance of Window, the recorder will append itself to the bottom. Otherwise, it will create a new window.
+
+
+
+INSTANCEMETHODS::
+
+METHOD:: win
+
+returns:: the window which holds the LaptoperaRecorder
+
+METHOD:: buffer
+
+returns:: the currently selected buffer in the drop down menu
+
+METHOD:: bufferAction
+set an Function to be called as an action when a buffer is selected in the drop down menu
+
+
+METHOD:: nilAction
+set an Function to be called as an action when a user unselects a sound file and does not select a new one
+
+
+METHOD:: startAction
+set an Function to be called as an action when a user clicks the start button
+
+
+METHOD:: stopAction
+set an Function to be called as an action when a user clicks the stop button
+
+
+METHOD:: dir
+set the shared directory in which to store and find saved samples
+argument:: directory
+
+METHOD:: synthSampleDir
+set the local directory which holds pre-recorded samples
+argument::directory
+
+
+METHOD:: startRecording
+starts recording
+
+METHOD:: stopRecording
+stops recording
+
+METHOD:: line
+The line number which to record
+argument:: num
+
+METHOD:: increment
+increment the line number
+
+METHOD:: mostRecent
+
+returns:: the most recently recorded buffer, by anyone on the network
+
+
+EXAMPLES::
+
+code::
+r.startRecording; // starts recording
+r.stopRecording; // stops recording
+r.increment; // increase the line number by 1
+r.line = 5; // set the line number to 5
+r.dir = "~/Documents/"; // change the sample directory to "~/Documents/"
+::

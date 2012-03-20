@@ -1,0 +1,521 @@
+CLASS:: NetAPI
+summary:: a class that does API stuff and communication for BiLE 
+categories:: Libraries>BiLETools
+related:: OscGroupClient, ClockFace, BileChat, ProcessTools
+
+DESCRIPTION::
+This class handles network ommunication for BiLE.  This can be done via the the OscGroup server or via broadcast. 
+
+
+If you want to use the OSCGroup server, the constructor asks for the full path to the client, your username and your password.  (Group authentication is already included.)
+
+code::
+a = NetAPI("/Applications/Media/pro/audio/SuperCollider/OscGroup/OscGroupClient", "localhost", "nick", "passwd");
+::
+
+If you want to use broadcast, you only need to provide your username.
+
+code::
+a = NetAPI.broadcast("nick");
+::
+
+This class  knows your hostname and ip address, so if you want those:
+
+code::
+a.my_ip
+a.hostname
+::
+
+To add an API method, you need a selector, a function and, optionally, a description:
+
+code::
+(
+	a.add('speak', { arg text;
+		text.speak;
+	}, "Speak the provided text. Usage: speak, text");
+)
+::
+
+To call this function from anywhere else in your code:
+
+code::
+a.call('speak', "it talks");
+::
+
+To see the help for it:
+
+code::
+a.help('speak').postln;
+::
+
+Or you can call it from outside of your current namespace:
+
+code::
+b = NetAPI.default;
+
+b.speak("It still speaks");
+::
+
+Anything you add to b will be visible to a and vice versa.
+
+
+You can call remote APIs in the same way, however, in the case that you and somebody else have the same selector name (which is a probable conflict), it will call your local API and not go to the network.  If you want to send something to the network, use sendMsg:
+
+code::
+a.sendMsg('any_symbol', "anything can go here and will go out to the group server")
+::
+
+Things that you send out to an OSCGroupServer in this way will not echo locally. However, broadcast messages ususally will echo locally.
+
+code::
+a.sendMsg('speak', "this may not speak here");
+// vs
+a.call('speak', "this will only speak locally");
+::
+
+To open a chat window, see [[BileChat]]
+
+
+
+
+If you want to a clock, you can ask for one:
+
+code::
+c = a.clock;
+c.show;
+::
+
+Start and stop the clock via the API:
+
+code::
+a.call('clock/clock', 'start');
+a.call('clock/clock', 'stop');
+a.call('clock/reset');
+::
+
+CLASSMETHODS::
+
+METHOD:: new
+create a new instance of NetAPI which uses OSCGroups
+argument:: path
+path to the OSCGroupClient program
+
+argument:: serveraddress
+the address of the OscGroupServer
+
+argument:: username
+Your username on the network
+
+argument:: userpass
+your password on the OscGroupServer
+
+
+
+METHOD:: broadcast
+create a new instance of NetAPI whihc uses broadcast networking
+argument:: username
+Your username on the network
+
+
+METHOD:: default
+
+returns:: the instance of NetAPI that has already been created elsewhere
+
+METHOD:: call
+invoke a function saved in the NetAPI
+
+argument:: selector
+a symbol key for the function
+
+argument::  ... args
+arguments
+
+
+INSTANCEMETHODS::
+
+METHOD:: client
+(describe method here)
+
+returns:: (returnvalue)
+
+METHOD:: colleagues
+(describe method here)
+
+returns:: (returnvalue)
+
+METHOD:: name
+(describe method here)
+
+returns:: (returnvalue)
+
+METHOD:: nick
+(describe method here)
+
+argument:: username
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: remote_functions
+(describe method here)
+
+returns:: (returnvalue)
+
+METHOD:: remote_shared
+(describe method here)
+
+returns:: (returnvalue)
+
+METHOD:: init
+(describe method here)
+
+argument:: path
+(describe argument here)
+
+argument:: serveraddress
+(describe argument here)
+
+argument:: username
+(describe argument here)
+
+argument:: userpass
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: local
+(describe method here)
+
+argument::  ... args
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: remote
+(describe method here)
+
+argument::  ... args
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: init_querying
+(describe method here)
+
+returns:: (returnvalue)
+
+METHOD:: addUser
+(describe method here)
+
+argument:: user
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: init_sharing
+(describe method here)
+
+returns:: (returnvalue)
+
+METHOD:: add
+(describe method here)
+
+argument:: selector
+(describe argument here)
+
+argument:: func
+(describe argument here)
+
+argument:: desc
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: addAll
+(describe method here)
+
+argument:: dict
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: make
+(describe method here)
+
+argument:: func
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: remove
+(describe method here)
+
+argument:: selector
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: exposeMethods
+(describe method here)
+
+argument:: obj
+(describe argument here)
+
+argument:: selectors
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: exposeAllExcept
+(describe method here)
+
+argument:: obj
+(describe argument here)
+
+argument:: selectors
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: call
+(describe method here)
+
+argument:: selector
+(describe argument here)
+
+argument::  ... args
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: func
+(describe method here)
+
+argument:: selector
+(describe argument here)
+
+argument::  ... args
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: doesNotUnderstand
+(describe method here)
+
+argument:: selector
+(describe argument here)
+
+argument::  ... args
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: functionNames
+(describe method here)
+
+returns:: (returnvalue)
+
+METHOD:: help
+(describe method here)
+
+argument:: selector
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: printOn
+(describe method here)
+
+argument:: stream
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: pr_formatMsg
+(describe method here)
+
+argument::  ... msg
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: pr_formatTag
+(describe method here)
+
+argument:: symbol
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: pr_sharedFormat
+(describe method here)
+
+argument:: symbol
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: sendMsg
+(describe method here)
+
+argument::  ... msg
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: msgUser
+(describe method here)
+
+argument:: user
+(describe argument here)
+
+argument::  ... msg
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: remote_query
+(describe method here)
+
+returns:: (returnvalue)
+
+METHOD:: advertise
+(describe method here)
+
+argument:: selector
+(describe argument here)
+
+argument:: desc
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: share
+(describe method here)
+
+argument:: selector
+(describe argument here)
+
+argument:: data
+(describe argument here)
+
+argument:: desc
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: advertiseShared
+(describe method here)
+
+argument:: selector
+(describe argument here)
+
+argument:: desc
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: subscribe
+(describe method here)
+
+argument:: selector
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: map
+(describe method here)
+
+argument:: selector
+(describe argument here)
+
+argument:: key
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: shareData
+(describe method here)
+
+argument:: selector
+(describe argument here)
+
+argument:: value
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: identify
+(describe method here)
+
+returns:: (returnvalue)
+
+METHOD:: add_remote_update_listener
+(describe method here)
+
+argument:: owner
+(describe argument here)
+
+argument:: action
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: remove_remote_update_listener
+(describe method here)
+
+argument:: owner
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: add_user_update_listener
+(describe method here)
+
+argument:: owner
+(describe argument here)
+
+argument:: action
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: remove_user_update_listener
+(describe method here)
+
+argument:: owner
+(describe argument here)
+
+returns:: (returnvalue)
+
+METHOD:: my_ip
+(describe method here)
+
+returns:: (returnvalue)
+
+METHOD:: hostname
+(describe method here)
+
+returns:: (returnvalue)
+
+METHOD:: echo
+(describe method here)
+
+returns:: (returnvalue)
+
+METHOD:: chat
+(describe method here)
+
+returns:: (returnvalue)
+
+METHOD:: clock
+(describe method here)
+
+returns:: (returnvalue)
+
+
+EXAMPLES::
+
+code::
+(some example code)
+::
