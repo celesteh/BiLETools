@@ -737,7 +737,7 @@ SharedCV {
 		widget.notNil.if({
 			widget.controlSpec = spec;
 		});
-		shared.value_(default_value ? spec.default, changer);
+		shared.init_value(default_value ? spec.default, changer);
 	}
 	
 		

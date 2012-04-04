@@ -281,7 +281,7 @@ NetAPI {
 				
 				desc = desc ? "";
 				
-				"%\t%\n".postf(key, desc);
+				//"%\t%\n".postf(key, desc);
 				remote_shared = remote_shared.put(key, desc);
 				
 				//and let listeners know
@@ -334,7 +334,7 @@ NetAPI {
 				//symbol.postln;
 				(symbol.containsStringAt(0, nick.asString++"/")).if ({
 					
-					"it's me!".postln;
+					//"it's me!".postln;
 					
 					symbol = symbol[nick.asString.size..];
 					symbol = symbol.asSymbol;
@@ -368,7 +368,7 @@ NetAPI {
 						// send them the current value
 						user.sendMsg(this.pr_sharedFormat(sym), data.value);
 					} , {
-						"error".postln;
+						//"error".postln;
 						user.sendMsg(("/" ++ name ++ "/API/Error/noSuchSymbol").asSymbol,
 								("/"++name++"/" ++ nick ++ "/" ++ symbol).asSymbol);
 					});
@@ -703,10 +703,10 @@ NetAPI {
 		//SharedRemoteListener(selector, this, resource);
 		selector = this.pr_formatTag(selector);
 		this.sendMsg('API/registerListener', selector, nick, this.my_ip, NetAddr.langPort);
-		("subscribing to" + selector).postln;
+		//("subscribing to" + selector).postln;
 		this.add(selector, { |input|
 			resource.value_(input, this);
-			("" + selector ++ ":" + input).postln;
+			//("" + selector ++ ":" + input).postln;
 		});
 		^resource;
 	}
@@ -832,7 +832,7 @@ APIResponder {
 	
 	sendMsg{  arg ... msg;
 		
-		("sending" + msg).postln;
+		//("sending" + msg).postln;
 		client.sendMsg(*msg);
 	}
 	

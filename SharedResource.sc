@@ -3,7 +3,7 @@ SharedResource {
 	
 	var <value, <signed_actions, unsigned_actions, semaphore, spec;
 	//var <>symbol, remote_listeners, api, <>desc;
-	var <>changeFunc, lastAdvertised;
+	var <>changeFunc, lastAdvertised, has_ever_changed;
 	
 	*new {arg value, threadSafe = false, changeFunc;
 		^super.new.init(value, threadSafe, changeFunc);
@@ -24,11 +24,21 @@ SharedResource {
 			changeFunc = {|old, new| old != new}
 		});
 		
+		has_ever_changed = false;
+		
+	}
+
+	init_value {|value, changer|
+
+		has_ever_changed.not.if({
+			this.value_(value, changer)
+		})
 	}
 	
 	spec_ {| s, v, changer|
-			spec = s.asSpec;
-			this.value_(v ? spec.default, changer);
+			spec = s.value.asSpec;
+			this.init_value(v ? spec.default, changer);
+
 			this.addUniqueMethod(\input_, { arg in, theChanger ... moreArgs;
 				this.value_(spec.map(in), theChanger, *moreArgs);
 			});
@@ -88,6 +98,8 @@ SharedResource {
 		changed.if({
 
 			"changed".postln;
+			has_ever_changed = true;
+
 			// notify others
 			dependantsDictionary.at(this).copy.do({ arg dep;
 				(dep === theChanger).not.if({

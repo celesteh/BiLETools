@@ -38,7 +38,8 @@ BileChat {
 				});
 			});
 			*/
-			color = Color(0.6.rand + 0.1, 0.6.rand, 0.6.rand + 0.1);
+			//color = Color(0.6.rand + 0.1, 0.6.rand, 0.6.rand + 0.1);
+			color = BileTools.colour;
 		});
 
 		win = Window.new("Communication", Rect(128, 64, 510, 370));
@@ -164,6 +165,7 @@ BileChat {
 		growl = File.exists("/usr/local/bin/growlnotify");
 		
 		api.add('msg', { arg user, blah;
+
 			AppClock.sched(0, {
 				(win.isClosed.not && exists).if ({
 					//disp.string = disp.string ++ "\n buh?";
@@ -171,7 +173,7 @@ BileChat {
 					//string = disp.string;
 					this.add(""++ user ++ ">" + blah);
 					this.growlnotify(user, blah);
-					[user, blah].postln;
+					//[user, blah].postln;
 				}, {
 					api.remove('msg');
 				});
@@ -225,7 +227,7 @@ BileChat {
 	
 	add { |notification|
 		
-		var str;
+		var str, bounds, scrolled;
 		
 		str ="";
 		
@@ -236,8 +238,39 @@ BileChat {
 			})
 		});
 		AppClock.sched(0, {
-			disp.string = disp.string ++ "\n" ++ str;
+			//disp.string = disp.string ++ "\n" ++ str;
+			disp.respondsTo('setString').if ({
+				disp.setString("\n"++str, disp.string.size, 0);
+			} , {
+				disp.string = disp.string ++ "\n" ++ str;
+			});
+
 			string = disp.string;
+
+			scrolled = false;
+
+			disp.respondsTo('innerBounds').if({
+				bounds = disp.innerBounds;
+				//"bottom is at %\n".postf(bounds.bottom);
+ 				disp.respondsTo('visibleOrigin').if ({
+					disp.visibleOrigin = Point(0,bounds.bottom);
+					//"Set point at %\n".postf(bounds.bottom);
+					scrolled = true;
+				});
+			});
+
+			scrolled.not.if({
+				disp.respondsTo('select').if ({
+					str = disp.selectedString;
+					str.notNil.if({
+						(str.size < 1).if ({ // don't wipe out the user's selection
+							disp.select(disp.string.size, 0);
+						});
+					});
+				})
+			});
+
+
 			nil
 		});
 					
@@ -279,14 +312,26 @@ BileChat {
 BileClock {
 	
 	var api, <clock, <master;
+	var <win, <view;
+	var <startingtime, <>tempo, <>inc, <cursecs, isPlaying = false, timeString;
+	var remFun, <mod, startTime, <>onMod, <>onBeat, startedAt, startButton;
 	
-	* new { |net_api, is_master = false|
+	/* This class is a fork of the ClockFace quark */
+
+
+	* new { |net_api, starttime = 0, tempo = 1, inc = 0.1, window, is_master = false|
 		
-		^super.new.init(net_api);
+		^super.new.init(net_api, starttime, tempo, inc, window, is_master);
 	}
 	
-	init { |net_api, is_master = false|
+	init { |net_api, starttime = 0, tempo = 1, inc = 0.1, window, is_master = false|
 		
+		var text, startButton, resetButton;
+
+		this.tempo = tempo;
+		this.inc = inc;
+		startingtime = starttime;
+
 		api = net_api;
 		api.isNil.if({
 			api = NetAPI.default;
@@ -312,44 +357,142 @@ BileClock {
 		api.add('clock/set', {|minutes, seconds| this.set(minutes, seconds);}, "Set the clock time."
 				+ "Usage: clock/set minutes, seconds");
 
+		cursecs = starttime;
+
+
 		master = is_master;
+
+		window.notNil.if({this.show(window)});
 
 	}
 	
-	show {
-		
+	show { |window|
+		/*
 		clock.notNil.if({
 			clock.window.front;
 		} , {
 			clock = ClockFace.new;
 		});
+		*/
+
+		var text, resetButton;
+				
+		win = window;
+		
+		win.isNil.if({
+			win = Window("Clock", 450@80);
+			win.view.background_(BileTools.colour);
+			view = win.view;
+			view.isNil.if({ view = win});
+		}, {
+			win.view.decorator.isNil.if({
+				 win.view.decorator = FlowLayout(win.view.bounds);
+			});
+			view = CompositeView(win, (win.view.bounds.width - 2) @ 30);
+		});
+
+		view.decorator = FlowLayout(view.bounds);
+		view.decorator.gap=10@5;
+
+
+		timeString = StaticText.new(view, 240@80)
+			.string_(cursecs.asTimeString)
+			.font_(Font("Arial", 40));
+
+		// add a button to start and stop the clock.
+		startButton = Button(view, 85 @ 20);
+		startButton.states = [
+			["Start Clock", Color.black, Color.green(0.7)],
+			["Stop Clock", Color.white, Color.red(0.7)]
+		];
+		startButton.action = {|view|
+			if (view.value == 1, {
+				
+				this.startAll;
+			} , {
+				this.master = true;
+				this.stop;
+			});
+		};
+		
+		resetButton = Button(view, 85 @ 20);
+		resetButton.states = [
+			["Reset Clock", Color.white, Color.blue(0.7)]];
+		resetButton.action = {|view|
+			this.resetAll;
+		};
+
+
+		win.front;
+		win.onClose_({this.pr_stop});
+
 	}
 	
 	pr_start {
-		clock.isNil.if({ AppClock.sched(0, {
-			clock = ClockFace.new;
-			master.if({
-				this.master_(master); 
-			});
-			clock.play;
-			
-			nil
-		}) }, {
-			master.if({
-				this.master_(master); 
-			});
-			clock.play;
+
+		var cur, last, floor;
+
+		master.if({
+			this.master_(master); 
+		});
+
+		last = 0.0;
+		isPlaying = true;
+		clock = TempoClock.new(tempo);
+		startedAt = clock.elapsedBeats;
+		remFun = {this.pr_stop};
+		CmdPeriod.add(remFun);
+
+		("starting tempo" + tempo + "inc" + inc).postln;
+
+		clock.sched(inc, {
+			//"tick".postln;
+			isPlaying.if({
+				cur = clock.elapsedBeats - startedAt + startingtime;
+				mod.notNil.if({
+					cur = cur%mod;
+					(cur < last).if({
+						{onMod.value; 
+							this.onBeat.value(cur.floor.asInt);
+						}.defer;
+					});
+				});				
+				this.cursecs_(cur, false);
+				//cur.postln;
+				onBeat.notNil.if({
+					(((floor = cur.floor) - last.floor) == 1).if({
+						{this.onBeat.value(floor.asInt)}.defer;
+					});
+				});
+				last = cur;
+				inc;
+			}, { nil});
+		});
+
+		AppClock.sched(0, {
+			startButton.value = 1;
+			nil;
 		});
 	}
 	
 	pr_stop {
 		
 		master = false;
-		clock.isNil.if({ AppClock.sched(0, {clock = ClockFace.new; clock.stop; nil}) },
-			{clock.stop; clock.onBeat = nil;});
+		startingtime = cursecs;
+		isPlaying = false;
+		clock.clear;
+		CmdPeriod.remove(remFun);
+		clock.stop;
+		
+		//clock.isNil.if({ AppClock.sched(0, {clock = ClockFace.new; clock.stop; nil}) },
+		//	{clock.stop; clock.onBeat = nil;});
 	}
 	
-	start {
+	play { this.start }
+
+	start { |time|
+
+		time.notNil.if ({ this.set(0, time)});
 		master.if({
 			this.startAll;
 		} , {
@@ -364,7 +507,7 @@ BileClock {
 			this.pr_stop;
 		});
 		this.master = false;
-		clock.onBeat = nil;
+		this.onBeat = nil;
 	}
 	
 	master_ { |is_master|
@@ -373,14 +516,14 @@ BileClock {
 		clock.notNil.if({
 		
 			master.if ({	
-				clock.onBeat_({ |time|
+				this.onBeat_({ |time|
 				
 					((time %1) == 0).if({
 						this.echoTime(time);
 					});
 				})
 			} , {
-				clock.onBeat = nil;
+				this.onBeat = nil;
 			});
 		});
 	}
@@ -391,10 +534,21 @@ BileClock {
 		
 		master.not.if({
 			time  = (minutes * 60) + seconds;
-			clock.isNil.if({ AppClock.sched(0, {clock = ClockFace.new(time); nil}) },
-				{clock.cursecs_(time)});
+			this.cursecs_(time, isPlaying.not);
 		});
 	}		
+
+	cursecs_ {arg curtime, updateStart = true;
+		var curdisp;
+		cursecs = curtime;
+		curdisp = curtime.asTimeString;
+		curdisp = curdisp[0 .. (curdisp.size-3)];
+		updateStart.if({startingtime = cursecs; 
+		});
+		timeString.notNil.if({
+			//curdisp.postln;
+			AppClock.sched(0, {timeString.string_(curdisp); nil})});
+	}
 	
 	
 	reset {
@@ -410,19 +564,39 @@ BileClock {
 		});
 		*/
 		//this.set(0, 0);
-		clock.notNil.if({ clock.cursecs_(0) });
+		this.cursecs_(0);
 	}
 	
 	startAll{
 		this.master = true;
 		api.sendMsg('clock/clock', 'start');
 		this.pr_start;
+		clock.sched(0.5,{ 
+			isPlaying.if({
+				api.sendMsg('clock/set', (cursecs / 60).floor, cursecs % 60); 
+				0.5
+			},{
+				nil
+			});
+		});
+		Task({ 
+			0.001.wait; 
+			api.sendMsg('clock/clock', 'start');
+			0.001.wait; 
+			api.sendMsg('clock/clock', 'start');
+		}).play;
 	}
 	
 	stopAll {
 		this.master = false;
 		api.sendMsg('clock/clock', 'stop');
 		this.pr_stop;
+		Task({ 
+			0.01.wait; 
+			api.sendMsg('clock/clock', 'stop');
+			0.01.wait; 
+			api.sendMsg('clock/clock', 'stop');
+		}).play;
 	}
 	
 	setAll{ |minutes, seconds|
@@ -449,8 +623,8 @@ BileClock {
 	
 }
 
-ClockPanel {
-	
+ClockPanel : BileClock {
+	/*
 	var <win, <view, api, <clock;
 	
 	*new { |api, win, clock|
@@ -512,5 +686,30 @@ ClockPanel {
 	show {
 		win.front;
 	}
+	*/
 }
 
+
+BileTools {
+
+	*show { |api|
+
+		var chat, clock;
+
+		chat = BileChat(api);
+		clock = BileClock(api);
+
+		AppClock.sched(0, {
+			chat.show;
+			clock.show;
+			nil;
+		});
+
+		^[chat, clock]
+	}
+
+	*colour {
+		^ Color(0.6.rand + 0.1, 0.6.rand, 0.6.rand + 0.1);
+	}
+
+}
