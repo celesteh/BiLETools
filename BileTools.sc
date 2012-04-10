@@ -380,7 +380,7 @@ BileClock {
 		win = window;
 		
 		win.isNil.if({
-			win = Window("Clock", 450@80);
+			win = Window("Clock", Rect(0, 0, 450, 80));
 			win.view.background_(BileTools.colour);
 			view = win.view;
 			view.isNil.if({ view = win});
@@ -687,6 +687,65 @@ ClockPanel : BileClock {
 		win.front;
 	}
 	*/
+}
+
+DeviceDialog {
+
+	*new {|s, action|
+
+		super.new.init(s, action)
+	}
+
+	*show{|s, action|
+
+		super.new.init(s, action)
+	}
+
+	init{ |s, action|
+
+		var options;
+		var indevices, outdevices;
+		var win, view, in, out, button;
+
+		Platform.case(\osx, { 
+			s.isNil.if({ s = Server.default});
+
+			options = s.options;
+			indevices = ServerOptions.inDevices;
+			outdevices = ServerOptions.outDevices;
+
+			AppClock.sched(0, {
+				win =  Window("Audio Devices", 450@80);
+				win.view.background_(BileTools.colour);
+				view = win.view;
+				view.decorator = FlowLayout(view.bounds); 
+				view.decorator.gap=10@5;
+
+				in = EZPopUpMenu(view, 230@22, "Input Device",
+					[\Default -> 	{ options.inDevice = nil; }] );
+
+				indevices.do({ |device|
+					in.addItem(device.asSymbol, { options.inDevice = device}) });
+
+				out = EZPopUpMenu(view, 230@22, "Output Device",
+					[\Default -> 	{ options.inDevice = nil; }] );
+
+				outdevices.do({ |device|
+					out.addItem(device.asSymbol, { options.outDevice = device}) });
+
+				button = Button(view, 115@22).states_([["Start"]]).action_({win.close});
+
+				win.onClose_({
+					s.waitForBoot(action);
+				});
+
+				win.front;
+			
+				nil;
+			});		
+		},
+		\linux,		{"Not Supported. Use Jack instead.".warn; s.waitForBoot(action)});
+	}
 }
 
 

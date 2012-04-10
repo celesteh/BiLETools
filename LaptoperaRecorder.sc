@@ -55,12 +55,14 @@ LaptoperaRecorder {
 		
 		api = net_api;
 		s = serv;
+
+		DeviceDialog(s, { recBuf = Buffer.alloc(s, 65536, 1);});
 		
 		this.dir_(directory);
 		
 		recording = false;
 
-		recBuf = Buffer.alloc(s, 65536, 1);
+		
 		
 		colour = Color(0.6.rand + 0.1, 0.6.rand, 0.6.rand+ 0.1); //Color.new(0.9, 0.1, 0.3);
 		win = window ? Window("Recorder");
