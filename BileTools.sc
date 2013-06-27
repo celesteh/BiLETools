@@ -264,7 +264,7 @@ BileChat {
 					str = disp.selectedString;
 					str.notNil.if({
 						(str.size < 1).if ({ // don't wipe out the user's selection
-							disp.select(disp.string.size, 0);
+							disp.select(disp.string.size+1, 0);
 						});
 					});
 				})
@@ -536,6 +536,12 @@ BileClock {
 			time  = (minutes * 60) + seconds;
 			this.cursecs_(time, isPlaying.not);
 		});
+	}
+
+	time {
+		clock.notNil.if({
+			^clock.elapsedBeats - startedAt + startingtime;
+		} , {^0});
 	}		
 
 	cursecs_ {arg curtime, updateStart = true;

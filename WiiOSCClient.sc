@@ -15,35 +15,35 @@ spec: A dictionary mapping keys to OscSlots
 	var resp;
 
 	*new { arg netAddr;
-		
+
 		/*
 		desc: Creates a new OSCHID. There should be one of these per device.
 		netAddr: An optional argument for the address of the device.
 		ex:
-					
+
 		k = OSCHID.new.spec_((
 			ax: OscSlot(\realtive, '/hand/x'),
 			ay: OscSlot(\realtive, '/hand/y'),
 			az: OscSlot(\realtive, '/hand/z')
 		));
-		
+
 		k.callibrate = false;
-		
+
 
 		*/
-		
+
 		^super.new.init(netAddr);
 	}
 
 	init { arg netAddr;
-		
+
 		var action;
-		
+
 		calibrate = true;
-		
+
 		("Set DarWIIn part to" + NetAddr.langPort).postln;
 		("In calibration mode").postln;
-		
+
 		dEBUG = true;
 
 		//roll = 0;
@@ -53,16 +53,16 @@ spec: A dictionary mapping keys to OscSlots
 		remote.isNil.if({remote = NetAddr("127.0.0.1", 5601)});
 		resp = [];
 	}
-	
-	
+
+
 	at { | controlName |
 		^this.spec.atFail(controlName, {
 			Error("invalid control name").throw
 		});
 	}
-	
+
 	setAction{ |key,keyAction|
-		
+
 		/*@
 		desc: Set the action for a particular slot by key
 		key: The key for the slot.
@@ -72,21 +72,21 @@ spec: A dictionary mapping keys to OscSlots
 			val.value.postln;
 		});
 		@*/
-		
+
 		this.at( key).action_( keyAction );
 	}
-	
+
 	removeAction{ |key|
 		this.at( key).action_( {} );
 	}
-	
+
 	calibrate_ { |bool|
 		/*@
 		desc: Turn callibration on or off
 		bool: true for on, false for off
 		ex:
 		When callibration is true, relative slots do not call their actions
-		
+
 		k.calibrate = true;
 
 		k.setAction(ax, {|val|
@@ -94,8 +94,8 @@ spec: A dictionary mapping keys to OscSlots
 		});
 
 		k.callibrate = false;
-		@*/		
-		
+		@*/
+
 		calibrate = bool;
 		this.spec.do({ |slot|
 			slot.calibrate = calibrate;
@@ -105,21 +105,21 @@ spec: A dictionary mapping keys to OscSlots
 }
 
 WiiOSCClient : OSCHID{
-	
-	
+
+
 	/*@
 	shortDesc: A class that communicates with DarWiinRemote OSC
 	longDesc: This class has all the same methods as WiiMote, so if that class ever gets fixed, it will be possible to switch back to it with minimal effort.  To use this class, start DarWiinRemote OSC and set its preferences so its OSC out port is the language port of SuperCollider
 	seeAlso: WiiMote
 	@*/
-	
+
 	// For Usage, see the documentation at the bottom of this file
-	
+
  // 	classvar <>dEBUG;
  // 	var <calibrate;
 
 
-	
+
 
 	var <>id;
 	var <battery;
@@ -133,8 +133,8 @@ WiiOSCClient : OSCHID{
 
   	var batterylevel;
 	var ir;
-	
-	
+
+
 
 
 	deviceSpec {
@@ -203,23 +203,23 @@ WiiOSCClient : OSCHID{
 */		)
 	}
 
-	
-	
+
+
 	*new { arg netAddr;
-		
+
 		^super.new.init(netAddr);
 	}
-	
+
 	init { arg netAddr;
-		
+
 		/*
 		var action;
-		
+
 		calibrate = true;
-		
+
 		("Set DarWIIn part to" + NetAddr.langPort).postln;
 		("In calibration mode").postln;
-		
+
 		dEBUG = true;
 
 		//roll = 0;
@@ -232,8 +232,8 @@ WiiOSCClient : OSCHID{
 		super.init(netAddr);
 		spec = this.deviceSpec;
 	}
-	
-	
+
+
 
 
 }
@@ -242,7 +242,7 @@ WiiOSCClient : OSCHID{
 Acceleration {
 	var <>x, <>y, <>z;
 	//var <>speedX, <>speedY, <>speedZ;
-	
+
 	*new{ arg x, y, z;
 		^super.new.copyArgs(x,y,z);
 	}
@@ -250,7 +250,7 @@ Acceleration {
 */
 
 OscSlot {
-	
+
 	/*@
 	shortDesc: A wrapper class for OSCresponderNodes
 	longDesc: Sets up an OSCresponderNode for a given key and optionally scales it based on minimum and maximum input received so far. This class is designed to mimmic GeneralHIDSlot.
@@ -258,10 +258,10 @@ OscSlot {
 	action: Sets the action for the slot. This will not get called for \relative slots until the calibrations is set to false
 	bus: Returns the bus to which this slot is mapped, if a bus has been created.
 	@*/
-	
+
 	var <osckey, <>action, <>value, <>rawValue, <responder, <bus, busAction, index, type, scale;
-	var <max, <min, >calibrate;
-	
+	var <>max, <>min, >calibrate;
+
 	*new{ arg type, osckey, action, index = 1, scale = 256;
 		/*@
 		desc: Create a new Slot
@@ -270,7 +270,7 @@ OscSlot {
 		action: The action to call upon receiving a new OSC message
 		index: The index of the message to listen for.  In most cases this will be one, but if your device bundles x, y z coordinates together and you want to listen for y, this would be 2. Or for z, it would be 3.
 		ex:
-		
+
 		w = OSCHID.new.spec_((
 			ax: OscSlot(\relative, '/wii/acc', nil, 1),
 			ay: OscSlot(\relative, '/wii/acc', nil, 2),
@@ -286,9 +286,9 @@ OscSlot {
 		^super.new.init(type, osckey, action, index, equals, scale);
 	}
 
-	
+
 	init { arg typ, key, act, ind = 1, eq, scl = 256;
-		
+
 		var resp_func;
 		osckey = key;
 		action = act;
@@ -297,12 +297,12 @@ OscSlot {
 		type = typ;
 		scale = scl;
 		calibrate = true;
-		
+
 		responder = OSCresponderNode(nil, osckey, { |t, r, msg|
 
 
 			var test;
-			
+
 				//WiiOSCClient.dEBUG.if ({
 					//msg.post; " ".post; msg[index].postln;
 			test = true;
@@ -317,11 +317,11 @@ OscSlot {
 
 			if (test, {
 					rawValue = msg[index];
-					
+
 					min.isNil.if({ min = rawValue});
 					max.isNil.if({ max = rawValue});
-					
-					if( rawValue < min, { 
+
+					if( rawValue < min, {
 						min = rawValue;
 						"% % min % \n".postf(osckey, index, min);
 					});
@@ -330,7 +330,7 @@ OscSlot {
 						"% % max % \n".postf(osckey, index, max);
 					});
 				//});
-				
+
 				if (type == \relative, {
 					//value = rawValue / scale;
 					value = rawValue - min;
@@ -344,7 +344,7 @@ OscSlot {
 				});
 			})
 		}).add;
-			
+
 	}
 
 
@@ -365,8 +365,8 @@ OscSlot {
 			});*/
 		busAction = { |v| bus.set( v.value ); };
 	}
-	
-	
+
+
 	freeBus{
 		/*@
 		desc: Free the bus on the server
@@ -384,19 +384,19 @@ OscSlot {
 		^In.kr( bus );
 	}
 
-	
+
 }
 
 WiiRamp {
-	
+
 	var <>upslope, <>downslope, <>hold;
 	var rout, max, min, direction, level, slope;
-	
+
 	*new { |upslope =15, downslope = 150, hold = 10|
-		
+
 		^super.new.init(upslope, downslope, hold);
 	}
-	
+
 	init { arg up, down, top;
 
 
@@ -404,24 +404,24 @@ WiiRamp {
 		downslope = down;
 		hold = top;
 
-		
+
 		rout = Routine { arg inVal;
-			
+
 			var counter;
-					
+
 			level = inVal;
 			slope = 0;
 			max = inVal;
 			min = inVal;
-			
+
 			counter = hold;
 			direction = 0;
 			//switch = false;
-			
+
 			inVal = inVal.yield;
-			
+
 			true.while({
-				
+
 				if ((inVal > level) , { // current position is below input
 					direction = 1; // so go up
 					counter = hold; // reset counter
@@ -430,20 +430,20 @@ WiiRamp {
 						slope = (max - level) / upslope; // compute slope
 					})
 				});
-				
+
 				if (level < max, { direction = 1; });
-				
+
 				if ((direction == 1), {  // go up
-					
+
 					level = level + slope;
-					
-					if (((level >= max) || 
-						(slope < 0.0000000000001)), { 
-							
-							direction = 0; 
+
+					if (((level >= max) ||
+						(slope < 0.0000000000001)), {
+
+							direction = 0;
 							max = 0;
 					});
-					
+
 				}, {
 					if (direction == 0, { // hold at the top
 						//"hold".postln;
@@ -457,20 +457,20 @@ WiiRamp {
 											// we need to go down
 							min = inVal;
 							slope = (level - min) / downslope;
-							level = level - slope;	
+							level = level - slope;
 						});
 					});
 				});
-				
+
 				inVal = level.yield;
 			});
 		};
 
-		
+
 	}
-	
+
 	next { |inval|
-		
+
 		^rout.next(inval);
 	}
 }
@@ -480,10 +480,10 @@ WiiRamp {
 
 /*
 
-	// First, you create a new instance of WiiOSCClient, 
+	// First, you create a new instance of WiiOSCClient,
 	// which starts in calibration mode
-	
-	
+
+
 	w = WiiOSCClient.new;
 
 	// If you have not already done so, open up DarwiinRemote OSC and get it talking to your wii.
@@ -491,39 +491,39 @@ WiiRamp {
 	// Of SuperCollider.  You will see a message in the post window telling you what port
 	// that is .... or you will see a lot of min and max messages, which lets you know it's
 	// already callibrating
-	
+
 	// move your wiimote about as if you were playing it.  It will scale it's output accordingly
-	
-	
+
+
 	// now that you're done callibrating, turn callibration mode off
-	
+
 	w.calibrate = false;
-	
+
 	// The WiiOSCClient is set up to behave very much like a HID client and is furthermore
 	// designed for drop-in-place compatibility if anybody ever sorts out the WiiMote code
 	// that SuperCollider pretends to support.
-	
+
 	// To get at a particular aspect of the data, you set an action per slot:
-	
+
 	w.setAction(\ax, {|val|
-		
+
 		val.value; // is the scaled data from \ax - the X axis of the accelerometre.
 		// It should be between 0-1, scaled according to how you waved your arms during
 		// the callibration period
 	});
-	
-	
-	
+
+
+
 	// You can use a WiiRamp to provide some lag
 	(
 		r = WiiRamp (20, 200, 15);
-	
+
 		w.setAction(\ax, {|val|
 			var scaled, lagged;
-		
+
 			scaled = ((val.value * 2) - 1).abs;
 			lagged = r.next(scaled);
-		
+
 			// now do somehting with lagged
 		});
 	)
