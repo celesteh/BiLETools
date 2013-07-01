@@ -331,8 +331,8 @@
 			(File.exists(file) && menu.notNil).if ({ // sanity check
 				"we are sane".postln;
 				latest = filename;
-				
-				//menu.items.includes(filename.asString).not.if({
+
+				(menu.items.select({|item| item.key == filename }).size == 0).if({
 					AppClock.sched(0, {
 						"adding".postln;
 						menu.addItem(filename.asString, {
@@ -340,7 +340,10 @@
 						});
 						nil;
 					});
-				//});
+				},
+					{
+						("already added " ++ filename).postln;
+					});
 			});
 		});
 		
@@ -398,8 +401,4 @@ play_button = Button(view, 50@30).states_([
 		~stopRecording = stop;
 	});
 )
-
-// =====================================================================
-// SuperCollider Workspace
-// =====================================================================
 
