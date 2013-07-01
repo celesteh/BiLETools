@@ -351,11 +351,12 @@
 		
 		synthSampleDir = (synthSampleDir ++ "/*.*").pathMatch;
 		synthSampleDir.do({| sample|
-			menus.at('synth').addItem(sample.asString, {
-				loadFile.(sample, 'synth');
-			});
-		});
-		
+			menus.at('synth').addItem(
+				PathName.new(sample.asString).fileNameWithoutExtension, 
+				{
+					loadFile.(sample, 'synth');
+				});
+		})		
 		
 		~mostRecent = {
 			
