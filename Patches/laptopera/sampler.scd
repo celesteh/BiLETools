@@ -374,7 +374,7 @@
 			~buffer;
 		};
 
-play_button = Button(view, 50@30).states_([
+play_button = Button(view, 300@30).states_([
     ["Play", Color.red, Color.green],
     ["Stop Playing", Color.black, Color.red]
    ])
@@ -384,7 +384,7 @@ play_button = Button(view, 50@30).states_([
       ~startAction.value; })
     }, {
      ~stopAction.notNil.if({
-      ~stopAction.vaue ; })
+      ~stopAction.value ; })
     }) 
    });
     // ok, now do other stuff
