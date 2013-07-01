@@ -1,353 +1,425 @@
-{\rtf1\ansi\deff4\adeflang1025
-{\fonttbl{\f0\froman\fprq2\fcharset0 Times New Roman;}{\f1\froman\fprq2\fcharset2 Symbol;}{\f2\fswiss\fprq2\fcharset0 Arial;}{\f3\froman\fprq2\fcharset128 Times New Roman;}{\f4\fswiss\fprq0\fcharset0 ArialMT;}{\f5\froman\fprq0\fcharset0 TimesNewRomanPSMT;}{\f6\fswiss\fprq2\fcharset128 Arial;}{\f7\fmodern\fprq1\fcharset0 Monaco;}{\f8\fnil\fprq2\fcharset128 Lohit Hindi;}{\f9\fnil\fprq0\fcharset128 Lohit Hindi;}{\f10\fswiss\fprq2\fcharset128 Droid Sans;}}
-{\colortbl;\red0\green0\blue0;\red128\green128\blue128;}
-{\stylesheet{\s0\snext0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057 Normal;}
-{\s15\sbasedon0\snext16{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\sb240\sa120\keepn\cf0\kerning1\hich\af8\langfe2052\dbch\af10\loch\f6\fs28\lang2057 Heading;}
-{\s16\sbasedon0\snext16{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\sb0\sa120\cf0\kerning1\hich\af4\langfe2052\dbch\af4\loch\f4\fs24\lang2057 Text body;}
-{\s17\sbasedon16\snext17{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\sb0\sa120\cf0\kerning1\hich\af9\langfe2052\dbch\af4\loch\f4\fs24\lang2057 List;}
-{\s18\sbasedon0\snext18{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\sb120\sa120\cf0\i\kerning1\hich\af9\langfe2052\dbch\af4\ai\loch\f4\fs24\lang2057 Caption;}
-{\s19\sbasedon0\snext19{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\kerning1\hich\af9\langfe2052\dbch\af4\loch\f4\fs24\lang2057 Index;}
-}{\info{\creatim\yr0\mo0\dy0\hr0\min0}{\revtim\yr0\mo0\dy0\hr0\min0}{\printim\yr0\mo0\dy0\hr0\min0}{\comment LibreOffice}{\vern3400}}\deftab709\deftab709\deftab709\deftab709\deftab709\deftab709\deftab709\deftab709\deftab709\deftab709\deftab709\deftab709\deftab709\deftab709\deftab709\deftab709\deftab709\deftab709\deftab709\deftab709
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf390
+{\fonttbl\f0\fswiss\fcharset0 ArialMT;\f1\froman\fcharset0 TimesNewRomanPSMT;\f2\fnil\fcharset0 Monaco;
+}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1134\margr1134\margb1134\margt1134\vieww12340\viewh8400\viewkind0
+\deftab709
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
 
-{\*\pgdsctbl
-{\pgdsc0\pgdscuse195\pgwsxn11906\pghsxn16838\marglsxn1134\margrsxn1134\margtsxn1134\margbsxn1134\pgdscnxt0 Default;}}
-\formshade{\*\pgdscno0}\paperh16838\paperw11906\margl1134\margr1134\margt1134\margb1134\sectd\sbknone\sectunlocked1\pgndec\pgwsxn11906\pghsxn16838\marglsxn1134\margrsxn1134\margtsxn1134\margbsxn1134\ftnbj\ftnstart1\ftnrstcont\ftnnar\aenddoc\aftnrstcont\aftnstart1\aftnnrlc
-\pgndec\pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\rtlch \ltrch\loch
-This document describes the networking infrastructure in use by BiLE.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch\loch
+\f0\fs24 \cf0 This document describes the networking infrastructure in use by BiLE.\
+\pard\pardeftab709
+\cf0 \
+The goal of the infrastructure design has been flexibility for real time changes in sharing network data and calling remote methods for users of languages like supercollider.  While this flexibility is somewhat lost to users of inflexible languages like MAX, they, nevertheless, can benefit from having a structure for data sharing.\
+\
+\
+\pard\pardeftab709\fi-432\ri-6\sb240\sa120
+
+\b\fs32 \cf0 Network Models
+\b0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+\cf0 \
+\pard\pardeftab709
+\cf0   If there is a good reason, for example, a remote user, we support OSCGroups as a means of sharing data.\
+  If all users are located together on the same subnet, then we use broadcast on port 57120.\
+\
+\pard\pardeftab709\fi-432\ri-6\sb240\sa120
+
+\b\fs32 \cf0 OSC Prefix
+\b0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+\cf0 \
+\pard\pardeftab709
+\cf0   By convention, all OSC messages start with '/bile/'\
+\pard\pardeftab709
+
+\f1 \cf0   
+\f0 \
+\pard\pardeftab709\fi-432\ri-6\sb240\sa120
+
+\b\fs32 \cf0 Data Restrictions
+\b0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+\cf0 \
+\pard\pardeftab709
+\cf0   Strings must all be ASCII. Non ASCII characters will be ignored.\
+\
+\pard\pardeftab709\fi-432\ri-6\sb240\sa120
+
+\b\fs32 \cf0 Establishing Communication
+\b0\fs24 \
+\pard\pardeftab709\fi-576\ri-6\sb240\sa120
+
+\i\b\fs28 \cf0 Identity
+\i0\b0\fs24 \
+\pard\pardeftab709\fi-720\ri-6\sb240\sa120
+
+\b \cf0 ID
+\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+\cf0       Upon joining the network, users should announce their identity:\
+\pard\pardeftab709
+
+\f1 \cf0   
+\f0 \
+
+\f1       
+\f2\fs20 /bile/API/ID nickname ipaddress port
+\f0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+
+\fs18 \cf0   
+\fs24 \
+\pard\pardeftab709
+\cf0       Nicknames must be ASCII only. Every user must have a unique nickname. \'93API\'94 is reserved and cannot be used as a nickname.\
+\pard\pardeftab709
+
+\f1 \cf0   
+\f0 \
+\pard\pardeftab709\fi-864\ri-6\sb240\sa120
+
+\i\b\fs22 \cf0 Example:
+\i0\b0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+
+\fs18 \cf0   
+\fs24 \
+\pard\pardeftab709
+
+\f1 \cf0       
+\f2\fs20 /bile/API/ID Nick 192.168.1.66 57120
+\f0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+
+\fs18 \cf0       
+\fs24 \
+\pard\pardeftab709
+\cf0       Note that because multicast echoes back, users may see their own ID arrive as an announcement.\
+\pard\pardeftab709
+
+\f1 \cf0   
+\f0 \
+\pard\pardeftab709\fi-720\ri-6\sb240\sa120
+
+\b \cf0 IDQuery
+\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+
+\fs18 \cf0       
+\fs24 \
+\pard\pardeftab709
+\cf0       Users should also send out their ID in response to an IDQuery:\
+\pard\pardeftab709
+
+\f1 \cf0       
+\f0 \
+
+\f1       
+\f2\fs20 /bile/API/IDQuery
+\f0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+
+\fs18 \cf0       
+\fs24 \
+\pard\pardeftab709
+
+\f1 \cf0  
+\f0      Users can send this message at any time, in order to compile a list of everyone on the network.\
+
+\f1       
+\f0 \
+\pard\pardeftab709\fi-576\ri-6\sb240\sa120
+
+\i\b\fs28 \cf0 API
+\i0\b0\fs24 \
+\pard\pardeftab709\fi-720\ri-6\sb240\sa120
+
+\b \cf0 Query
+\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+\cf0         Users can enquire what methods they can remotely invoke and what data they can request.\
+\pard\pardeftab709
+
+\f1 \cf0         
+\f0 \
+
+\f1         
+\f2\fs20 /bile/API/Query
+\f0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+
+\fs18 \cf0         
+\fs24 \
+\pard\pardeftab709
+
+\fs22 \cf0         In reply to this, users should send /bile/API/Key and /bile/API/Shared (see below)
+\fs24 \
+\pard\pardeftab709
+
+\f1 \cf0         
+\f0 \
+\pard\pardeftab709\fi-720\ri-6\sb240\sa120
+
+\b \cf0 Key
+\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+\cf0         Keys represent remote methods. The user should report their accessible methods in response to a Query\
+\pard\pardeftab709
+\cf0         \
+\pard\pardeftab709
+
+\f1 \cf0         
+\f2\fs20 /bile/API/Key symbol desc nickname
+\f0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+
+\fs18 \cf0         
+\fs24 \
+\pard\pardeftab709
+\cf0         The symbol is an OSC message that the user is listening for.\
+        The desc is a text based description of what this message does. It should include a usage example.\
+        The nickname is the name of the user that accepts this message.\
+        \
+\pard\pardeftab709\fi-864\ri-6\sb240\sa120
+
+\i\b\fs22 \cf0 Example
+\i0\b0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+
+\fs18 \cf0         
+\fs24 \
+\pard\pardeftab709
+
+\f1 \cf0         
+\f2\fs20 /bile/API/Key /bile/msg "For chatting. Usage: msg, nick, text" Nick
+\f0\fs24 \
+\pard\pardeftab709\fi-720\ri-6\sb240\sa120
+
+\b \cf0   Shared
+\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+\cf0         Shared represents available data streams.  Sources may include input devices, control data sent to running audio processes or analysis.  The user should report their shared data response to a Query\
+\pard\pardeftab709
+
+\f2 \cf0         
+\fs20 /bile/API/Shared  symbol desc
+\f0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+\cf0         The symbol is an OSC message that the user sends with.  The format of this should be\
+\pard\pardeftab709
+
+\f2 \cf0         
+\fs20 /bile/nickname/symbol
+\f0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+\cf0         The desc is a text based description of the data. If the range is not between 0-1, it should mention this.\
+\pard\pardeftab709
+\cf0         The nickname is the name of the user that accepts this message.\
+\pard\pardeftab709
+
+\f1 \cf0         
+\f0 \
+\pard\pardeftab709\fi-864\ri-6\sb240\sa120
+
+\i\b\fs22 \cf0 Example
+\i0\b0\fs24 \
+\pard\pardeftab709
+
+\f2 \cf0         
+\fs20 /bile/API/Shared /bile/Nick/freq "Frequency. Not scaled."
+\f0\fs24 \
+\pard\pardeftab709\fi-432\ri-6\sb240\sa120
+
+\b\fs32 \cf0 Listening
+\b0\fs24 \
+\pard\pardeftab709\fi-720\ri-6\sb240\sa120
+
+\b \cf0 RegisterListener
+\b0 \
+\pard\pardeftab709\sa120
+\cf0           Shared data will not be sent out if no one has requested it and it may be sent either directly to interested users or to the entire group, at the sender's discretion.  In order to ensure receiving the data stream, a user must register as a listener.\
+\pard\pardeftab709
+
+\f2 \cf0         
+\fs20 /bile/API/registerListener symbol nickname ip port
+\f0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+\cf0         The symbol is an OSC message that the user will be listening for.  It should correspond with a previously advertised shared item.  If the receiver of this message recognises their own nickname in the symbol (which is formatted 
+\f2\fs20 /bile/nickname/symbol
+\f0\fs24 ), they should return an error:
+\f2\fs20  /bileAPI/Error/noSuchSymbol
+\f0\fs24 \
+\pard\pardeftab709
+\cf0         The nickname is the name of the user that will accept the symbol as a message.\
+        The ip is the ip address of the user that will accept the symbol as a message.\
+        The port is the port of the user that will accept the symbol as a message.\
+\pard\pardeftab709\fi-864\ri-6\sb240\sa120
+
+\i\b\fs22 \cf0 Example
+\i0\b0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+
+\f2 \cf0         
+\fs20 /bile/API/registerListener /bile/Nick/freq Shelly  192.168.1.67 57120
+\f0\fs24 \
+\
+\pard\pardeftab709\fi-576\ri-6\sb240\sa120
+
+\i\b\fs28 \cf0 Error
+\i0\b0\fs24 \
+\pard\pardeftab709\fi-720\ri-6\sb240\sa120
+
+\b \cf0 noSuchSymbol
+\b0 \
+\pard\pardeftab709\sa120
+\cf0           In the case that a user receives a request to register a listener or to remove a listener for data that they are not sharing, they can reply with \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+
+\f2 \cf0         
+\fs20 /bile/API/Error/noSuchSymbol OSCsymbol
+\f0\fs24 \
+        The symbol is an OSC message that the user tried to start or stop listening to.  It is formatted 
+\f2\fs20 /bile/nickname/symbol.
+\f0\fs24   Users should not reply with an error unless they recognise their own nickname as the middle element of the OSC message.  This message may be sent directly to the confused user.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+
+\i\b\fs22 \cf0 Example
+\i0\b0\fs24  \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+
+\f2 \cf0         
+\fs20 /bile/API/Error/noSuchSymbol /bile/Nick/freq
+\f0\fs24 \
+\pard\pardeftab709\fi-576\ri-6\sb240\sa120
+
+\i\b\fs28 \cf0 De-listening
+\i0\b0\fs24 \
+\pard\pardeftab709\fi-720\ri-6\sb240\sa120
+
+\b\fs28 \cf0 RemoveListener
+\b0\fs24 \
+\pard\pardeftab709\sa120
+\cf0             To announce an intention to ignore subsequent data, a user can ask to be removed.\
+\pard\pardeftab709
+
+\f2 \cf0         
+\fs20 /bile/API/removeListener symbol nickname ip
+\f0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+\cf0         The symbol is an OSC message that the user will no longer be listening for.  If the receiver of this message sees their nickname in the symbol which is formatted 
+\f2\fs20 /bile/nickname/symbol
+\f0\fs24 ), they can reply with 
+\f2\fs20 /bile/API/Error/noSuchSymbol symbol
+\f0\fs24 \
+\pard\pardeftab709
+\cf0         The nickname is the name of the user that will no longer accept the symbol as a message.\
+        The ip is the ip address of the user that will no longer accept the symbol as a message.\
+\pard\pardeftab709\fi-864\ri-6\sb240\sa120
+
+\i\b\fs22 \cf0 Example
+\i0\b0\fs24 \
+\pard\pardeftab709
+
+\f2 \cf0         
+\fs20 /bile/API/removeListener  /bile/Nick/freq Shelly  192.168.1.67
+\f0\fs24 \
+\pard\pardeftab709\fi-720\ri-6\sb240\sa120
+
+\b \cf0 RemoveAll
+\b0 \
+\pard\pardeftab709\sa120
+\cf0             Users who are quitting the network can asked to be removed form everything that they were listening to.\
+\pard\pardeftab709
+
+\f2 \cf0         
+\fs20 /bile/API/removeAll  nickname ip 
+\f0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+\cf0         The nickname is the name of the user that will no longer accept any shared data.\
+\pard\pardeftab709
+\cf0         The ip is the ip address of the user that will no longer accept any shared data.\
+\pard\pardeftab709\fi-864\ri-6\sb240\sa120
+
+\i\b\fs22 \cf0 Example
+\i0\b0\fs24 \
+\pard\pardeftab709
+
+\f2 \cf0         
+\fs20 /bile/API/removeAll  Nick  192.168.1.66
+\f0\fs24 \
+\pard\pardeftab709\fi-432\ri-6\sb240\sa120
+
+\b\fs32 \cf0 Commonly Used Messages
+\b0\fs24 \
+\pard\pardeftab709\fi-576\ri-6\sb240\sa120
+
+\i\b\fs28 \cf0 Chatting
+\i0\b0\fs24 \
+\pard\pardeftab709\fi-720\ri-6\sb240\sa120
+
+\b \cf0 Msg
+\b0 \
+\pard\pardeftab709\sa120
+\cf0           This is used for chatting.\
+\pard\pardeftab709
+
+\f2 \cf0         
+\fs20 /bile/msg nickname text
+\f0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+\cf0         The nickname is the name of the user who is sending the message.\
+\pard\pardeftab709
+\cf0         The text is the text that the user wishes to send to the group.\
+        \
+\pard\pardeftab709\fi-576\ri-6\sb240\sa120
+
+\i\b\fs28 \cf0 Clock
+\i0\b0\fs24 \
+\pard\pardeftab709\sa120
+\cf0           This is for a shared stopwatch and not for serious timing applications\
+\pard\pardeftab709\fi-720\ri-6\sb240\sa120
+
+\b \cf0 Clock start or stop
+\b0 \
+\pard\pardeftab709\sa120
+
+\f2 \cf0           
+\fs20 /bile/clock/clock symbol
+\f0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+\cf0       The symbol is either start or stop.\
+\pard\pardeftab709\fi-720\ri-6\sb240\sa120
+
+\b \cf0 Reset
+\b0 \
+\pard\pardeftab709\sa120
+\cf0          Reset the clock to zero.\
+\pard\pardeftab709\sa120
+
+\f2 \cf0           
+\fs20 /bile/clock/reset
+\f0\fs24 \
+\pard\pardeftab709\fi-720\ri-6\sb240\sa120
+
+\b \cf0 Set
+\b0 \
+\pard\pardeftab709\sa120
+\cf0           Set the clock time\
+\pard\pardeftab709\sa120
+
+\f2 \cf0           
+\fs20 /bile/clock/set minutes seconds
+\f0\fs24 \
+          Minutes is the number of minutes past zero.\
+          Seconds is the number of seconds past zero.\
+\
+\pard\pardeftab709\fi-432\ri-6\sb240\sa120
+
+\b\fs32 \cf0 Proposed Additions
+\b0\fs24 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab709
+\cf0 	Because users can silently join, leave and re-join the network, it could be a good idea to have users time out after a period of silence, maybe around 30 seconds or so.  To stay active, they would need to send I'm still here messages.\
+	\
+\pard\pardeftab709
+\cf0 	There should possibly also be a way for a user to announce that they have just arrived, so, for example, if a SuperCollider user recompiles, her connection will think of itself as new and other users will need to delete or recreate connections depending on that user.\
 }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch\loch
-The goal of the infrastructure design has been flexibility for real time changes in sharing network data and calling remote methods for users of languages like supercollider.  While this flexibility is somewhat lost to users of inflexible languages like MAX, they, nevertheless, can benefit from having a structure for data sharing.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch\loch
-}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch\loch
-}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-432\sb240\sa120{\b\afs32\ab\rtlch \ltrch\loch\fs32
-Network Models}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\rtlch \ltrch\loch
-}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-  }{\rtlch \ltrch\loch
-If there is a good reason, for example, a remote user, we support OSCGroups as a means of sharing data.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-  }{\rtlch \ltrch\loch
-If all users are located together on the same subnet, then we use broadcast on port 57120.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch\loch
-}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-432\sb240\sa120{\b\afs32\ab\rtlch \ltrch\loch\fs32
-OSC Prefix}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\rtlch \ltrch\loch
-}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-  }{\rtlch \ltrch\loch
-By convention, all OSC messages start with '/bile/'}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af5\dbch\af5\rtlch \ltrch\loch\f5
-  }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-432\sb240\sa120{\b\afs32\ab\rtlch \ltrch\loch\fs32
-Data Restrictions}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\rtlch \ltrch\loch
-}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-  }{\rtlch \ltrch\loch
-Strings must all be ASCII. Non ASCII characters will be ignored.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch\loch
-}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-432\sb240\sa120{\b\afs32\ab\rtlch \ltrch\loch\fs32
-Establishing Communication}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-576\sb240\sa120{\i\b\afs28\ai\ab\rtlch \ltrch\loch\fs28
-Identity}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-720\sb240\sa120{\b\ab\rtlch \ltrch\loch
-ID}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\rtlch \ltrch
-      }{\rtlch \ltrch\loch
-Upon joining the network, users should announce their identity:}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af5\dbch\af5\rtlch \ltrch\loch\f5
-  }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af5\dbch\af5\rtlch \ltrch\loch\f5
-      }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/API/ID nickname ipaddress port}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\afs18\rtlch \ltrch\fs18
-  }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-      }{\rtlch \ltrch\loch
-Nicknames must be ASCII only. Every user must have a unique nickname. \'93API\'94 is reserved and cannot be used as a nickname.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af5\dbch\af5\rtlch \ltrch\loch\f5
-  }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-864\sb240\sa120{\i\b\afs22\ai\ab\rtlch \ltrch\loch\fs22
-Example:}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\afs18\rtlch \ltrch\fs18
-  }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af5\dbch\af5\rtlch \ltrch\loch\f5
-      }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/API/ID Nick 192.168.1.66 57120}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\afs18\rtlch \ltrch\fs18
-      }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-      }{\rtlch \ltrch\loch
-Note that because multicast echoes back, users may see their own ID arrive as an announcement.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af5\dbch\af5\rtlch \ltrch\loch\f5
-  }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-720\sb240\sa120{\b\ab\rtlch \ltrch\loch
-IDQuery}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\afs18\rtlch \ltrch\fs18
-      }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-      }{\rtlch \ltrch\loch
-Users should also send out their ID in response to an IDQuery:}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af5\dbch\af5\rtlch \ltrch\loch\f5
-      }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af5\dbch\af5\rtlch \ltrch\loch\f5
-      }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/API/IDQery}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\afs18\rtlch \ltrch\fs18
-      }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af5\dbch\af5\rtlch \ltrch\loch\f5
- }{\rtlch \ltrch
-     }{\rtlch \ltrch\loch
-Users can send this message at any time, in order to compile a list of everyone on the network.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af5\dbch\af5\rtlch \ltrch\loch\f5
-      }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-576\sb240\sa120{\i\b\afs28\ai\ab\rtlch \ltrch\loch\fs28
-API}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-720\sb240\sa120{\b\ab\rtlch \ltrch\loch
-Query}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-Users can enquire what methods they can remotely invoke and what data they can request.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af5\dbch\af5\rtlch \ltrch\loch\f5
-        }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af5\dbch\af5\rtlch \ltrch\loch\f5
-        }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/API/Query}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\afs18\rtlch \ltrch\fs18
-        }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\afs22\rtlch \ltrch\fs22
-        }{\afs22\rtlch \ltrch\loch\fs22
-In reply to this, users should send /bile/API/Key and /bile/API/Shared (see below)}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af5\dbch\af5\rtlch \ltrch\loch\f5
-        }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-720\sb240\sa120{\b\ab\rtlch \ltrch\loch
-Key}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-Keys represent remote methods. The user should report their accessible methods in response to a Query}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-        }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af5\dbch\af5\rtlch \ltrch\loch\f5
-        }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/API/Key symbol desc nickname}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\afs18\rtlch \ltrch\fs18
-        }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-The symbol is an OSC message that the user is listening for.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-The desc is a text based description of what this message does. It should include a usage example.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-The nickname is the name of the user that accepts this message.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-        }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-864\sb240\sa120{\i\b\afs22\ai\ab\rtlch \ltrch\loch\fs22
-Example}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\afs18\rtlch \ltrch\fs18
-        }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af5\dbch\af5\rtlch \ltrch\loch\f5
-        }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/API/Key /bile/msg "For chatting. Usage: msg, nick, text" Nick}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-720\sb240\sa120{\b\ab\rtlch \ltrch
-  }{\b\ab\rtlch \ltrch\loch
-Shared}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-Shared represents available data streams.  Sources may include input devices, control data sent to running audio processes or analysis.  The user should report their shared data response to a Query}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af7\dbch\af7\rtlch \ltrch\loch\f7
-        }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/API/Shared  symbol desc}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-The symbol is an OSC message that the user sends with.  The format of this should be}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af7\dbch\af7\rtlch \ltrch\loch\f7
-        }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/nickname/symbol}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-The desc is a text based description of the data. If the range is not between 0-1, it should mention this.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-The nickname is the name of the user that accepts this message.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af5\dbch\af5\rtlch \ltrch\loch\f5
-        }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-864\sb240\sa120{\i\b\afs22\ai\ab\rtlch \ltrch\loch\fs22
-Example}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af7\dbch\af7\rtlch \ltrch\loch\f7
-        }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/API/Shared /bile/Nick/freq "Frequency. Not scaled."}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-432\sb240\sa120{\b\afs32\ab\rtlch \ltrch\loch\fs32
-Listening}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-720\sb240\sa120{\b\ab\rtlch \ltrch\loch
-RegisterListener}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\sb0\sa120{\rtlch \ltrch
-          }{\rtlch \ltrch\loch
-Shared data will not be sent out if no one has requested it and it may be sent either directly to interested users or to the entire group, at the sender's discretion.  In order to ensure receiving the data stream, a user must register as a listener.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af7\dbch\af7\rtlch \ltrch\loch\f7
-        }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/API/registerListener symbol nickname ip port}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-The symbol is an OSC message that the user will be listening for.  It should correspond with a previously advertised shared item.  If the receiver of this message recognises their own nickname in the symbol (which is formatted }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/nickname/symbol}{\rtlch \ltrch\loch
-), they should return an error:}{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
- /bileAPI/Error/noSuchSymbol}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-The nickname is the name of the user that will accept the symbol as a message.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-The ip is the ip address of the user that will accept the symbol as a message.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-The port is the port of the user that will accept the symbol as a message.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-864\sb240\sa120{\i\b\afs22\ai\ab\rtlch \ltrch\loch\fs22
-Example}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\hich\af7\dbch\af7\rtlch \ltrch\loch\f7
-        }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/API/registerListener /bile/Nick/freq Shelly  192.168.1.67 57120}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\rtlch \ltrch\loch
-}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-576\sb240\sa120{\i\b\afs28\ai\ab\rtlch \ltrch\loch\fs28
-Error}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-720\sb240\sa120{\b\ab\rtlch \ltrch\loch
-noSuchSymbol}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\sb0\sa120{\rtlch \ltrch
-          }{\rtlch \ltrch\loch
-In the case that a user receives a request to register a listener or to remove a listener for data that they are not sharing, they can reply with }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\hich\af7\dbch\af7\rtlch \ltrch\loch\f7
-        }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/API/Error/noSuchSymbol OSCsymbol}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-The symbol is an OSC message that the user tried to start or stop listening to.  It is formatted }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/nickname/symbol.}{\rtlch \ltrch\loch
-  Users should not reply with an error unless they recognise their own nickname as the middle element of the OSC message.  This message may be sent directly to the confused user.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\rtlch \ltrch\loch
-}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\i\b\afs22\ai\ab\rtlch \ltrch\loch\fs22
-Example}{\rtlch \ltrch\loch
- }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\hich\af7\dbch\af7\rtlch \ltrch\loch\f7
-        }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/API/Error/noSuchSymbol /bile/Nick/freq}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-576\sb240\sa120{\i\b\afs28\ai\ab\rtlch \ltrch\loch\fs28
-De-listening}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-720\sb240\sa120{\b\afs28\ab\rtlch \ltrch\loch\fs28
-RemoveListener}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\sb0\sa120{\rtlch \ltrch
-            }{\rtlch \ltrch\loch
-To announce an intention to ignore subsequent data, a user can ask to be removed.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af7\dbch\af7\rtlch \ltrch\loch\f7
-        }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/API/removeListener symbol nickname ip}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-The symbol is an OSC message that the user will no longer be listening for.  If the receiver of this message sees their nickname in the symbol which is formatted }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/nickname/symbol}{\rtlch \ltrch\loch
-), they can reply with }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/API/Error/noSuchSymbol symbol}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-The nickname is the name of the user that will no longer accept the symbol as a message.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-The ip is the ip address of the user that will no longer accept the symbol as a message.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-864\sb240\sa120{\i\b\afs22\ai\ab\rtlch \ltrch\loch\fs22
-Example}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af7\dbch\af7\rtlch \ltrch\loch\f7
-        }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/API/removeListener  /bile/Nick/freq Shelly  192.168.1.67}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-720\sb240\sa120{\b\ab\rtlch \ltrch\loch
-RemoveAll}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\sb0\sa120{\rtlch \ltrch
-            }{\rtlch \ltrch\loch
-Users who are quitting the network can asked to be removed form everything that they were listening to.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af7\dbch\af7\rtlch \ltrch\loch\f7
-        }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/API/removeAll  nickname ip }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-The nickname is the name of the user that will no longer accept any shared data.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-The ip is the ip address of the user that will no longer accept any shared data.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-864\sb240\sa120{\i\b\afs22\ai\ab\rtlch \ltrch\loch\fs22
-Example}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af7\dbch\af7\rtlch \ltrch\loch\f7
-        }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/API/removeAll  Nick  192.168.1.66}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-432\sb240\sa120{\b\afs32\ab\rtlch \ltrch\loch\fs32
-Commonly Used Messages}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-576\sb240\sa120{\i\b\afs28\ai\ab\rtlch \ltrch\loch\fs28
-Chatting}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-720\sb240\sa120{\b\ab\rtlch \ltrch\loch
-Msg}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\sb0\sa120{\rtlch \ltrch
-          }{\rtlch \ltrch\loch
-This is used for chatting.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\hich\af7\dbch\af7\rtlch \ltrch\loch\f7
-        }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/msg nickname text}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-The nickname is the name of the user who is sending the message.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-        }{\rtlch \ltrch\loch
-The text is the text that the user wishes to send to the group.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch
-        }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-576\sb240\sa120{\i\b\afs28\ai\ab\rtlch \ltrch\loch\fs28
-Clock}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\sb0\sa120{\rtlch \ltrch
-          }{\rtlch \ltrch\loch
-This is for a shared stopwatch and not for serious timing applications}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-720\sb240\sa120{\b\ab\rtlch \ltrch\loch
-Clock start or stop}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\sb0\sa120{\hich\af7\dbch\af7\rtlch \ltrch\loch\f7
-          }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/clock/clock symbol}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\rtlch \ltrch
-      }{\rtlch \ltrch\loch
-The symbol is either start or stop.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-720\sb240\sa120{\b\ab\rtlch \ltrch\loch
-Reset}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\sb0\sa120{\rtlch \ltrch
-         }{\rtlch \ltrch\loch
-Reset the clock to zero.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\sb0\sa120{\hich\af7\dbch\af7\rtlch \ltrch\loch\f7
-          }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/clock/reset}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-720\sb240\sa120{\b\ab\rtlch \ltrch\loch
-Set}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\sb0\sa120{\rtlch \ltrch
-          }{\rtlch \ltrch\loch
-Set the clock time}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\sb0\sa120{\hich\af7\dbch\af7\rtlch \ltrch\loch\f7
-          }{\hich\af7\dbch\af7\rtlch \ltrch\loch\fs20\loch\f7
-/bile/clock/set minutes seconds}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\sb0\sa120{\rtlch \ltrch
-          }{\rtlch \ltrch\loch
-Minutes is the number of minutes past zero.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\sb0\sa120{\rtlch \ltrch
-          }{\rtlch \ltrch\loch
-Seconds is the number of seconds past zero.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\sb0\sa120{\rtlch \ltrch\loch
-}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\li0\ri0\lin0\rin0\fi-432\sb240\sa120{\b\afs32\ab\rtlch \ltrch\loch\fs32
-Proposed Additions}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\rtlch \ltrch\loch
-\tab Because users can silently join, leave and re-join the network, it could be a good idea to have users time out after a period of silence, maybe around 30 seconds or so.  To stay active, they would need to send I'm still here messages.}
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720{\rtlch \ltrch\loch
-\tab }
-\par \pard\plain \s0{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\nowidctlpar\cf0\kerning1\hich\af4\langfe2052\dbch\af4\afs24\lang1081\loch\f4\fs24\lang2057{\rtlch \ltrch\loch
-\tab There should possibly also be a way for a user to anounce that tey have just arrived, so, for example, if a SuperCollider user recompiles, her connection will think of itself as new and other users will need to delete or recreate connections depending on that user.}
-\par }
