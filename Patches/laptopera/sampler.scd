@@ -8,6 +8,8 @@
 
 // ~increment - increase the line number 1
 
+// ~username - the username used
+
 // ~dir - the directory in which files exist. Changing this variable does not change the
 //				behavious of code in this file
 
@@ -35,13 +37,13 @@
 
 	var api;
 	
-	api = NetAPI.default ? NetAPI.broadcast("Holger");
+	api = NetAPI.default ? NetAPI.broadcast(~username ?? "Nobody");
 	b = BileChat(api);
 	c = BileClock(api).show;
 	
 	s.options.memSize = s.options.memSize * 256;
-	s.options.outDevice = nil;
-//	s.options.inDevice = "H2 Audio";
+// s.options.outDevice = nil;
+// s.options.inDevice = "H2 Audio";
 	//s.options.outDevice = "MOTU 828mk2";
 	//s.options.inDevice = "MOTU 828mk2";
 
@@ -81,20 +83,12 @@
 		view.decorator = FlowLayout(view.bounds);
 
 
-		
-		//win.view.decorator.gap=2@2;
-		//dir = "~/tmp/audio/";
-		//dir = "/Volumes/composer\'s\ Public\ Folder/Recordings";
-		//dir = "/Volumes/Shared/Leptopera/";
-		//dir = "/Volumes/Shelly\ Knotts\'s\ Public\ Folder/laptopera/";
-		dir = "/Users/hb/Public/Laptopera/";
-		
+		dir = ~dir ?? "~/Public/Laptopera/".standardizePath;
+		~dir = dir.standardizePath;
+				
 		synthSampleDir = 
-		//"~/Dropbox/BiLE\\\ Sound\\\ Files/samples/leptopera/act2".standardizePath;
 		("~/Dropbox/BiLE\\\ Sound\\\ Files".standardizePath ++ "/samples/leptopera/act2");
 
-		~dir = dir.standardizePath;
-		
 		
 		
 		 dir_gui =  EZText (view,
@@ -267,7 +261,7 @@
 					dedbuf.free;
 				});
 				~buffer = nil;
-				
+
 				~nilBuffer.notNil.if({ ~nilBuffer.value });
 			});
 			
@@ -356,7 +350,7 @@
 				{
 					loadFile.(sample, 'synth');
 				});
-		})		
+		});		
 		
 		~mostRecent = {
 			
