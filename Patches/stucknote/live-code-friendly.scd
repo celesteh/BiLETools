@@ -28,7 +28,7 @@ Freezenote: click a button to temporarily halt others from being able to make ch
 	//			"169.254.239.230",
 	//			"les", "lespass");
 
-	api = NetAPI.broadcast("Les");
+api = NetAPI.default ? NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGroupClient", "realizedsound.mooo.com", "les", "password");
 
 	semaphore = Semaphore(1);
 	should_call_action = true;
