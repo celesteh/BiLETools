@@ -820,8 +820,9 @@ APIResponder {
 
 
 	join { |action|
-
-		client.join(action);
+		"join - APIResponder".postln;
+		client.join;//(action);
+		action.value;
 	}
 
 
