@@ -28,7 +28,7 @@ Freezenote: click a button to temporarily halt others from being able to make ch
 	//			"169.254.239.230",
 	//			"les", "lespass");
 
-api = NetAPI.default ? NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGroupClient", "realizedsound.mooo.com", "les", "password");
+api =  NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGroupClient", "realizedsound.mooo.com", "les", "password");
 
 	semaphore = Semaphore(1);
 	should_call_action = true;
@@ -184,7 +184,7 @@ api = NetAPI.default ? NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGr
 
 			user_names = api.colleagues.keys.collect({|k| k});
 
-
+		"user update".postln;
 
 
 			AppClock.sched(0.0, {
@@ -215,7 +215,15 @@ api = NetAPI.default ? NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGr
 		user_update_action.value;
 		api.add_user_update_listener(this, {user_update_action.value} );
 
-
+	Task({
+		5.wait;
+		api.identify;
+		inf.do ({
+			10.wait;
+			api.identify;
+		});
+		//user_update_action.value;
+	}).play;
 
 
 

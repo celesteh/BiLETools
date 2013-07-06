@@ -396,6 +396,7 @@ w = WiiMote.discover;
 			record = { |buf, state = 0|
 
 				//(buf.isNil).if ({ buf = active_buf }, {active_buf = buf});
+			"record".postln;
 
 				timer.start_tap;
 
