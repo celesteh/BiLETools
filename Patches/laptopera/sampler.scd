@@ -398,7 +398,7 @@ s.waitForBoot({
 				~startAction.value; })
 			}, {
 				~stopAction.notNil.if({
-					~stopAction.vaue ; })
+					~stopAction.value ; })
 		})
 	});
 	// ok, now do other stuff
