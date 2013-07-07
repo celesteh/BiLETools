@@ -344,7 +344,7 @@ s.waitForBoot({
 			"we are sane".postln;
 			latest = filename;
 
-			(menu.items.select({|item| item.key == filename }).size == 0).if({
+			(menu.items.select({|item| item.key.asString == filename.asString }).size == 0).if({
 				AppClock.sched(0, {
 					"adding".postln;
 					menu.addItem(filename.asString, {
