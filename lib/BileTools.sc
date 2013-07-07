@@ -484,6 +484,11 @@ BileClock {
 		CmdPeriod.remove(remFun);
 		clock.stop;
 
+		AppClock.sched(0, {
+			startButton.value = 0;
+			nil;
+		});
+
 		//clock.isNil.if({ AppClock.sched(0, {clock = ClockFace.new; clock.stop; nil}) },
 		//	{clock.stop; clock.onBeat = nil;});
 	}
