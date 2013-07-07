@@ -362,10 +362,12 @@ s.waitForBoot({
 
 	synthSampleDir = (synthSampleDir ++ "/*.*").pathMatch;
 	synthSampleDir.do({| sample|
-		menus.at('synth').addItem(sample.asString, {
-			loadFile.(sample, 'synth');
-		});
-	});
+		menus.at('synth').addItem(
+			PathName.new(sample.asString).fileNameWithoutExtension, 
+			{
+				loadFile.(sample, 'synth');
+			});
+	});		
 
 
 	~mostRecent = {
@@ -390,7 +392,7 @@ s.waitForBoot({
 		~buffer;
 	};
 
-	play_button = Button(view, 50@30).states_([
+	play_button = Button(view, 300@30).states_([
 		["Play", Color.red, Color.green],
 		["Stop Playing", Color.black, Color.red]
 	])
