@@ -344,15 +344,17 @@ s.waitForBoot({
 			"we are sane".postln;
 			latest = filename;
 
-			//menu.items.includes(filename.asString).not.if({
-			AppClock.sched(0, {
-				"adding".postln;
-				menu.addItem(filename.asString, {
-					loadFile.(file, index);
+			(menu.items.select({|item| item.key == filename }).size == 0).if({
+				AppClock.sched(0, {
+					"adding".postln;
+					menu.addItem(filename.asString, {
+						loadFile.(file, index);
+					});
+					nil;
+				}); },
+				{
+					("already added " ++ filename).postln;
 				});
-				nil;
-			});
-			//});
 		});
 	});
 
