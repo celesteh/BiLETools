@@ -41,7 +41,7 @@
 
 var api;
 
-api = ~api ?? NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGroupClient", "192.168.1.71", "les", "password");
+api = ~api ?? NetAPI.default ?? NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGroupClient", "192.168.1.71", "les", "password");
 b = BileChat(api);
 c = BileClock(api).show;
 
@@ -363,11 +363,11 @@ s.waitForBoot({
 	synthSampleDir = (synthSampleDir ++ "/*.*").pathMatch;
 	synthSampleDir.do({| sample|
 		menus.at('synth').addItem(
-			PathName.new(sample.asString).fileNameWithoutExtension, 
+			PathName.new(sample.asString).fileNameWithoutExtension,
 			{
 				loadFile.(sample, 'synth');
 			});
-	});		
+	});
 
 
 	~mostRecent = {
