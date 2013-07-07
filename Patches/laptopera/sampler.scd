@@ -41,7 +41,7 @@
 
 var api;
 
-api = NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGroupClient", "192.168.1.71", "les", "password");
+api = ~api ?? NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGroupClient", "192.168.1.71", "les", "password");
 b = BileChat(api);
 c = BileClock(api).show;
 
@@ -95,7 +95,7 @@ s.waitForBoot({
 	//dir = "/Volumes/Shelly\ Knotts\'s\ Public\ Folder/laptopera/";
 	//dir = "/Users/hb/Public/Laptopera/";
 	//dir = "/mnt/holger-nfs/".standardizePath;
-	dir = "/run/user/celesteh/gvfs/smb-share:server=mooncake.local,share=laptopera/".standardizePath;
+	dir = ~dir ?? "/run/user/celesteh/gvfs/smb-share:server=mooncake.local,share=laptopera/".standardizePath;
 
 	synthSampleDir =
 	//"~/Dropbox/BiLE\\\ Sound\\\ Files/samples/leptopera/act2".standardizePath;
