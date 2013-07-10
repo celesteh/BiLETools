@@ -167,6 +167,26 @@ BileChat {
 
 		//api.add_remote_update_listener(this, update_action);
 		growl = File.exists("/usr/local/bin/growlnotify");
+		growl.not.if({ 
+			\MandelHub.asClass.notNil.if({
+				var pseudohub = (classPath:  { |that,filename| 
+					(MandelHub.filenameSymbol.asString.dirname ++ "/" ++ filename);
+				});
+				Platform.case(
+					\osx, {
+						growl = MandelPlatformOSX(pseudohub);
+					},
+					\linux, {
+						growl = MandelPlatformLinux(pseudohub);
+					},
+					{ // default
+						this.post("Platform specific functions for your system aren't available.");
+						growl = false;
+					}
+				);
+			});
+		});
+
 
 		api.add('msg', { arg user, blah;
 
@@ -284,7 +304,7 @@ BileChat {
 	growlnotify { |user, blah|
 		//var fuckyousc;
 		//"this is getting called".postln;
-		growl.if({
+		(growl == true).if({
 			//"shoudl growl".postln;
 			//fuckyousc = blah;
 			blah = blah.asString.replace("\\", "\\\\");
@@ -292,6 +312,10 @@ BileChat {
 			//"wtf".postln;
 			("/usr/local/bin/growlnotify \"" ++ user ++ "\" -m \"" ++ blah ++
 				"\" -a SuperCollider").unixCmd;
+		},{
+			(growl != false).if({
+				growl.displayNotification(user.asString, blah.asString);
+			});
 		});
 	}
 
