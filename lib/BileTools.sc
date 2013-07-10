@@ -47,16 +47,19 @@ BileChat {
 		win.view.decorator = FlowLayout(win.view.bounds);
 
 		view = CompositeView(win, 510 @ 370);
+		view.resize_(5);
 		//view.decorator.gap=2@2;
 
 		disp = TextView(view,Rect(10,10, 380,300))
 			.editable = false;
+		disp.resize_(5);
 			//.focus(true);
 		disp.hasVerticalScroller = true;
 		disp.autohidesScrollers_(true);
 		//disp.autoScrolls = true;
 
 		user_list = PopUpMenu(view,Rect(400,10,90, 30));
+		user_list.resize_(3);
 
 		user_update_action = {
 			var user_names;
@@ -122,6 +125,7 @@ BileChat {
 		api_methods.items = (["API Methods"] ++ api.functionNames
 							++ api.remote_functions.keys).
 								collect({|a| a.asString});
+		api_methods.resize_(6);
 		/*
 		update_action = {
 			//"remote_action_update_listener_fucked_your_mom".postln;
@@ -181,8 +185,9 @@ BileChat {
 			});
 		}, "For chatting. Usage: msg, nick, text");
 
-		talk = TextView(view,Rect(10,330, 480,15))
+		talk = TextView(view,Rect(10,330, 480,20))
 			.focus(true);
+		talk.resize_(8);
 
 		talk.keyDownAction_({ arg view, char, modifiers, unicode, keycode;
 
