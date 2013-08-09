@@ -48,7 +48,7 @@ BileChat {
 		win.view.decorator.gap=10@5;
 		win.view.minWidth_(180);
 		win.view.minHeight_(130);
-		
+
 
 		view = CompositeView(win, 480 @ 300);
 		view.resize_(5);
@@ -170,9 +170,9 @@ BileChat {
 
 		//api.add_remote_update_listener(this, update_action);
 		growl = File.exists("/usr/local/bin/growlnotify");
-		growl.not.if({ 
+		growl.not.if({
 			\MandelHub.asClass.notNil.if({
-				var pseudohub = (classPath:  { |that,filename| 
+				var pseudohub = (classPath:  { |that,filename|
 					(MandelHub.filenameSymbol.asString.dirname ++ "/" ++ filename);
 				});
 				Platform.case(
@@ -415,7 +415,7 @@ BileClock {
 
 		win.isNil.if({
 			win = Window("Clock", Rect(0, 0, 450, 80));
-			win.view.background_(BileTools.colour);
+			win.view.background_(BileTools.light_colour);
 			view = win.view;
 			view.isNil.if({ view = win});
 		}, {
@@ -816,4 +816,7 @@ BileTools {
 		^ Color(0.6.rand + 0.1, 0.6.rand, 0.6.rand + 0.1);
 	}
 
+	*light_colour {
+		^ Color(0.5.rand + 0.5, 0.5.rand + 0.5, 0.5.rand + 0.5);
+	}
 }
