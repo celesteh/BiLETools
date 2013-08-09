@@ -42,21 +42,27 @@ BileChat {
 			color = BileTools.colour;
 		});
 
-		win = Window.new("Communication", Rect(128, 64, 510, 370));
+		win = Window.new("Communication", Rect(128, 64, 500, 360));
 		win.view.background_(color);
-		win.view.decorator = FlowLayout(win.view.bounds);
+		win.view.decorator = FlowLayout(win.view.bounds, 10@10);
+		win.view.decorator.gap=10@5;
+		win.view.minWidth_(180);
+		win.view.minHeight_(130);
+		
 
-		view = CompositeView(win, 510 @ 370);
-		//view.decorator.gap=2@2;
+		view = CompositeView(win, 480 @ 300);
+		view.resize_(5);
 
-		disp = TextView(view,Rect(10,10, 380,300))
+		disp = TextView(view,Rect(0,0, 380,300))
 			.editable = false;
+		disp.resize_(5);
 			//.focus(true);
 		disp.hasVerticalScroller = true;
 		disp.autohidesScrollers_(true);
 		//disp.autoScrolls = true;
 
-		user_list = PopUpMenu(view,Rect(400,10,90, 30));
+		user_list = PopUpMenu(view,Rect(390,0,90, 30));
+		user_list.resize_(3);
 
 		user_update_action = {
 			var user_names;
@@ -118,10 +124,11 @@ BileChat {
 			})
 		};
 
-		api_methods = ListView(view ,Rect(400,50,90,250));
+		api_methods = ListView(view ,Rect(390,40,90,260));
 		api_methods.items = (["API Methods"] ++ api.functionNames
 							++ api.remote_functions.keys).
 								collect({|a| a.asString});
+		api_methods.resize_(6);
 		/*
 		update_action = {
 			//"remote_action_update_listener_fucked_your_mom".postln;
@@ -163,6 +170,26 @@ BileChat {
 
 		//api.add_remote_update_listener(this, update_action);
 		growl = File.exists("/usr/local/bin/growlnotify");
+		growl.not.if({ 
+			\MandelHub.asClass.notNil.if({
+				var pseudohub = (classPath:  { |that,filename| 
+					(MandelHub.filenameSymbol.asString.dirname ++ "/" ++ filename);
+				});
+				Platform.case(
+					\osx, {
+						growl = MandelPlatformOSX(pseudohub);
+					},
+					\linux, {
+						growl = MandelPlatformLinux(pseudohub);
+					},
+					{ // default
+						this.post("Platform specific functions for your system aren't available.");
+						growl = false;
+					}
+				);
+			});
+		});
+
 
 		api.add('msg', { arg user, blah;
 
@@ -181,8 +208,11 @@ BileChat {
 			});
 		}, "For chatting. Usage: msg, nick, text");
 
-		talk = TextView(view,Rect(10,330, 480,15))
-			.focus(true);
+		win.view.decorator.nextLine;
+		talk = TextView(win.view,480@30)
+		.focus(true)
+		.autohidesScrollers_(true);
+		talk.resize_(8);
 
 		talk.keyDownAction_({ arg view, char, modifiers, unicode, keycode;
 
@@ -279,7 +309,7 @@ BileChat {
 	growlnotify { |user, blah|
 		//var fuckyousc;
 		//"this is getting called".postln;
-		growl.if({
+		(growl == true).if({
 			//"shoudl growl".postln;
 			//fuckyousc = blah;
 			blah = blah.asString.replace("\\", "\\\\");
@@ -287,6 +317,10 @@ BileChat {
 			//"wtf".postln;
 			("/usr/local/bin/growlnotify \"" ++ user ++ "\" -m \"" ++ blah ++
 				"\" -a SuperCollider").unixCmd;
+		},{
+			(growl != false).if({
+				growl.displayNotification(user.asString, blah.asString);
+			});
 		});
 	}
 
@@ -483,6 +517,11 @@ BileClock {
 		clock.clear;
 		CmdPeriod.remove(remFun);
 		clock.stop;
+
+		AppClock.sched(0, {
+			startButton.value = 0;
+			nil;
+		});
 
 		//clock.isNil.if({ AppClock.sched(0, {clock = ClockFace.new; clock.stop; nil}) },
 		//	{clock.stop; clock.onBeat = nil;});
