@@ -7,13 +7,16 @@ w = WiiMote.discover;
 (
 
 
+
+
+
 	// stockhausen! Act 2
 
 
 
 	var api;
 	var chat;
-	var stick, wii;
+	var stick, wii, nano;
 	var clock;
 	var bar;
 	var qbuf, bufs, active_buf;
@@ -21,15 +24,28 @@ w = WiiMote.discover;
 	var timer;
 	var stop, start;
 
-	stop = ~stopRecording;
+~api = NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGroupClient", "192.168.0.101", "les", "password");
+
+~dir = "/run/user/celesteh/gvfs/smb-share:server=apfeltaschen.local,share=laptopera/".standardizePath;
+
+// shelly's computer - username: les password: lesisawesome
+
+s.options.memSize = s.options.memSize * 256;
+s.options.outDevice = nil;
+
+"/home/celesteh/Documents/code/BiLETools/Patches/laptopera/sampler.scd".load;
+
+
+stop = ~stopRecording;
 	start = ~startRecording;
 
 	stick = false; // change to true if you have a stick
-	wii = true; //change to true if you have a wii
+	wii = false; //change to true if you have a wii
+nano = true;
 
 
 	api = NetAPI.default;
-
+//api = ~api;
 
 	s.options.memSize = s.options.memSize * 256;
 
@@ -37,7 +53,7 @@ w = WiiMote.discover;
 
 	s.waitForBoot({
 
-		var joystick, spec, document_gui, wiimote;
+		var joystick, spec, document_gui, wiimote, nk;
 		var synth_group, post_group;
 		var show;
 		var cv;
@@ -64,7 +80,7 @@ w = WiiMote.discover;
 				var name;
 
 				name = dev[1].name;
-				(name.contains("Joystick")).if ({
+				(name.asString.contains("Joystick")).if ({
 
 					joystick = GeneralHID.open( dev);
 				})
@@ -79,6 +95,7 @@ w = WiiMote.discover;
 
 
 				spec = GeneralHIDSpec.new(joystick);
+				/*
 				spec.add(\b1,	[1,1]);
 				spec.add(\b2,	[1,2]);
 				spec.add(\b3,	[1,3]);
@@ -94,7 +111,23 @@ w = WiiMote.discover;
 				spec.add(\ly,	[3,49]);
 				spec.add(\rx,	[3,50]);
 				spec.add(\ry,	[3,53]);
-
+				*/
+				spec.add(\b1,	[1,288]);
+				spec.add(\b2,	[1,289]);
+				spec.add(\b3,	[1,290]);
+				spec.add(\b4,	[1,291]);
+				spec.add(\b5,	[1,292]);
+				spec.add(\b6,	[1,293]);
+				spec.add(\b7,	[1,294]);
+				spec.add(\b8,	[1,295]);
+				spec.add(\b9,	[1,296]);
+				spec.add(\b10,	[1,297]);
+				spec.add(\hatV,	[3,17]);
+				spec.add(\hatH,	[3,16]);
+				spec.add(\lx,	[3,0]);
+				spec.add(\ly,	[3,1]);
+				spec.add(\rx,	[3,5]);
+				spec.add(\ry,	[3,2]);
 
 
 				GeneralHID.startEventLoop(0.005);
@@ -345,7 +378,7 @@ w = WiiMote.discover;
 			play_once  = {|buf|
 				var ttime;
 
-				"play once".postln;
+			"play once".postln;
 
 				(buf.isNil).if ({ buf = active_buf }, {active_buf = buf});
 
@@ -474,7 +507,7 @@ w = WiiMote.discover;
 
 
 
-			(stick || wii).if({ // joystick stuff
+			(stick || wii || nano).if({ // joystick stuff
 
 
 
@@ -482,6 +515,7 @@ w = WiiMote.discover;
 					var value;
 
 					value = val.value;
+				value.postln;
 					(value != 0).if({
 						"button".postln;
 						action.value;
@@ -514,12 +548,22 @@ w = WiiMote.discover;
 
 				spec[\b1].action_({|val| record.(active_buf, val.value) });
 
-				spec[\hat].action_({|val|
-					var adjusted;
-					adjusted = (val.value * 10).floor;
+				spec[\hatH].action_({|val|
+					//var adjusted;
+					//adjusted = (val.value * 10).floor;
 
-					(adjusted ==1).if ({ stop_all_loops.value;});
+					(val.value ==0).if ({ stop_all_loops.value;}); //left
+				(val.value ==1).if({button_act.(1, ~increment; )}); // right
 				});
+
+				spec[\hatV].action_({|val|
+					//var adjusted;
+					//adjusted = (val.value * 10).floor;
+
+					(val.value ==0).if ({button_act.(1, ~mostRecent; )}); //up
+				//(val.value ==1).if({ }); //down
+				});
+
 
 
 				spec[\rx].action_({|val| val.value.postln; stick_act.(val, \density)});
@@ -552,6 +596,27 @@ w = WiiMote.discover;
 				wiimote.setAction(\ay, {|val| stick_act.(val, \rate, false)});
 
 			});
+
+		nano.if({
+			nk = NanoKontrol2.new;
+			active_instrument = \playshift;
+
+			nk.action_(\recBt, {|val| record.(active_buf, (val.value/127)) });
+			nk.action_(\playBt, {|val| button_act.(val, {play_loop.(active_buf, active_instrument); })});
+			nk.action_(\stopBt, {|val| button_act.(val, {stop_all_loops.value; })});
+			nk.action_(\cycleBt, {|val| button_act.(val, ~mostRecent; )});
+			nk.action_(\ffwBt, {|val| button_act.(val, ~increment; )});
+
+			nk.action_(\fader1, {|val| val.value.postln; stick_act.(val/127, \density)});
+			nk.action_(\fader2, {|val| stick_act.(val/127, \dur, false)});
+			nk.action_(\fader3, {|val| stick_act.(val/127, \rate)});
+			nk.action_(\fader4, {|val| stick_act.(val/127, \freq, false)});
+
+			nk.action_(\sBt1, {|val| button_act.(val, {active_instrument = \playshift })});
+			nk.action_(\sBt2, {|val| button_act.(val, {active_instrument = \granulate })});
+			nk.action_(\sBt1, {|val| button_act.(val, {active_instrument = \granulate_rm })});
+
+		});
 
 				//})
 

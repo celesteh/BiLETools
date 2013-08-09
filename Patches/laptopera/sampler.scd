@@ -1,4 +1,4 @@
-// version 0.016m-alpha
+// version 0.017m-alpha
 
 // The following environment variables are defined:
 // ~startRecording -  a function to open a buffer and a new file and start recording
@@ -10,6 +10,9 @@
 
 // ~dir - the directory in which files exist. Changing this variable does not change the
 //				behavious of code in this file
+
+// ~synthSampleDir - the directory in which synthsamples reside
+
 
 // ~buffer - the currently selected buffer
 
@@ -30,6 +33,7 @@
 //				YOU CANNOT DEPEND ON IT RETURNING THE RIGHT BUFFER. USE ~buffer AFTER CALLING IT
 //
 // ~echoBack - true plays back the recording immediately after. false doesn't.
+//
 
 // something about shelly unselecting - bug // add nil action for buffer
 
@@ -45,8 +49,6 @@ api = ~api ?? NetAPI.default ?? NetAPI.oscgroup("~/Documents/code/osc/oscgroups/
 b = BileChat(api);
 c = BileClock(api).show;
 
-s.options.memSize = s.options.memSize * 256;
-s.options.outDevice = nil;
 //	s.options.inDevice = "H2 Audio";
 //s.options.outDevice = "MOTU 828mk2";
 //s.options.inDevice = "MOTU 828mk2";
@@ -97,7 +99,7 @@ s.waitForBoot({
 	//dir = "/mnt/holger-nfs/".standardizePath;
 	dir = ~dir ?? "/run/user/celesteh/gvfs/smb-share:server=mooncake.local,share=laptopera/".standardizePath;
 
-	synthSampleDir =
+	synthSampleDir = ~synthSampleDir ??
 	//"~/Dropbox/BiLE\\\ Sound\\\ Files/samples/leptopera/act2".standardizePath;
 	("~/Dropbox/BiLE\\\ Sound\\\ Files".standardizePath ++ "/samples/leptopera/act2");
 
