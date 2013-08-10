@@ -198,7 +198,7 @@ BileChat {
 					//disp.string = disp.string ++ "\n buh?";
 					//disp.string = disp.string ++ "\n" + user ++">"+ blah;
 					//string = disp.string;
-					blah = blah.replace("\\n", "\n");
+					blah = blah.asString.replace("\\n", "\n");
 					this.add(""++ user ++ ">" + blah);
 					this.growlnotify(user, blah);
 					//[user, blah].postln;
