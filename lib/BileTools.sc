@@ -198,6 +198,7 @@ BileChat {
 					//disp.string = disp.string ++ "\n buh?";
 					//disp.string = disp.string ++ "\n" + user ++">"+ blah;
 					//string = disp.string;
+					blah = blah.replace("\\n", "\n");
 					this.add(""++ user ++ ">" + blah);
 					this.growlnotify(user, blah);
 					//[user, blah].postln;
@@ -220,7 +221,10 @@ BileChat {
 
 			(char == 13.asAscii).if({
 				blah = talk.string;
-				blah = blah.stripRTF; //.tr(13.asAscii, $ ).tr(10.asAscii, $ ).replace("  ", " ");
+				//blah = blah.stripRTF;
+				//.escapeChar(13.asAscii).escapeChar(10.asAscii);
+				//.tr(13.asAscii, $ ).tr(10.asAscii, $ ).replace("  ", " ");
+				blah = blah.replace(""++13.asAscii, "\\n");
 				talk.string = "";
 				this.say(blah);
 			});
