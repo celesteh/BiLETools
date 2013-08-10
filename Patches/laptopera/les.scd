@@ -6,7 +6,7 @@ w = WiiMote.discover;
 
 (
 
-
+//put amp on knob 1
 
 
 
@@ -28,7 +28,7 @@ w = WiiMote.discover;
 
 ~dir = "/run/user/celesteh/gvfs/smb-share:server=apfeltaschen.local,share=laptopera/".standardizePath;
 
-// shelly's computer - username: les password: lesisawesome
+// shelly's computer - username: les password: takeaguess
 
 s.options.memSize = s.options.memSize * 256;
 s.options.outDevice = nil;
@@ -602,19 +602,20 @@ nano = true;
 			active_instrument = \playshift;
 
 			nk.action_(\recBt, {|val| record.(active_buf, (val.value/127)) });
-			nk.action_(\playBt, {|val| button_act.(val, {play_loop.(active_buf, active_instrument); })});
-			nk.action_(\stopBt, {|val| button_act.(val, {stop_all_loops.value; })});
-			nk.action_(\cycleBt, {|val| button_act.(val, ~mostRecent; )});
-			nk.action_(\ffwBt, {|val| button_act.(val, ~increment; )});
+			nk.action_(\playBt, {|val| button_act.(val/127, {play_loop.(active_buf, active_instrument); })});
+			nk.action_(\stopBt, {|val| button_act.(val/127, {stop_all_loops.value; })});
+			nk.action_(\cycleBt, {|val| button_act.(val/127, ~mostRecent; )});
+			nk.action_(\ffwBt, {|val| button_act.(val/127, ~increment; )});
 
+			nk.action_(\knob1, {|val| stick_act.(val/127, \amp)});
 			nk.action_(\fader1, {|val| val.value.postln; stick_act.(val/127, \density)});
-			nk.action_(\fader2, {|val| stick_act.(val/127, \dur, false)});
+			nk.action_(\fader2, {|val| stick_act.(val/127, \dur)});
 			nk.action_(\fader3, {|val| stick_act.(val/127, \rate)});
-			nk.action_(\fader4, {|val| stick_act.(val/127, \freq, false)});
+			nk.action_(\fader4, {|val| stick_act.(val/127, \freq)});
 
-			nk.action_(\sBt1, {|val| button_act.(val, {active_instrument = \playshift })});
-			nk.action_(\sBt2, {|val| button_act.(val, {active_instrument = \granulate })});
-			nk.action_(\sBt1, {|val| button_act.(val, {active_instrument = \granulate_rm })});
+			nk.action_(\sBt1, {|val| button_act.(val/127, {active_instrument = \playshift })});
+			nk.action_(\sBt2, {|val| button_act.(val/127, {active_instrument = \granulate })});
+			nk.action_(\sBt1, {|val| button_act.(val/127, {active_instrument = \granulate_rm })});
 
 		});
 

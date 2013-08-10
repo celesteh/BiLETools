@@ -1,4 +1,4 @@
-// version 0.017m-alpha
+// version 0.018m-alpha
 
 // The following environment variables are defined:
 // ~startRecording -  a function to open a buffer and a new file and start recording
@@ -23,7 +23,7 @@
 //				set your active buffer to undefined
 //
 // ~startAction - This is a function, definied by you, the user, that will get called when
-//              you hit the button marked start. (Typically, it would start playing something.)
+//              you hit the button marked play. (Typically, it would start playing something.)
 //
 // ~stopAction - This is a function, defined by you, the user, that wil get called when
 //              you hit the button marked stop. (Typically, it would stop playing something.)
@@ -201,6 +201,7 @@ s.waitForBoot({
 				// make sure the file is actually closed before trying to normalise it
 				s.sync;
 				0.01.wait;
+				~increment.value;
 				SoundFile.normalize(tmpfile, path);
 
 				s.sync;
