@@ -220,7 +220,7 @@ BileChat {
 
 			(char == 13.asAscii).if({
 				blah = talk.string;
-				blah = blah.stripRTF.tr(13.asAscii, $ ).tr(10.asAscii, $ ).replace("  ", " ");
+				blah = blah.stripRTF; //.tr(13.asAscii, $ ).tr(10.asAscii, $ ).replace("  ", " ");
 				talk.string = "";
 				this.say(blah);
 			});
