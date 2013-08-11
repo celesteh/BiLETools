@@ -46,9 +46,12 @@ BileChat {
 		win.view.background_(color);
 		win.view.decorator = FlowLayout(win.view.bounds, 10@10);
 		win.view.decorator.gap=10@5;
-		win.view.minWidth_(180);
-		win.view.minHeight_(130);
-
+		win.view.respondsTo(\minWidth_).if({
+			win.view.minWidth_(180);
+		});
+		win.view.respondsTo(\minHeight_).if({
+			win.view.minHeight_(130);
+		});
 
 		view = CompositeView(win, 480 @ 300);
 		view.resize_(5);
@@ -225,6 +228,7 @@ BileChat {
 				//.escapeChar(13.asAscii).escapeChar(10.asAscii);
 				//.tr(13.asAscii, $ ).tr(10.asAscii, $ ).replace("  ", " ");
 				blah = blah.replace(""++13.asAscii, "\\n");
+				blah = blah.replace(""++10.asAscii, "\\n");
 				talk.string = "";
 				this.say(blah);
 			});
