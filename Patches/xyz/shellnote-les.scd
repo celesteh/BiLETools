@@ -19,7 +19,7 @@ w = WiiMote.discover;
 	var win, active_player, challenger, xyz_constructor, controlling, lists, buttons;
 	var semaphores, cv;
 	var user_names, user_update_action;
-	var kinect, assign_gestural_control, wiimote, controller;
+	var kinect, assign_gestural_control, wiimote, controller, touch;
 
 	//"`/usr/bin/dirname \"$0\"`/kinect/run.sh".unixCmd;
 
@@ -32,6 +32,15 @@ w = WiiMote.discover;
 		));
 */
 
+/*
+// this version for touchOSC on iphone
+touch = 	touch = OSCHID.new.spec_((
+		ax: OscSlot(\relative, '/accxyz', nil, 1),
+		ay: OscSlot(\relative, '/accxyz', nil, 2),
+		az: OscSlot(\relative, '/accxyz', nil, 3),
+		amp: OscSlot(\relative, '/1/ampfader', nil, 1)
+		));
+*/
 
 wiimote = w; //WiiOSCClient.new;
 			//wiimote.calibrate = false;
@@ -49,7 +58,9 @@ controller = wiimote;
 	//			"les", "lespass");
 
 //	api = NetAPI.broadcast("Les"); // shelly update this
-api = NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGroupClient", "192.168.1.76", "les", "password");
+api = NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGroupClient",
+	"137.205.214.187",//"192.168.0.5", //"192.168.1.76",
+	"Les", "password");
 
 
 	should_call_action = true;
@@ -401,6 +412,10 @@ api = NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGroupClient", "192.
 
 					} , { // there's a fight
 						//"fight".postln;
+						// who needs a fucking code freeze 40 minutes before a fucking gig.
+						// not us
+						api.sendMsg('fighters', api.nick.asSymbol, what,
+									active_player[what], *([who] ++ (challenger[what]? [])));
 						//add them to the challenger list, if there is one
 						challenger[what].notNil.if({
 							(challenger[what].includes(who)
