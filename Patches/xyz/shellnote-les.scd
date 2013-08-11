@@ -23,14 +23,13 @@ w = WiiMote.discover;
 
 	//"`/usr/bin/dirname \"$0\"`/kinect/run.sh".unixCmd;
 
-	// shelly update this
-/*
+
 	kinect = OSCHID.new.spec_((
 		ax: OscSlot(\relative, '/hand/x'),
 		ay: OscSlot(\relative, '/hand/y'),
 		az: OscSlot(\relative, '/hand/z')
 		));
-*/
+
 
 /*
 // this version for touchOSC on iphone
@@ -42,14 +41,17 @@ touch = 	touch = OSCHID.new.spec_((
 		));
 */
 
+/*
 wiimote = w; //WiiOSCClient.new;
 			//wiimote.calibrate = false;
 		wiimote.battery;
 		w.enableMotionSensor( 1 );
 		w.enableExpansion( 1 );
 		w.enableButtons(1);
+*/
 
-controller = wiimote;
+// shelly set this to kinect or wiimote or touch as appropriate
+controller = kinect;
 
 
 	//api = NetAPI("/Applications/Media/pro/audio/SuperCollider/OscGroup/OscGroupClient",
@@ -59,7 +61,7 @@ controller = wiimote;
 
 //	api = NetAPI.broadcast("Les"); // shelly update this
 api = NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGroupClient",
-	"137.205.214.187",//"192.168.0.5", //"192.168.1.76",
+	"192.168.0.100", //"192.168.1.76",
 	"Les", "password");
 
 
