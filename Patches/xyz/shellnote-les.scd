@@ -29,6 +29,7 @@ w = WiiMote.discover;
 		ay: OscSlot(\relative, '/hand/y'),
 		az: OscSlot(\relative, '/hand/z')
 		));
+kinect.calibrate = false;
 
 
 /*
@@ -39,6 +40,7 @@ touch = 	touch = OSCHID.new.spec_((
 		az: OscSlot(\relative, '/accxyz', nil, 3),
 		amp: OscSlot(\relative, '/1/ampfader', nil, 1)
 		));
+touch.calibrate = false;
 */
 
 /*
@@ -158,6 +160,11 @@ api = NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGroupClient",
 			z = con.addCV((api.nick ++ "/z").asSymbol);
 			z.spec_(\unipolar);
 
+		touch.notNil.if({
+			touch.spec.includesKey(\amp).if({ "amp defined".postln;
+				touch.setAction(\amp, {|val| amp.input=val.value;});
+			}, { "amp undefined".postln;});
+		});
 
 			// shelly change this part to map your variables
 			con.synth_(
