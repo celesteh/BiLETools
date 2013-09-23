@@ -31,9 +31,13 @@ s.waitForBoot({
 
 		var fade, result, scale;
 
+		fade = fader.isNil.if({0},
+			{ fader.value.isNil.if({0},
+				{fader.value / 127})
+		});
 		//fade = fader.value / 127;
-		//scale = fade * antisocial.value;
-		result = (param.value * (1 - antisocial.value));// + scale;
+		scale = fade * antisocial.value;
+		result = (param.value * (1 - antisocial.value)) + scale;
 	};
 
 
