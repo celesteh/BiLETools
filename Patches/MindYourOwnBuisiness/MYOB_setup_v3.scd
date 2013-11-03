@@ -1,12 +1,12 @@
-// Mind Your Own Busines, v3, 3.11.2013
+// Mind Your Own Busines, v2, 28.10.2012
 // SETUP
 
 
 ///////////////////////////////////
 //// FIRST: Start Republic, IF NOT DONE by standalone
 (
-r = Republic.new.makeDefault;
-r.gui(12); // add a display if you like.
+// r = Republic.new.makeDefault;
+// r.gui(12); // add a display if you like.
 
 // personalize here
 ~myPathToOscGroupClient="/Users/monodread/Documents/OscGroup/OscGroupClient"; // <- your path to OSCGroupClient
@@ -19,6 +19,13 @@ r.gui(12); // add a display if you like.
 // join via code or in standalone use window to enter nickname
 // takes a few seconds to start
 r.join(~myNick.asSymbol);
+
+// create MANDELCLOCK
+try {
+MandelHub.join(~myNick);
+m = MandelHub.instance;
+};
+
 
 )
 
@@ -41,6 +48,9 @@ AppClock.sched(0.5, {
 }).play;
 );
 
+// create the mandel GUI, does not work for SC 3.44?
+m.gui;
+
 // create some dict to store stuff
 q = q ? ();
 
@@ -48,12 +58,6 @@ r.s.meter; // some meters
 // scope your bus values, works only in SC IDE
 Stethoscope.new(r.s, 4, 10, rate:\control);
 
-// create MANDELCLOCK
-try {
-MandelHub.join(~myNick);
-m = MandelHub.instance;
-m.gui; // make a Gui with the Metro & bpm
-};
 
 // create a 6-chan bus
 ~bus = Bus.new(\control, 10, 6, r.s);
