@@ -41,9 +41,6 @@ AppClock.sched(0.5, {
 }).play;
 );
 
-// create the mandel GUI, does not work for SC 3.44?
-m.gui;
-
 // create some dict to store stuff
 q = q ? ();
 
