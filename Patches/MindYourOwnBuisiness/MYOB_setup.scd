@@ -114,34 +114,8 @@ loadRelative("MYOB_Patterns.scd");
 
 );
 
-// Not used when using MandelClock...
-/*
-(
-// make a sub dict for our responders
-q.resp = ();
-
-// prepare listening for SC Standalone...
-(
-q.resp[\setclock] = OSCresponder(nil, '/setclock', { |t, resp, msg|
-		var clock;
-		clock = msg[1]; // second item in 'msg' is ndefname
-		"//New Tempo is:  % bpm.\n".postf(clock);
-		~clock.tempo = clock/60;
-	}).add;
-);
 
 /*
-// alternative Code for SC3.5 ++
-q.resp[\setclock] = OSCFunc....
-
-
-// use like this
-r.send(\all, '/setclock', 60);
-*/
-
-);
-
-
 
 // play test sound
 ( 'instrument': 'testsound', 'freq': 500, 'sustain': 1, 'amp': 1, 'where': 0).play;
