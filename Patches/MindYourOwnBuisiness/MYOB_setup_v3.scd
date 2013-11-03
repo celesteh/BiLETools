@@ -1,4 +1,4 @@
-// Mind Your Own Busines, v2, 28.10.2012
+// Mind Your Own Busines, v3, 3.11.2012
 // SETUP
 
 
@@ -19,13 +19,6 @@
 // join via code or in standalone use window to enter nickname
 // takes a few seconds to start
 r.join(~myNick.asSymbol);
-
-// create MANDELCLOCK
-try {
-MandelHub.join(~myNick);
-m = MandelHub.instance;
-};
-
 
 )
 
@@ -63,8 +56,34 @@ Stethoscope.new(r.s, 4, 10, rate:\control);
 ~bus = Bus.new(\control, 10, 6, r.s);
 // 10 is volume, 11 -> 'where'-bus, 12..16 are sound params
 
-// create a TempoClock, synced to MandelClock
-t = TempoClock.default.tempo_(1);
+// create a responsive CLOCK
+~clock = TempoClock.default.tempo_(1);
+
+~clock.tempo = 1; // original 60 bpm
+
+// make a sub dict for our responders
+q.resp = ();
+
+try {
+// prepare listening... 
+(
+q.resp[\setclock] = OSCresponder(nil, '/setclock', { |t, resp, msg|
+		var clock;
+		clock = msg[1]; // second item in 'msg' is ndefname
+		"//New Tempo is:  % bpm.\n".postf(clock);
+		~clock.tempo = clock/60;
+	}).add;
+);
+/*
+// alternative Code for SC3.5 ++
+q.resp[\setclock] = OSCFunc....
+
+
+// use like this
+r.send(\all, '/setclock', 60);
+*/ 
+
+};
 
 (
 // assign bus control to Nano if you have Les' NanoKontrol2 class installed
