@@ -1,4 +1,4 @@
-// Mind Your Own Busines, v4, 5.11.2012
+// Mind Your Own Busines, v3, 3.11.2012
 // SETUP
 
 
@@ -195,31 +195,31 @@ PdefAllGui.new(10);
 
 // set the amplitude, use SETAMP synth:
 // reset to zero
-( 'instrument': 'setAmp', 'value': 0, 'dur': 1, 'where': \all ).play;
-( 'instrument': 'setAmp', 'value': 0.2+0.3.rand, 'dur': 1, 'where': \all ).play;
+( 'instrument': 'setAmp', 'server': r.s, 'value': 0, 'dur': 1, 'where': \all ).play;
+( 'instrument': 'setAmp', 'server': r.s, 'value': 0.2+0.3.rand, 'dur': 1, 'where': \all ).play;
 
 // All at Once -> use SETBUSES Synth
 // zero values except amp -> BUT: when ampbus = 0 you won't hear anything!
-( 'instrument': 'setBuses', 'value1': 0, 'value2': 0, 'value3': 0, 'dur': 1, 'where': \all ).play;
+( 'instrument': 'setBuses', 'server': r.s, 'value1': 0, 'value2': 0, 'value3': 0, 'dur': 1, 'where': \all ).play;
 
 // all rand vals, At Once
-( 'instrument': 'setBuses', 'value1': 1.0.rand, 'value2': 1.0.rand, 'value3': 1.0.rand, 'dur': 1, 'where': \all ).play;
+( 'instrument': 'setBuses', 'server': r.s, 'value1': 1.0.rand, 'value2': 1.0.rand, 'value3': 1.0.rand, 'dur': 1, 'where': \all ).play;
 
 // To Set only single Values use SETBUS synth instead
 // bus argument specifies which bus / value to be set
-( 'instrument': 'setBus', 'bus': 11, 'value': 0.8.rand, 'where': \all ).play;
-( 'instrument': 'setBus', 'bus': 12, 'value': 0.6.rand, 'where': \all ).play;
-( 'instrument': 'setBus', 'bus': 13, 'value': 1.0.rand, 'where': \all ).play;
+( 'instrument': 'setBus', 'server': r.s, 'bus': 11, 'value': 0.8.rand, 'where': \all ).play;
+( 'instrument': 'setBus', 'server': r.s, 'bus': 12, 'value': 0.6.rand, 'where': \all ).play;
+( 'instrument': 'setBus', 'server': r.s, 'bus': 13, 'value': 1.0.rand, 'where': \all ).play;
 
 // envBusPerc Synth takes the value from given value to 0, offset is the start val
-( 'instrument': 'envBusPerc', 'bus': 11, 'value': 1, 'dur': 1, 'legato': 3, 'offset': 0.0, 'where': 0	).play;
+( 'instrument': 'envBusPerc', 'server': r.s, 'bus': 11, 'value': 1, 'dur': 1, 'legato': 3, 'offset': 0.0, 'where': 0	).play;
 
 // envBusRev Synth takes the value up TO a given value from 0, offset is the end val
-( 'instrument': 'envBusRev', 'bus': 11, 'value': 0.5, 'dur': 1, 'legato': 1, 'offset': 0.0, 'where': 0	).play;
+( 'instrument': 'envBusRev', 'server': r.s, 'bus': 11, 'value': 0.5, 'dur': 1, 'legato': 1, 'offset': 0.0, 'where': 0	).play;
 // NOTE: while one envelope is playing you can't really overwrite it with another!
 
 // this synth makes Random Noise-Values on the bus:
-( 'instrument': 'busNoise', 'bus': 11, 'dur': 5, 'where': 0 ).play;
+( 'instrument': 'busNoise', 'server': r.s, 'bus': 11, 'dur': 5, 'where': 0 ).play;
 
 
 // set values from a Pattern
@@ -262,17 +262,17 @@ Pbindef(\rhythm1, \sustain, Pwhite(1, 3.0) * 0.01);
 // FOR AMP
 // set the amplitude, use SETAMP synth:
 // reset to zero
-( 'instrument': 'setAmp', 'value': 0, 'dur': 1, 'where': \all ).play;
-( 'instrument': 'setAmp', 'value': 0.2+0.3.rand, 'dur': 1, 'where': \all ).play;
+( 'instrument': 'setAmp', 'server': r.s, 'value': 0, 'dur': 1, 'where': \all ).play;
+( 'instrument': 'setAmp', 'server': r.s, 'value': 0.2+0.3.rand, 'dur': 1, 'where': \all ).play;
 
-( 'instrument': 'setAmp', 'ampval': 0.2, 'dur': 0.1, 'where': \all ).play;
+( 'instrument': 'setAmp', 'server': r.s, 'ampval': 0.2, 'dur': 0.1, 'where': \all ).play;
 
 // from tdef
 (
 Tdef(\setAmp, {
 	[10,33].choose.do{
 		// r.nameList gives all the available nicknames:
-	( 'instrument': 'setAmp', 'value': 1.0.rand, 'dur': 0.1, 'where': r.nameList.choose ).play;
+	( 'instrument': 'setAmp', 'server': r.s, 'value': 1.0.rand, 'dur': 0.1, 'where': r.nameList.choose ).play;
 	[1,3,5].reciprocal.choose.rand.wait;
 	}}).play;
 );
