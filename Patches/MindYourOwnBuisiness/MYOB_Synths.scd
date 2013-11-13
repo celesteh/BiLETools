@@ -3,11 +3,11 @@
 (
 // a test sound
 (
-SynthDef(\testsound, { |freq=500, sustain=1, amp=0.1, out=0|
+SynthDef(\testsound, { |freq=425, sustain=1, amp=0.2, out=0|
 	var son, env, dur;
 	dur = sustain;
 	env = EnvGen.kr(Env.new([amp,amp,0],[dur,dur*0.1]), doneAction: 2);
-	son = SinOsc.ar(freq*[1,1.3]);
+	son = SinOsc.ar(freq*[1,0.824]);
 	Out.ar(out, son*env*amp)
 }).share;
 );
@@ -16,62 +16,67 @@ SynthDef(\testsound, { |freq=500, sustain=1, amp=0.1, out=0|
 // B Bus control via SynthDef
 (
 (
-SynthDef('setBuses', { |out=11, value1, value2, value3, dur=0.1|
+SynthDef('setBuses', { |bus=11, value1, value2, value3, dur=0.1|
 	var newvals = [value1, value2, value3];
 	EnvGen.kr(Env.perc(releaseTime:dur), doneAction:2);
-	ReplaceOut.kr(out, newvals);
+	ReplaceOut.kr(bus, newvals);
 }).share;
 );
 
 (
-SynthDef('setAmp', { |out=10, ampval=0.3, dur = 1|
+SynthDef('setAmp', { |value=0.3, dur = 0.1|
+	var ampbus = 10; 
 	EnvGen.kr(Env.perc(releaseTime:dur), doneAction:2);
-	ReplaceOut.kr(out, ampval);
+	ReplaceOut.kr(ampbus, value);
 }).share;
 );
 
 (
-SynthDef('setAmpRand', { |out=10, dur = 1|
+SynthDef('setAmpRand', { |dur = 0.1|
+	var ampBus =10;
 	EnvGen.kr(Env.perc(releaseTime:dur), doneAction:2);
-	ReplaceOut.kr(out, LFNoise2.kr(rrand(0.1,10)).abs);
+	ReplaceOut.kr(ampBus, LFNoise2.kr(rrand(0.1,10)).abs);
 }).share;
 );
 
 (
-SynthDef('setBus', { |out=11, value=0, dur = 1|
+SynthDef('setBus', { |bus=11, value=0, dur = 0.1|
 	EnvGen.kr(Env.perc(releaseTime:dur), doneAction:2);
-	ReplaceOut.kr(out, value);
+	ReplaceOut.kr(bus, value);
 }).share;
 );
 
-SynthDef(\envBusPerc, {|out=10, value=1, dur = 1, legato = 3, offset = 0.2|
+SynthDef(\envBusPerc, {|bus=10, value=1, dur = 1, legato = 3, offset = 0.001|
 	var env;
-	env = EnvGen.kr(Env.perc(releaseTime:dur*legato, curve: -2), doneAction:2);
-	ReplaceOut.kr(out, (value * env) + offset);
+	env = EnvGen.kr(Env.perc(releaseTime: dur*legato, curve: -2), doneAction:2);
+	ReplaceOut.kr(bus, (value * env) + offset);
 }).share;
 
-SynthDef(\envBusRev, {|out=10, value=1, dur = 1, legato = 3, offset = 0.2|
+SynthDef(\envBusRev, {|bus=10, value=0.4, dur = 1, legato = 3, offset = 0.001|
 	var env;
 	env = EnvGen.kr(Env.new([0,1], [dur*legato]), doneAction:2);
-	ReplaceOut.kr(out, (value * env) + offset);
+	ReplaceOut.kr(bus, (value * env) + offset);
 }).share;
 
 (
 SynthDef('setBusesFX', { |out=0, value1=0.0, value2=0.0, value3=0.0, dur = 1|
+	var buses = [11,12,13];
 	value1 = LFSaw.kr(LFNoise0.kr(0.5).range(1, 2)).range(value1, 1.0);
 	value2 = value2.linlin(0,1,0,0.3) + LFSaw.kr(5).range(0.6, 0.76718139648438);
 	value3 = SinOsc.kr(1).range(0.2, value3);
 	EnvGen.kr(Env.perc(releaseTime:dur), doneAction:2);
-	ReplaceOut.kr(11, value1);
-	ReplaceOut.kr(12, value2);
-	ReplaceOut.kr(13, value3);
+	ReplaceOut.kr(buses[0], value1);
+	ReplaceOut.kr(buses[1], value2);
+	ReplaceOut.kr(buses[2], value3);
 }).share;
 );
 
 
-SynthDef(\busNoise, {|out = 11, dur = 0.1|
+SynthDef(\busNoise, {|noise=1.0, bus = 11, dur = 2|
+	var noises = [WhiteNoise.kr, PinkNoise.kr, BrownNoise.kr];
+	noise = noises[2]; // how to put the noise arg here?
 	EnvGen.kr(Env.perc(releaseTime:dur), doneAction:2);
-	ReplaceOut.kr(out, BrownNoise.kr);
+	ReplaceOut.kr(bus, noise);
 }).share;
 
 
@@ -94,7 +99,7 @@ SynthDef(\sd1, {arg out=0, sustain=0.5;
 
 	lfo = LFSaw.kr(lfo).range(1,10);
 	son = RHPF.ar(Blip.ar(freq*[1,1.02], harm, 0.1), freq*0.5*lfo,0.2, dist);
-	son = LeakDC.ar(son);
+//	son = LFPulse.ar(freq*[1,2], z) * Pulse.kr(y.linexp(0,1,0.1,100,1));
 	Out.ar(out, son.tanh * env * amp);
 }).share;
 );
@@ -108,14 +113,14 @@ SynthDef(\sd2, {|out=0, sustain=0.5|
 	z = In.kr(13, 1);
 	// do remapping here?
 	freq = x.linexp(0,1,150,4000);
-	rate = y.linlin(0,1,0.1,15);
-	rate2 = rate* Rand(0.8,1.4);
+	rate = y.linlin(0,1,1,30);
+	rate2 = rate * Rand(0.8,1.4);
 	rel = z.linlin(0,1,0.1,2.0);
 
 	trig = Impulse.kr(rate);
 	trig = Trig.kr(trig, Rand(0.5,1.0) * sustain);
 	mod = Stepper.kr(trig, 0, 1, x.linexp(0,1,1,10) ); //
-	son = Mix.new(SinOsc.ar((freq*1.01.rand)/mod, mul:amp)!3).dup;
+	son = Mix.new(SinOsc.ar((freq*rrand(0.8,1.3))/mod, mul:amp)!3).dup;
 	son = Ringz.ar(son, freq/mod, 0.1);
 	son = LeakDC.ar(son).tanh;
 
@@ -127,7 +132,7 @@ SynthDef(\sd2, {|out=0, sustain=0.5|
 
 (
 SynthDef('sd3', { |out=0,sustain=0.5|
-	var snd, env, env2, freq, mul, noises, atk, select, amp, x,y,z,a;
+	var snd, env, filt, env2, freq, mul, noises, atk, select, amp, x,y,z,a;
 	amp = In.kr(10, 1);
 	x = In.kr(11, 1);
 	y = Latch.kr(In.kr(12, 1),Impulse.kr(4));
@@ -136,29 +141,30 @@ SynthDef('sd3', { |out=0,sustain=0.5|
 	env2 = Line.kr(1,0.5,sustain);
 	// do remapping
 	freq = x.linexp(0,1,1000,12000 * env2);
-	mul = a.linexp(0,1,100,1500);
+	mul = z.linexp(0,1,100,1500);
 	atk = LFNoise0.kr(x*5).range(0.01,0.3);
 	freq = freq *[1,1.01];
+	y = y.linlin(0,1,1, 0.01);
 	noises = [ LFDClipNoise.ar(freq, mul),
 			LFClipNoise.ar(freq, mul),
 			LFDNoise0.ar(freq, mul*2),
 			LFDNoise1.ar(freq, mul*4),
-			LFDNoise3.ar(freq, mul*4),
-			LFNoise0.ar(freq, mul*4),
+			LFDNoise3.ar(freq, mul*3),
+			LFNoise0.ar(freq, mul*3),
 			LFNoise1.ar(freq, mul*4),
 			LFNoise2.ar(freq, mul*4)];
 
-	select = z.linlin(0,1,0,noises.size);
-
-	snd = SelectX.ar(select, BPF.ar(noises), freq*LFSaw.kr(z).range(0.5,1.5)) * 0.0001*(y*5);
+	select = a.linlin(0,1,0,noises.size);
+	snd = SelectX.ar(select, noises);
+	filt = BPF.ar(snd, freq*LFSaw.kr(z).range(0.5,1.5), y, 1/y) * 0.0001*5;
 	env = EnvGen.ar(Env.perc(atk,sustain),doneAction:2);
-	Out.ar(out, snd.tanh * env * amp);
+	Out.ar(out, ((snd*0.001*a)+filt).tanh * env * amp);
 }).share;
 );
 
 // sd4,5,6 are Holgers Originals
 (
-SynthDef('sd4', { |out=0,sustain=0.5|
+SynthDef('sd4', { |out=0,sustain=0.1|
 	var snd, env;
 	var amp = In.kr(10, 1);
 	var x = Latch.kr(In.kr(11, 1),Impulse.kr(2));
@@ -255,7 +261,7 @@ SynthDef(\sd1, { |out=0, sustain=1|
 	dnoise = x.linexp(0,1,10,0.1);
 
 	env = freq * XLine.kr([rise,1/rise], 1, log(freq)*0.05);
-	env2 = EnvGen.kr(Env.new([0,1,0.8,0],[0.15,sustain,0.1],-3),doneAction:2);
+	env2 = EnvGen.kr(Env.new([0,amp,amp/2,0],[0.15,sustain,0.1],-3),doneAction:2);
 	rand = LFNoise0.kr(log(env**0.5), 0.25,0.25);
 	chop = chop*rand*log(env);
 	lfo = LFSaw.kr(chop, 0,0.3,0.5);
@@ -348,17 +354,35 @@ SynthDef(\hpf, { |freq = 500, sustain = 10|
 
 SynthDef(\strobeAr, { |sustain=8, freq=8, width=0.5|
 	var in = In.ar(0, 2);
+	var strobe = LFPulse.ar(freq, 0, width);
+	var env = Line.kr(1, 1, sustain, doneAction: 2);
+	ReplaceOut.ar(0, in * strobe * env);
+}).share;
+
+SynthDef(\strobe, { |sustain=8, freq=8, width=0.5|
+	var in = In.ar(0, 2);
 	var strobe = LFPulse.kr(freq, 0, width);
 	var env = Line.kr(1, 1, sustain, doneAction: 2);
 	ReplaceOut.ar(0, in * strobe * env);
 }).share;
 
-SynthDef(\fade, { |sustain=8, freq=8, width=0.5|
+SynthDef(\fade, { |sustain=8, freq=1, width=0.5|
 	var in = In.ar(0, 2);
-	var lfo = LFTri.kr(freq).range(0.01,1);
+	var lfo = LFTri.kr(freq,1).range(0.01,1);
 	var env = Line.kr(1, 1, sustain, doneAction: 2);
 	ReplaceOut.ar(0, in * lfo * env);
 }).share;
+
+
+
+SynthDef(\delay, { |sustain=8, delay=8|
+	var in = In.ar(0, 2);
+	var env = Line.kr(1, 1, sustain, doneAction: 2);
+	delay = (~clock.tempo)/delay;
+	in = CombL.ar(in, 2.0, delay.clip(0.001,2.0), 2);
+	ReplaceOut.ar(0, in * env);
+}).share;
+
 
 );
 
