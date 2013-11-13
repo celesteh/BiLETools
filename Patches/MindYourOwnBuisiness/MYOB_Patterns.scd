@@ -1,4 +1,4 @@
-// MYOB, v2, some example Tdefs for Bus control
+// MYOB, v3, some example Tdefs for Bus control
 
 // CONTROL VIA TDEF
 // Used with Event from a Tdef
@@ -10,14 +10,14 @@ Tdef(\resetParams, {
 			'value1': 0,
 			'value2': 0,
 			'value3': 0,
-			'dur': 1,
+			'dur': 0.1,
 			'where': \all
 		).play;
 	}});
 );
 (
 Tdef(\setAllRand,{
-	inf.do { |i|
+	5.rand.do { |i|
 		(	'instrument': 'setBuses',
 			'value1': 1.0.rand,
 			'value2': 1.0.rand,
@@ -34,7 +34,7 @@ Tdef(\setAllRand,{
 Tdef(\setAmps,{
 	inf.do { |i|
 		i = i%100 * 0.01;
-		('instrument': 'setAmp','ampval': i, 'where': \all).play;
+		('instrument': 'setAmp','value': i, 'where': \all).play;
 		0.1.rand.wait;
 	};
 });
@@ -42,15 +42,15 @@ Tdef(\setAmps,{
 
 (
 Tdef(\setParam1,{
-	inf.do { |i, val1,val2,val3|
+	inf.do { |i|
 		i = i%100 * 0.01;
 		(	'instrument': 'setBus',
-			'out': 11,
+			'bus': 11,
 			'value': i,
 			'dur': 0.1,
 			'where': \all
 		).play;
-		2.0.rand.wait;
+		(0.1+0.1.rand).wait;
 	};
 });
 );
@@ -58,11 +58,11 @@ Tdef(\setParam1,{
 
 (
 Tdef(\setParam2,{
-	inf.do { |i, val1|
+	inf.do { |i|
 		i = i%100 * 0.01;
 		(	'instrument': 'setBus',
-			'out': 12,
-			'value': 0.5.rand+i%0.5,
+			'bus': 12,
+			'value': 0.5-i%0.5,
 			'dur': 0.1,
 			'where': \all
 		).play;
@@ -76,7 +76,7 @@ Tdef(\setParam3,{
 	inf.do { |i|
 		i = i%100 * 0.01;
 		(	'instrument': 'setBus',
-			'out': 13,
+			'bus': 13,
 			'value': 0.3.rand+i%0.5,
 			'dur': 0.1,
 			'where': \all
@@ -90,13 +90,13 @@ Tdef(\setParam3,{
 Tdef(\setAllFX,{
 	inf.do { |i|
 		(	'instrument': 'setBusesFX',
-			'value1': 0.5.rand,
-			'value2': 0.5.rand,
-			'value3': 0.5.rand,
-			'dur': 1.0,
+			'value1': 1.0.rand,
+			'value2': 1.0.rand,
+			'value3': 1.0.rand,
+			'dur': 0.5,
 			'where': \all
 		).play;
-		0.5.wait;
+		1.wait;
 	};
 });
 );
@@ -109,7 +109,7 @@ Tdef(\sloRiseInSync,{
 			'value1': i,
 			'value2': i,
 			'value3': i,
-			'dur': 1.0,
+			'dur': 0.1,
 			'where': \all
 		).play;
 		0.1.wait;
@@ -139,29 +139,43 @@ Tdef(\clck_6Dwn,{ r.send(\all, '/setclock', (~clock.tempo*60)-6); 0.5.wait;});
 // if you need a gui:
 // PdefAllGui(10);
 
+(
+Pdef(\busEnvVals,
+	Pbind(
+		\instrument, \envBusPerc,
+		\server, r.s,
+		\where, Pseq(r.nameList, inf), //
+		\dur, Pwhite(0.1, 1),
+		\legato, Pwhite(0.5,1.0),
+	     \value, Ptuple([Pseq([0,1,0],inf), Pseq([1,0,0,1,0],inf), Pseq([0,1],inf), 1]).trace,
+		\offset, 0.2,
+		\bus, [11,12,13,14]
+	)
+);
+);
 
 (
-w = 4;
+w = 8;
 Pdef(\rhythm1,
 	Pbind(
    		\instrument, \sd1,
-//      \where,  0, //specify target if you want
-        \sustain, Pwhite(0.01, 0.12) * w,
-        // choose some rhythm
-//      \dur, Prand((Array.fill(w, { arg i; i/ w })).scramble.pyramid(1 + w.rand),inf)
-//		\dur, 2/3 * Pseq([0.25, 0.25, 0.5],inf) * 1.0
-		\dur, 0.5 * Pseq([2,1,2,1,2,1,1,1,1]/6,inf)
+   		\where,  0, //specify target if you want   	
+   		\server, r.s,
+   		\sustain, Pwhite(0.01, 0.12) * w,
+   		// choose some rhythm
+//		\dur, Prand((Array.fill(w, { arg i; i/ w })).scramble.pyramid(1 + w.rand),inf)
+		\dur, 1 * Pseq([2,1,2,1,2,1,1,1,1]/6,inf)
 ));
 );
 
 (
 w = 4;
 Pdef(\rhythm2,
-	Pbind(
-    	\instrument, \sd2,
-        \sustain, Pseq([0.1, Pwhite(0.1,0.5,1)],inf),
-        // \dur, Prand((Array.fill(5, { arg i; i/w })).scramble.pyramid(1 +10.rand),inf),
-        \dur, 0.25 * Ppatlace([Pseq([2,3,2,2,3]/3,inf)-0.1,0.1],inf) //12/8ths pulse
+	Pbind(	
+	    	\instrument, \sd2,
+	    	\server, r.s,
+	    // \sustain, w * Pseq([0.1, Pwhite(0.1,0.5,1)],inf),
+	    \dur, 1 * Ppatlace([Pseq([2,3,2,2,3]/3,inf)-0.1,0.1],inf) //12/8ths pulse
 ));
 );
 
@@ -169,14 +183,36 @@ Pdef(\rhythm2,
 Pdef(\rhythm3,
 	Pbind(
    		\instrument, \sd3,
-    		\i, Pn(Pseries(0.01,0.01,100),inf),
-    		\sustain, Pkey(\i)*Pwhite(1,3.0),
+	    	\server, r.s,    		
+	    	\i, Pn(Pseries(0.01,0.01,100),inf),
+    		\sustain, Pkey(\i)*Pwhite(0.1,1.0),
 //  		\dur, Prand((Array.fill(w, { arg i; i * w })).scramble.pyramid(1 +1.rand),inf)
 		\dur, Pkey(\i)
 ));
 );
 
+(
+Pdef(\rhythm4, 
+	Pbind(
+	\instrument, \sd4, 
+	\where, 0,
+	\server, r.s,
+	\sustain, Pseq((0.1,0.15..1),inf),
+	\dur, 2/3 * Pseq([0.25, 0.25, 0.5],inf)
+	));
+);
 
+(
+w = 5;
+Pdef(\rhythm5, 
+	Pbind(
+		\instrument, \sd5, 
+		\where, 0,
+		\server, r.s,
+		\sustain, Pseq((0.1,0.15..1),inf),
+		\dur, Prand((Array.fill(5, { arg i; i/w })).scramble.pyramid(1 +10.rand),inf)
+	));
+);
 
 /*
 Here are some basic rumbapattern for dur param, try out
