@@ -87,13 +87,17 @@ r.send(\all, '/setclock', 60);
 
 (
 // assign bus control to Nano if you have Les' NanoKontrol2 class installed
+var nano, assign;
 
 'NanoKontrol2'.asClass.notNil.if({
     nano = NanoKontrol2.new;
 
     assign = { |fader, busIndex|
         nano.at(fader.asSymbol).action_({|val|
-            Bus('control', busIndex, 1).set(val.value / 127);
+//            Bus('control', busIndex, 1).set(val.value / 127);
+		val = val.value/127;
+	( 'instrument': 'setBus', 'bus': busIndex, 'server': r.s, 'value': val, 'dur': 0.1, 'where': \all );
+	[busIndex, val].postln;
         });
     };
 
@@ -106,6 +110,12 @@ r.send(\all, '/setclock', 60);
 
 })
 );
+
+/*
+// for linux, getting synths from others without GUI button
+r.requestSynthDefs; // then wait until they are all there
+r.informServer; // write them into your SynthDesc Lib
+*/
 
 // load some example patterns and sounds to start with:
 loadRelative("MYOB_Synths.scd");
@@ -210,6 +220,9 @@ PdefAllGui.new(10);
 ( 'instrument': 'setBus', 'server': r.s, 'bus': 11, 'value': 0.8.rand, 'where': \all ).play;
 ( 'instrument': 'setBus', 'server': r.s, 'bus': 12, 'value': 0.6.rand, 'where': \all ).play;
 ( 'instrument': 'setBus', 'server': r.s, 'bus': 13, 'value': 1.0.rand, 'where': \all ).play;
+
+// amp is also accessible thru 'setBus'
+( 'instrument': 'setBus', 'server': r.s, 'bus': 10, 'value': 0.0.rand, 'where': \all ).play;
 
 // envBusPerc Synth takes the value from given value to 0, offset is the start val
 ( 'instrument': 'envBusPerc', 'server': r.s, 'bus': 11, 'value': 1, 'dur': 1, 'legato': 3, 'offset': 0.0, 'where': 0	).play;
