@@ -1,4 +1,4 @@
-// MYOB, v3, some example Tdefs for Bus control
+// MYOB, v2, some example Tdefs for Bus control
 
 // CONTROL VIA TDEF
 // Used with Event from a Tdef
@@ -7,6 +7,7 @@
 Tdef(\resetParams, {
 	1.do{
 		(	'instrument': 'setBuses',
+			'server': r.s,
 			'value1': 0,
 			'value2': 0,
 			'value3': 0,
@@ -19,6 +20,7 @@ Tdef(\resetParams, {
 Tdef(\setAllRand,{
 	5.rand.do { |i|
 		(	'instrument': 'setBuses',
+			'server': r.s,		
 			'value1': 1.0.rand,
 			'value2': 1.0.rand,
 			'value3': 1.0.rand,
@@ -34,7 +36,7 @@ Tdef(\setAllRand,{
 Tdef(\setAmps,{
 	inf.do { |i|
 		i = i%100 * 0.01;
-		('instrument': 'setAmp','value': i, 'where': \all).play;
+		('instrument': 'setAmp','server': r.s,'value': i, 'where': \all).play;
 		0.1.rand.wait;
 	};
 });
@@ -45,6 +47,7 @@ Tdef(\setParam1,{
 	inf.do { |i|
 		i = i%100 * 0.01;
 		(	'instrument': 'setBus',
+			'server': r.s,		
 			'bus': 11,
 			'value': i,
 			'dur': 0.1,
@@ -61,6 +64,7 @@ Tdef(\setParam2,{
 	inf.do { |i|
 		i = i%100 * 0.01;
 		(	'instrument': 'setBus',
+			'server': r.s,
 			'bus': 12,
 			'value': 0.5-i%0.5,
 			'dur': 0.1,
@@ -76,6 +80,7 @@ Tdef(\setParam3,{
 	inf.do { |i|
 		i = i%100 * 0.01;
 		(	'instrument': 'setBus',
+			'server': r.s,
 			'bus': 13,
 			'value': 0.3.rand+i%0.5,
 			'dur': 0.1,
@@ -90,6 +95,7 @@ Tdef(\setParam3,{
 Tdef(\setAllFX,{
 	inf.do { |i|
 		(	'instrument': 'setBusesFX',
+			'server': r.s,
 			'value1': 1.0.rand,
 			'value2': 1.0.rand,
 			'value3': 1.0.rand,
@@ -106,6 +112,7 @@ Tdef(\sloRiseInSync,{
 	inf.do { |i|
 		i = i%100 * 0.01;
 		(	'instrument': 'setBusesFX',
+			'server': r.s,		
 			'value1': i,
 			'value2': i,
 			'value3': i,
