@@ -13,7 +13,11 @@
 
 (
 
-var index, assign, nano;
+var index, assign, nano, ip;
+
+ip = NetAPI.ip.asString;
+
+//"killall OscGroupClient".unixCmd;
 
 s.waitForBoot({
 
@@ -24,6 +28,12 @@ s.waitForBoot({
 	AllGui();
 
 	r.join(\les);
+	r.requestSynthDefs;
+
+	2.wait;
+	//r.s.sync;
+	"SYNCED".warn;
+	"hello?".postln;
 
 	r.shareHistory;
 
@@ -36,8 +46,9 @@ s.waitForBoot({
 
 
 
+
 	~newBus = {
-		Bus.new('control', index.next, 1, s);
+		Bus.new('control', index.next, 1, r.s);
 	};
 
 	a = ~newBus.value;
@@ -48,7 +59,7 @@ s.waitForBoot({
 
 	~syns =  {r.synthDescs.asArray.sort({ |a, b| a.name < b.name }).collect ({ |desc| desc.metadata.sourceCode.postln;});};
 
-	s.sync;
+	//s.sync;
 
 	q = q ?? IdentityDictionary.new(know:true); // global dictionary
 	try{
@@ -56,7 +67,7 @@ s.waitForBoot({
 		Ndef.defaultServer=s;
 	};
 	//make sure you are only using republic server
-	s.meter;
+	//s.meter;
 
 	~busVals = {
 		r.nameList.do({|name|
@@ -68,18 +79,38 @@ s.waitForBoot({
 		})
 	};
 
+
+
 	Task({
+
+		1.wait;
 		"y u no run?".warn;
 		3.wait;
+		//this.send(\all, '/hist', nickname, Shout.tag + ip);
+		r.shout(ip);
+
 		//n = NetAPI.broadcast(\les);
-		n = NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGroupClient", "192.168.0.101", "les", "password");
+		n = NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGroupClient", ip,
+			//"192.168.1.67",
+			"les", "password");
 		1.wait;
 		AppClock.sched(0.5, {
 			BileClock(n).show;
 			BileChat(n);
+			PdefAllGui(5);
 			// scope your bus values
 			Stethoscope.new(r.s, 4, 10, rate:\control)
 		}).play;
+	}).play;
+
+	Task({
+		10.wait;
+		inf.do({
+			r.requestSynthDefs;
+			5.wait;
+			r.informServer;
+			10.wait;
+		})
 	}).play;
 
 
@@ -89,20 +120,27 @@ s.waitForBoot({
 
 	r.s.meter; // some meters
 	// scope your bus values, works only in SC IDE
-	Stethoscope.new(r.s, 4, 10, rate:\control);
+	//Stethoscope.new(r.s, 4, 10, rate:\control);
 
 	// create a 6-chan bus
 	//~bus = Bus.new(\control, 10, 6, r.s);
 	// 10 is volume, 11..15 are sound params
 
-	// load some example patterns and sounds to start with:
-	loadRelative("MYOB_Synths.scd");
-	loadRelative("MYOB_Patterns.scd");
-
 	// create a TempoClock;
 	~clock = TempoClock.default.tempo_(1);
 
 	~clock.tempo = 1; // original 60 bpm
+
+
+	// load some example patterns and sounds to start with:
+	10.wait;
+	"synths next".warn;
+	loadRelative("MYOB_Synths.scd");
+	"synths".warn;
+	2.wait;
+	loadRelative("MYOB_Patterns.scd");
+	"patterns".warn;
+	//r.s.sync;
 
 	// make a sub dict for our responders
 	q.resp = ();
@@ -126,100 +164,74 @@ s.waitForBoot({
 	*/
 
 
-	s.sync;
+	//r.s.sync;
 
 
 
-	SynthDef('setBuses', { |out=10, ampval, val1, val2, val3, dur = 0.1|
-		var newvals = [ampval, w, val1, val2, val3];
-		EnvGen.kr(Env.perc(releaseTime:dur), doneAction:2);
-		ReplaceOut.kr(out, newvals);
-	}).share;
-
-	s.sync;
-
-	SynthDef('setAmp', { |out=10, ampval=0.3, dur = 1|
-		EnvGen.kr(Env.perc(releaseTime:dur), doneAction:2);
-		ReplaceOut.kr(out, ampval);
-	}).share;
-
-	s.sync;
-
-
-	SynthDef('setBus', { |out=12, val1 = 0, dur = 1|
-		EnvGen.kr(Env.perc(releaseTime:dur), doneAction:2);
-		ReplaceOut.kr(out, val1);
-	}).share;
-
-	s.sync;
-
-	SynthDef(\envBusPerc, {|out=10, value =1, dur = 1, legato = 3, offset = 0.2|
-		var env;
-		env = EnvGen.kr(Env.perc(releaseTime:dur*legato, curve: -2), doneAction:2);
-		ReplaceOut.kr(out, (value * env) + offset);
-	}).share;
-
-	s.sync;
-
-
-	SynthDef(\envBusRev, {|out=10, value =1, dur = 1, legato = 3, offset = 0.2|
-		var env;
-		env = EnvGen.kr(Env.new([0,1], [dur*legato]), doneAction:2);
-		ReplaceOut.kr(out, (value * env) + offset);
-	}).share;
-
-	s.sync;
-
-
-	SynthDef('setBusesFX', { |out=0, ampval=0.3, val1=0.0, val2=0.0, val3=0.0, dur = 1|
-		ampval = LFNoise1.kr(0.5).range(0.0, ampval);
-		val1 = LFSaw.kr(LFNoise0.kr(0.5).range(1, 2)).range(val1, 1.0);
-		val2 = val2.linlin(0,1,0,0.3) + LFSaw.kr(5).range(0.6, 0.76718139648438);
-		val3 = SinOsc.kr(1).range(0.2, val3);
-		EnvGen.kr(Env.perc(releaseTime:dur), doneAction:2);
-		ReplaceOut.kr(10, ampval);
-		ReplaceOut.kr(11, val1);
-		ReplaceOut.kr(12, val2);
-		ReplaceOut.kr(13, val3);
-	}).share;
-
-	s.sync;
-
-
-	SynthDef(\busNoise, {|out = 11, dur = 0.1|
-		EnvGen.kr(Env.perc(releaseTime:dur), doneAction:2);
-		ReplaceOut.kr(out, BrownNoise.kr);
-	}).share;
-
-	s.sync;
-
+	//s.sync;
+	/*
 
 	'NanoKontrol2'.asClass.notNil.if({
-		nano = NanoKontrol2.new;
+	nano = NanoKontrol2.new;
 
-		assign = { |fader, busIndex|
-			nano.at(fader.asSymbol).action_({|val|
-				Bus('control', busIndex, 1).set(val.value / 127);
-			});
-		};
+	assign = { |fader, busIndex|
+	nano.at(fader.asSymbol).action_({|val|
+	[fader, val].postln;
+	//Bus('control', busIndex, 1).set(val.value / 127);
+	(instrument: \setBus, server: r.s,
+	where: \all,
+	dur: 0.1,
+	legato: 2,
+	value: (val.value / 127),
+	bus: busIndex
+	).play;
+	//( 'instrument': 'setBus', 'bus': busIndex, 'server': r.s, 'value': val.value/127, 'dur': 0.1, 'where': \all ).play;
+	});
+	};
 
-		assign.(\fader8, 10);
+	assign.(\fader8, 10);
 
-		4.do({|index|
-			index = index+1;
-			assign.(\fader ++ index, 10+index);
-		});
-
+	4.do({|index|
+	index = index+1;
+	assign.(\fader ++ index, 10+index);
 	});
 
+	});
+	*/
+	"nano next".postln;
+	Task({
+		5.wait;
+		"tasking nano".postln;
+		'NanoKontrol2'.asClass.notNil.if({
 
+			"nano exists".postln;
+			~nano = NanoKontrol2.new;
+
+			~assign = { |fader, busIndex|
+				~nano.at(fader.asSymbol).action_({|val|
+					//[fader, val].postln;
+					Bus('control', busIndex, 1).set(val.value / 127);
+					( 'instrument': 'setBus', 'bus': busIndex, 'server': r.s, 'value': val.value/127, 'dur': 0.1, 'where': \all ).play;
+				});
+			};
+
+			~assign.(\fader8, 10);
+
+			4.do({|index|
+				index = index+1;
+				~assign.(\fader ++ index, 10+index);
+			});
+
+		});
+
+	}).play;
 })
 
 
 
-);
+)
 
-NetAPI.ip
+NetAPI.ip.asString
 n = NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGroupClient", "192.168.1.67", "les", "password");
 BileClock(n).show;
 BileChat(n);
@@ -280,28 +292,28 @@ Pdef(\init,
 		\where, Pseq(r.nameList, 5), //
 		\dur, 0.1,
 		\legato, 2,
-		\val1, 0.0001,
-		\out, [11, 12, 13, 14]
+		\value, 0.7,
+		\bus, [11, 12, 13, 14]
 	).trace
 ).play
 
 )
 
 Pdef(\init).stop
-
+~busVals.value;
 (
 
 Pdef(\env,
 	Pbind(
-		\instrument, \envBusRev,
+		\instrument, \envBusPerc,
 		\server, r.s,
 		\where, Prand(r.nameList, inf), //
-		\dur, Pwhite(0.1, 1),
+		\dur, Pwhite(0.1, 2),
 		\legato, 50,
-		\value, Pwhite(0, 0.5),
+		\value, Pwhite(0, 2),
 		\ofset, 0.5,
 		\freq, Prand([\rest, \rest, 440], inf),
-		\out, Pwhite(11,14)
+		\bus, Pwhite(11,14)
 	).trace
 ).play
 
@@ -318,13 +330,18 @@ Pdef(\noise,
 		\dur, Pwhite(0.01, 1),
 		\legato, 50,
 		\freq, Prand([\rest, \rest, 440], inf),
-		\out, Pwhite(11,14)
+		\bus, Pwhite(11,14)
 	).trace
 ).play
 )
 
 Pdef(\noise).stop
 
+(
+
+Pdef(\env).stop;
+Pdef(\noise).stop
+)
 /*
 (
 Pdef(\mindyouown,
@@ -394,7 +411,7 @@ Pdef(\bus,
 		\where, Pfunc({r.nameList.choose}), //
 		\dur, 1,
 		\value, Pwhite(0.2, 1),
-		\out, Pwhite(10, 20)
+		\bus, Pwhite(10, 20)
 	).trace
 ).play;
 /*
@@ -515,6 +532,8 @@ Pdef(\rhythm3,
 		//\dur, 0.2,
 	)).play;
 );
+
+
 (
 Pdef(\rhythm1,
 		PbindProxy(\instrument, \sd1,
@@ -541,7 +560,7 @@ Pdef(\rhythm2,
 
 
 (
-
+Pdef(\rhythm).stop;
 Pdef(\rhythm1).stop;
 Pdef(\rhythm2).stop;
 Pdef(\rhythm3).stop;
