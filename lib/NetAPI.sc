@@ -249,7 +249,7 @@ NetAPI {
 
 		client.addResp(("/" ++ name ++ "/API/ID").asSymbol,  { arg time, resp, msg;
 						var new_user, username, my_nick;
-						msg.postln;
+						//msg.postln;
 
 						my_nick = nick.asString.replace(" ", "");
 						username = msg[1].asString.replace(" ", "");
@@ -454,7 +454,7 @@ NetAPI {
 										/*func.value(*msg[1..])*/ );
 			//# returnAddr,returnPath = API.prResponsePath(addr);
 			//returnAddr.sendMsg(*([returnPath] ++ result));
-			msg.postln;
+			//msg.postln;
 		});
 		this.advertise(selector, desc);
 	}
@@ -663,7 +663,7 @@ NetAPI {
 		*/
 		sym = this.pr_formatMsg(*msg);
 		client.sendMsg(*sym);
-		sym.postln;
+		//sym.postln;
 		client.echo.not.if({
 			this.call(*msg)
 		});
