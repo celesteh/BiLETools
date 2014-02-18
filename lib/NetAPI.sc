@@ -1,5 +1,8 @@
 // Ver 0.5.0,  11 May 2011
 
+
+// WTF. why is it not finding everyone
+
 NetAPI {
 
 	classvar <all, <listeners,<>defaultResponse ='/response', <ip;
@@ -238,7 +241,7 @@ NetAPI {
 		});
 
 		client.addResp(("/" ++ name ++ "/API/IDQuery").asSymbol,  { arg time, resp, msg;
-						//"IDquery".postln;
+						"IDquery".postln;
 						//client.sendMsg('/bile/API/ID', nick, this.my_ip, NetAddr.langPort);
 						this.identify;
 							//("key" + key).postln;
@@ -246,7 +249,7 @@ NetAPI {
 
 		client.addResp(("/" ++ name ++ "/API/ID").asSymbol,  { arg time, resp, msg;
 						var new_user, username, my_nick;
-						//msg.postln;
+						msg.postln;
 
 						my_nick = nick.asString.replace(" ", "");
 						username = msg[1].asString.replace(" ", "");
@@ -299,7 +302,11 @@ NetAPI {
 
 		var username;
 
+
 		username = user.nick;
+
+		["username", username].postln;
+
 		(username != nick).if ({
 			colleagues[username].isNil.if({
 
@@ -313,6 +320,9 @@ NetAPI {
 
 
 	init_sharing {
+
+		"init sharing".postln;
+
 		shared.isNil.if({
 			shared = Dictionary.new;
 		});
@@ -444,7 +454,7 @@ NetAPI {
 										/*func.value(*msg[1..])*/ );
 			//# returnAddr,returnPath = API.prResponsePath(addr);
 			//returnAddr.sendMsg(*([returnPath] ++ result));
-			//msg.postln;
+			msg.postln;
 		});
 		this.advertise(selector, desc);
 	}
@@ -653,7 +663,7 @@ NetAPI {
 		*/
 		sym = this.pr_formatMsg(*msg);
 		client.sendMsg(*sym);
-		//sym.postln;
+		sym.postln;
 		client.echo.not.if({
 			this.call(*msg)
 		});
@@ -674,6 +684,7 @@ NetAPI {
 	remote_query {
 		Task({
 			this.sendMsg('API/IDQuery');
+			"done IDQuery".postln;
 			0.2.wait;
 			this.sendMsg('API/Query');
 		}).play;
@@ -705,6 +716,8 @@ NetAPI {
 	}
 
 	advertiseShared {| selector, desc = ""|
+
+		"advertising".postln;
 
 		this.sendMsg('API/Shared', this.pr_sharedFormat(selector), desc)
 	}
@@ -743,6 +756,7 @@ NetAPI {
 
 
 	identify {
+		"identifying".postln;
 		this.sendMsg('API/ID', nick, this.my_ip, NetAddr.langPort);
 	}
 
@@ -807,6 +821,7 @@ APIResponder {
 
 		client.isNil.if ({
 
+				//"killall OscGroupClient".unixCmd;
 			OscGroupClient.program_(path);
 
 			client = OscGroupClient(serveraddress, username, userpass, "bile", "bacon");
