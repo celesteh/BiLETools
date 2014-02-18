@@ -52,6 +52,8 @@ s.waitForBoot({
 		param1.sp(0, 0, 1, 0.01, \lin, gui);
 		param1.guitype_(\voter);
 		param1.action = {|p| artificial = scaled.(p, /*faders.fader2*/)};
+		"guitype ".post; param1.guitype.postln;
+		"widget ".post; param1.widget.postln;
 		//faders.fader2.action = {|f| artificial = scaled.(param1, f)};
 
 		param2 = gui.addRemote('resonant');

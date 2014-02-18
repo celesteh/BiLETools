@@ -2,12 +2,47 @@
 
 /*
 
+
+1st section everyone plays a gesture () 0:00 - 0:50
+2nd section chorus - everyone can play 0:50 - 1:10
+3rd seciton pairs (les & jonas) 1:10 - 1:40
+2nd section chorus (everyone) 1:40 - 2:00
+5th section pairs (holger & shelly) 2:00 - 2:30
+6th section chorus (everyone) 2:30 - 3:00
+end irreplaceable ending 3:00 - 3:20
+
+
+
+
+
+
 10 secs everybody solos
 20 secs of chorus: all play
 30 sec: verses: then pairs me & jonas
 */
 
 var nano, joystick;
+
+Task({
+	var ip;
+	1.wait;
+	ip = NetAPI.ip.asString;
+	("y u no run?" + ip).warn;
+	3.wait;
+	//n = NetAPI.broadcast(\les);
+	n = NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGroupClient", ip,
+		//"192.168.1.67",
+		"les", "password");
+	1.wait;
+	AppClock.sched(0.5, {
+		BileClock(n).show;
+		BileChat(n);
+		PdefAllGui(5);
+		// scope your bus values
+		//Stethoscope.new(r.s, 4, 10, rate:\control)
+	}).play;
+}).play;
+
 
 nano = NanoKontrol2.new;
 
@@ -23,7 +58,7 @@ try
 s.waitForBoot({
 
 	var single, bells, irreplaceable, fftbuf, syn, assign, con, instr, buf, bright3, bright4,
-	pmono;
+	pmono, bufs, syns;
 
 	fftbuf = Buffer.alloc(s,1024);
 	//	SynthDef(\concat, {|var out, })
@@ -36,6 +71,9 @@ s.waitForBoot({
 		channels: [0]);
 	bright4 = Buffer.readChannel(s, "/home/celesteh/Desktop/Beyonce/brighton-4.aiff",
 		channels: [0]);
+
+	bufs = [bells, bright3,bright4, irreplaceable, single];
+	syns = [\token2, \freeze];
 
 	s.sync;
 
@@ -107,7 +145,7 @@ s.waitForBoot({
 
 		fft = IFFT(chain);
 
-		Out.ar(out, fft * env );
+		Out.ar(out, fft.tanh * env );
 	}).add;
 
 
@@ -119,7 +157,8 @@ s.waitForBoot({
 	//syn = Synth(\token2, [\bufnum, bells.bufnum, \trigRate, 5 ]);
 
 
-	con = Conductor.make({|cond, amp, freq, amps, grainDur, matchLength, trigRate, freeze|
+	con = Conductor.make({|cond, amp, freq, amps, grainDur, matchLength, trigRate, freeze,
+		buffer, synth|
 
 		var setsyn;
 
@@ -129,6 +168,8 @@ s.waitForBoot({
 		trigRate.sp(0.1, 0.1, 20, 0);
 		freeze.sp(0, 0, 1, 1);
 		amp.value = 0.2;
+		buffer.sp(0, 0, bufs.size-1, 1);
+		synth.sp(0,0, syns.size-1, 1);
 
 
 
@@ -166,6 +207,29 @@ s.waitForBoot({
 			index = index+1;
 			assign.(index, cond[sym], sym);
 		});
+
+		buffer.action_({|val|
+			var newb;
+			val.value.postln;
+			newb = bufs.at(val.value);
+			newb.notNil.if({
+				buf = newb;
+			});
+		});
+		nano.at(\knob1).action_({|val|
+			buffer.input_(val.value/127)
+		});
+
+		synth.action_({|val|
+			instr = syns.at(val.value);
+			val.value.postln;
+			instr.postln;
+			syns.postln;
+		});
+		nano.at(\knob2).action_({|val|
+			synth.input_(val.value/127)
+		});
+
 
 		//\playBt   -> NKButton.new(45),
 		//\stopBt   -> NKButton.new(46),
@@ -223,7 +287,8 @@ s.waitForBoot({
 				\mathLength,  Pfunc({matchLength.value}),
 				\trigRate,  Pfunc({trigRate.value}),
 				\freeze,  Pfunc({freeze.value}),
-				\bufnum, Pfunc({buf.bufnum})
+				\bufnum, Pfunc({buf.bufnum}),
+				\dur, 0.1
 			).play;
 			"playing".postln;
 			},
@@ -236,10 +301,33 @@ s.waitForBoot({
 		//setsyn.value;
 
 
+		//button 6 is 293
+		//button 8 is 295
+		//button 9 is 296
+		//button 10 is 297
+
+		joystick.slots[1].at(293).action_({|val|
+			//button 6
+			val = val.value;
+			(val ==1).if({
+				buf = bright3;
+				"bright3".postln;
+				setsyn.value;
+			})
+		});
+		joystick.slots[1].at(295).action_({|val|
+			//button 8
+			val = val.value;
+			(val ==1).if({
+				buf = bright4;
+				"bright4".postln;
+				setsyn.value;
+			})
+		});
 
 
 		joystick.slots[1].at(290).action_({|val|
-
+			//button 3
 			val = val.value;
 			(val ==1).if({
 				buf = bells;
@@ -249,7 +337,7 @@ s.waitForBoot({
 		});
 
 		joystick.slots[1].at(289).action_({|val|
-
+			// button 2
 			val = val.value;
 			(val ==1).if({
 				buf = single;
@@ -259,7 +347,7 @@ s.waitForBoot({
 		});
 
 		joystick.slots[1].at(291).action_({|val|
-
+			//button 4
 			val = val.value;
 			(val ==1).if({
 				instr = \token1;
@@ -269,7 +357,7 @@ s.waitForBoot({
 		});
 
 		joystick.slots[1].at(292).action_({|val|
-
+			//button 5
 			val = val.value;
 			(val ==1).if({
 				instr = \token2;
@@ -279,7 +367,7 @@ s.waitForBoot({
 		});
 
 		joystick.slots[1].at(298).action_({|val|
-
+			// button 11
 			val = val.value;
 			(val ==1).if({
 				instr = \freeze;
@@ -290,7 +378,7 @@ s.waitForBoot({
 
 
 		joystick.slots[1].at(288).action_({|val|
-
+			//trigger
 			val = val.value;
 			(val ==1).if({
 				cond.player.play;
@@ -299,7 +387,7 @@ s.waitForBoot({
 		});
 
 		joystick.slots[1].at(294).action_({|val|
-
+			// button 7
 			val = val.value;
 			(val ==1).if({
 				cond.player.stop;

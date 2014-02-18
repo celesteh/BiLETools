@@ -606,12 +606,15 @@ nano = true;
 			nk.action_(\stopBt, {|val| button_act.(val/127, {stop_all_loops.value; })});
 			nk.action_(\cycleBt, {|val| button_act.(val/127, ~mostRecent; )});
 			nk.action_(\ffwBt, {|val| button_act.(val/127, ~increment; )});
+			nk.action_(\setMarkerBt, {|val| button_act.(val/127, {play_once.(active_buf)})});
 
-			nk.action_(\knob1, {|val| stick_act.(val/127, \amp)});
-			nk.action_(\fader1, {|val| val.value.postln; stick_act.(val/127, \density)});
-			nk.action_(\fader2, {|val| stick_act.(val/127, \dur)});
-			nk.action_(\fader3, {|val| stick_act.(val/127, \rate)});
-			nk.action_(\fader4, {|val| stick_act.(val/127, \freq)});
+			nk.action_(\knob1, {|val| stick_act.(val/127, \amp, false)});
+			nk.action_(\fader1, {|val| val.value.postln; stick_act.(val/127, \density, false)});
+			nk.action_(\fader2, {|val| stick_act.(val/127, \dur, false)});
+			nk.action_(\fader3, {|val| stick_act.(val/127, \rate, false)});
+			nk.action_(\fader4, {|val| stick_act.(val/127, \freq, false)});
+			nk.action_(\fader5, {|val| stick_act.(val/127, \pos, false)});
+
 
 			nk.action_(\sBt1, {|val| button_act.(val/127, {active_instrument = \playshift })});
 			nk.action_(\sBt2, {|val| button_act.(val/127, {active_instrument = \granulate })});
