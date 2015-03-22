@@ -227,6 +227,7 @@ BileChat {
 				//blah = blah.stripRTF;
 				//.escapeChar(13.asAscii).escapeChar(10.asAscii);
 				//.tr(13.asAscii, $ ).tr(10.asAscii, $ ).replace("  ", " ");
+				blah = blah.stripWhiteSpace;
 				blah = blah.replace(""++13.asAscii, "\\n");
 				blah = blah.replace(""++10.asAscii, "\\n");
 				talk.string = "";

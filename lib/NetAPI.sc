@@ -912,10 +912,13 @@ BroadcastResponder {
 		resp = //OSCresponderNode(nil, key, func);
 		//resp = resp.add;
 		function = { |msg, time, addr, recvPort|
+			key.postln;
 			func.value(time, this, msg);
 		};
 
-		OSCdef(key, function);
+		OSCdef(key, function, key);
+
+		key.postln;
 
 		responders = responders ++ key;
 	}
