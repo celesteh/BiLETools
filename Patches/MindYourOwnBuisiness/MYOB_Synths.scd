@@ -39,6 +39,14 @@ SynthDef('setAmpRand', { |dur = 0.1|
 }).share;
 );
 
+// put this in for support of les' code
+(
+SynthDef(\setBusesles, { |out=0,va=0.0, vx = 0, vy = 0, vz, gate = 1|
+	EnvGen.kr(Env.adsr, gate:gate, doneAction:2);
+	ReplaceOut.kr(out, [va, vx, vy, vz]);
+}).share;
+)
+
 (
 SynthDef('setBus', { |bus=11, value=0, dur = 0.1|
 	EnvGen.kr(Env.perc(releaseTime:dur), doneAction:2);
