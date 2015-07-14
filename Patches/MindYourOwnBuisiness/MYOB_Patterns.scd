@@ -1,4 +1,5 @@
-// MYOB, v2, some example Tdefs for Bus control
+// MYOB, v3.1, some example Tdefs for Bus control
+// 14.07.2015
 
 // CONTROL VIA TDEF
 // Used with Event from a Tdef
@@ -159,19 +160,57 @@ Pdef(\busEnvVals,
 		\bus, [11,12,13,14]
 	)
 );
+
+
+Pdef(\init,
+	Pbind(
+		\instrument, \setBus,
+		\server, r.s,
+		\where, Pseq(r.nameList, 5), //
+		\dur, 0.1,
+		\legato, 2,
+		\value, 0.7,
+		\bus, [11, 12, 13, 14]
+	).trace
+);
+
+
+Pdef(\bus,
+	Pbind(
+		\server, r.s,
+		\instrument, \setBusles,
+		\where, Pfunc({r.nameList.choose}), //
+		\dur, 1,
+		\value, Pwhite(0.2, 1),
+		\bus, Pwhite(10, 20)
+	)
+);
+
+
+Pdef(\noise,
+	Pbind(
+		\instrument, \busNoise,
+		\server, r.s,
+		\where, Prand(r.nameList, inf), //
+		\dur, Pwhite(0.01, 1),
+		\legato, 50,
+		\freq, Prand([\rest, \rest, 440], inf),
+		\bus, Pwhite(11,14)
+	).trace
+)
 );
 
 (
-w = 8;
+w = 3;
 Pdef(\rhythm1,
 	Pbind(
    		\instrument, \sd1,
-   		\where,  0, //specify target if you want   	
+   		\where,  r.nameList.choose, //specify target if you want   
    		\server, r.s,
-   		\sustain, Pwhite(0.01, 0.12) * w,
+   		\sustain, 0.1*Pwhite(0.01, 0.12) * w,
    		// choose some rhythm
 //		\dur, Prand((Array.fill(w, { arg i; i/ w })).scramble.pyramid(1 + w.rand),inf)
-		\dur, 1 * Pseq([2,1,2,1,2,1,1,1,1]/6,inf)
+		\dur, w/4 * Prand([1,1,0.5,0.125],inf) * Pseq([2,1,2,1,2,1,1,1,1]/6,inf)
 ));
 );
 
@@ -240,8 +279,21 @@ Here are some basic rumbapattern for dur param, try out
 		1/3 // for 12/8ths
 //		0.25 // for 4/4s
 */
-
+(
+Tdef(\freqstep, {
+	100.do{ |i|
+		i= i%100;
+	(	'instrument': 'setBus',
+			'server': r.s,		
+			'bus': 11,
+			'value': 0.3+0.1.rand,
+			'dur': 0.1,
+			'where': \all
+		).play;
+		1.wait;
+	};
+	});
 
 );
-
+);
 
