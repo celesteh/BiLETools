@@ -1,5 +1,12 @@
-// Mind Your Own Busines, v3, 3.11.2012
+// Mind Your Own Busines, v3.1, 14.07.2015
 // SETUP
+/*
+ROLES 
+1. set bus - les
+2. synthdefs - jonas
+3. rhythm - shelly
+4. set amp , fx - Holger
+*/
 
 
 ///////////////////////////////////
@@ -10,6 +17,10 @@
 
 // personalize here
 ~myPathToOscGroupClient="/Users/monodread/Documents/OscGroup/OscGroupClient"; // <- your path to OSCGroupClient
+e.g. "~/Public/SCRepublic_344_NDmax/OscGroup/OscGroupClient".standardizePath
+or relative to the directory of this file
+thisProcess.nowExecutingPath ++ "/OscGroup/OscGroupClient"
+
 ~myIP= "192.168.1.67"; //	<-- put the IP for OSCGroups here
 
 // NICKNAME
@@ -200,6 +211,7 @@ PdefAllGui.new(10);
 ////// EXAMPLE CODE / EVENTs TO USE:
 
 // FOR BUS CONTROL
+( 'instrument': 'setBuses', 'server': r.s, 'value1': 0.5, 'value2': 0.5, 'value3': 0.5, 'dur': 1, 'where': \all ).play;
 
 // USING SINGLE EVENTS
 
@@ -304,7 +316,7 @@ Tdef(\setAmp, {
 (instrument: \strobeAr, addAction: 1, freq: 7, dur:4, where: \all).play; // this may click
 (instrument: \strobe, addAction: 1, freq: 13, dur:4, where: \all).play;
 
-(instrument: \fade, addAction: 1, freq: 1, sustain:10, where: \all).play;
+(instrument: \fade, addAction: 1, freq: 10, sustain:10, where: r.nameList.choose).play;
 
 
 (instrument: \rev, addAction: 1, dur: 10, drift: 0.1, rate: 0.3, revTime: 10, wet: 0.6, where: \all).play;
@@ -322,7 +334,7 @@ Tdef(\setAmp, {
 (instrument: \hpf, addAction: 1, freq: 1500, sustain: 10, where: \all).play;
 
 
-(instrument: \delay, addAction: 1, delay: 16, sustain: 10, where: \all).play;
+(instrument: \delay, addAction: 1, delay: 6, sustain: 10, where: \all).play;
 
 
 
