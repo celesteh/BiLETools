@@ -1,0 +1,78 @@
+title:: Network FAQ
+summary:: A short single-line summary of what this is
+categories:: Libraries>BiLETools, FAQ, Guides
+related:: Reference/FooBar
+
+section:: Broadcast
+
+I cannot connect to the network!
+
+subsection:: I can receive but not send
+
+ Mac users, check the order of network setting in preferences.    Your computer will send to the one at the top of the list.    To change the order, click on the cog wheel below the list of network things.    --> new macs have issues, go to ethernet
+
+    If this does not work, go to Under ethernet /  advanced settings, check if you have a DNS server. If not, make up random numbers.
+
+subsection:: I can send but cannot recieve
+
+Check if you are properly bound to receive from the right port.    In SuperCollider, try evaluating: NetAddr.langPort
+
+If you are using both MAX and SuperCollider, you must start SuperCollider before you start MAX.    Try quitting both and starting in the right order. If that doesn't work, try restarting your computer.
+
+If you are just using SuperCollider, restart your computer.
+
+Make sure you have the right network selected.
+
+Try connecting via ethernet to the router - plug into LAN, not wlan
+
+If you are using the hub, the port number should glow green and yellow or red
+
+If you are connecting to your iPhone via an adhoc network, make sure the ethernet is above the wifi in the network list.
+
+If your network control panel indicates that you're using a self-assigned IP, make sure that the wifi and the ethernet are not using the same IP address.    If they are, Configure IPv4 Using DHCP with manual address and pick a new IP address.    You must use a different IP address than other people in the group are using.
+
+section:: OSC Groups
+
+download the latest version of oscgroups binary
+put it someplace on your hard drive (it need not go in the extensions folder)
+when you invoke NetAPI, it should look like:
+
+Examples::
+    n = NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGroupClient", "realizedsound.mooo.com", "les", "password");
+::
+
+the “~/Doc...” should be replaced by the path to where you put the oscgroup client programme
+
+change “les” to your name
+change “password” to what password you want to use
+
+“realizedsound.mooo.com” is reachable from anywhere, as is “oscgroups.washington.edu”.    If everybody is in the same room, run OscGroupServer on one person's computer and change that line to their IP address.    They can find their ip address by running:
+
+Examples::
+  NetAPI.ip
+::
+
+subsection:: I can't seem to connect?
+
+Is OscGroupClient showing up in your activity monitor?    If not, make sure you've got it installed correctly. Make sure you have the right path to it in NetApi.    If you have any spaces in your path, escape them with forward slashes: “~/Library/Application\ Support/SuperCollider/Extensions/OscGroup/OscGroupClient”
+
+Are you unable to bind?    Go to the activity monitor and kill all running copies of OscGroupClient.
+
+section:: TouchOSC
+
+1. Turn on computer
+2. Plug ethernet cable to router
+3. Create wifi network from computer
+4. Put iPhone in airplane mode
+5. Turn wifi on on iPhone
+6. Connect TouchOSC to the wifi network
+7. Start supercollider
+8. Start MAX, if you are using it
+9. Launch the patch
+
+section:: Mounting shared drives on linux
+
+
+1. SMB is better than AFP.    See: https://support.apple.com/kb/HT1549?viewlocale=en_US
+2. Mount via the gui. The drive mounts at /run/user/<login>/gvfs/
+3. Check permissions. See the link above.

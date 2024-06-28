@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN" "http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<!--This file was converted to xhtml by LibreOffice - see https://cgit.freedesktop.org/libreoffice/core/tree/filter/source/xslt for the code.-->
+
+<head profile="http://dublincore.org/documents/dcmi-terms/">
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8"/>
+<title xml:lang="en-US">- no title specified</title>
+<meta name="DCTERMS.title" content="" xml:lang="en-US"/>
+
+<meta name="DCTERMS.language" content="en-US" scheme="DCTERMS.RFC4646"/>
+<meta name="DCTERMS.source" content="http://xml.openoffice.org/odf2xhtml"/>
+
+
+
+
+
+
+<meta name="xsl:vendor" content="libxslt"/>
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/" hreflang="en"/>
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" hreflang="en"/>
+<link rel="schema.DCTYPE" href="http://purl.org/dc/dcmitype/" hreflang="en"/>
+<link rel="schema.DCAM" href="http://purl.org/dc/dcam/" hreflang="en"/>
+
+<style>
+    table { border-collapse:collapse; border-spacing:0; empty-cells:show }
+    td, th { vertical-align:top; font-size:12pt;}
+    h1, h2, h3, h4, h5, h6 { clear:both;}
+    ol, ul { margin:0; padding:0;}
+    li { list-style: none; margin:0; padding:0;}
+    span.footnodeNumber { padding-right:1em; }
+    span.annotation_style_by_filter { font-size:95%; font-family:Arial; background-color:#fff000;  margin:0; border:0; padding:0;  }
+    span.heading_numbering { margin-right: 0.8rem; }* { margin:0;}
+    .paragraph-Default_20_Style{ font-size:12pt; font-family:'Times New Roman'; writing-mode:horizontal-tb; direction:ltr; text-align:left ! important; }
+    .paragraph-P1{ font-size:12pt; text-align:left ! important; font-family:'Times New Roman'; writing-mode:horizontal-tb; direction:ltr; }
+    .text-ListLabel_20_1{ color:#000080; font-family:Monaco; font-size:9pt; text-decoration:underline; }
+    .text-T1{ font-family:Monaco; font-size:9pt; }
+    .text-T2{ color:#000080; font-family:Monaco; font-size:9pt; text-decoration:underline; }
+    /* ODF styles with no properties representable as CSS:
+    .dp1  { } */
+</style>
+</head>
+
+<body dir="ltr" style="max-width:21.59cm;margin-top:2.54cm; margin-bottom:2.54cm; margin-left:3.175cm; margin-right:3.175cm; ">
+
+<p class="paragraph-P1"><span class="text-T1">Network FAQ</span></p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1"><span class="text-T1">BROADCAST:</span></p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1"><span class="text-T1">-&gt; I can't connnect to the network</span></p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1"><span class="text-T1">* Can I receive from the network?</span></p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1"><span class="text-T1">    If yes, then check the order of network setting in preferences.    Your computer will send to the one at the top of the list.    To change the order, click on the cog wheel below the list of network things.    --&gt; new macs have issues, go to ethernet</span></p>
+
+<p class="paragraph-P1"><span class="text-T1">    </span></p>
+
+<p class="paragraph-P1"><span class="text-T1">    If this doesn't work, go to Under ethernet-&gt; advanced settings, check if you have a DNS server. If not, make up random numbers.</span></p>
+
+<p class="paragraph-P1"><span class="text-T1">    </span></p>
+
+<p class="paragraph-P1"><span class="text-T1">* Can I send to the network, but not receive?</span></p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1"><span class="text-T1">    If yes, then check if you are properly bound to receive from the right port.    In SuperCollider, try evaluating: NetAddr.langPort</span></p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1"><span class="text-T1">        -- If you are using both MAX and SuperCollider, you must start SuperCollider before you start MAX.    Try quitting both and starting in the right order. If that doesn't work, try restarting your computer.    </span></p>
+
+<p class="paragraph-P1"><span class="text-T1">        -- If you are just using SuperCollider, restart your computer.</span></p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1"><span class="text-T1">* Make sure you have the right network selected.</span></p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1"><span class="text-T1">* Try connecting via ethernet to the router - plug into LAN, not wlan</span></p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1"><span class="text-T1">*If you are using the hub, the port number should glow green and yellow or red</span></p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1"><span class="text-T1">* If you are connecting to your iPhone via an adhoc network, make sure the ethernet is above the airport in the network list.</span></p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1"><span class="text-T1">* If your network control panel indicates that you're using a self-assigned IP, make sure that the airport and the ethernet are not using the same IP address.    If they are, Configure IPv4 Using DHCP with manual address and pick a new IP address.    You must use a different IP address than other people in the group are using.</span></p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1">OSCGROUPS:</p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1">download the latest version of oscgroups binary</p>
+
+<p class="paragraph-P1">put it someplace on your hard drive (it need not go in the extensions folder)</p>
+
+<p class="paragraph-P1">when you invoke NetAPI, it should look like:</p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1">n = NetAPI.oscgroup("~/Documents/code/osc/oscgroups/bin/OscGroupClient", "realizedsound.mooo.com", "les", "password");</p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1">the “~/Doc...” should be replaced by the path to where you put the oscgroup client programme</p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1">change “les” to your name</p>
+
+<p class="paragraph-P1">change “password” to what password you want to use</p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1">“realizedsound.mooo.com” is reachable from anywhere, as is “oscgroups.washington.edu”.    If everybody is in the same room, run OscGroupServer on one person's computer and change that line to their IP address.    They can find their ip address by running:</p>
+
+<p class="paragraph-P1">NetAPI.ip</p>
+<p class="paragraph-P1"> </p><p class="paragraph-P1"> </p>
+<p class="paragraph-P1">* I can't seem to connect?</p>
+
+<p class="paragraph-P1">Is OscGroupClient showing up in your activity monitor?    If not, make sure you've got it installed correctly. Make sure you have the right path to it in NetApi.    If you have any spaces in your path, escape them with forward slashes: “~/Library/Application\ Support/SuperCollider/Extensions/OscGroup/OscGroupClient”</p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1">Are you unable to bind?    Go to the activity monitor and kill all running copies of OscGroupClient.</p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1"><span class="text-T1">----&gt; Gestural data is jumpy and has gaps</span></p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1"><span class="text-T1">Try doing the the touchOSC thing below</span></p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1"><span class="text-T1">----&gt; TouchOSC is evil!</span></p>
+<p class="paragraph-P1"> </p>
+<p class="paragraph-P1"><span class="text-T1">1. Turn on computer</span></p>
+
+<p class="paragraph-P1"><span class="text-T1">2. Plug ethernet cable to router</span></p>
+
+<p class="paragraph-P1"><span class="text-T1">3. Create wifi network from computer</span></p>
+
+<p class="paragraph-P1"><span class="text-T1">4. Put iPhone in airplane mode</span></p>
+
+<p class="paragraph-P1"><span class="text-T1">5. Turn wifi on on iPhone</span></p>
+
+<p class="paragraph-P1"><span class="text-T1">6. Connect TouchOSC to the wifi network</span></p>
+
+<p class="paragraph-P1"><span class="text-T1">7. Start supercollider</span></p>
+
+<p class="paragraph-P1"><span class="text-T1">8. Start MAX, if you are using it</span></p>
+
+<p class="paragraph-Default_20_Style"><span class="text-T1">9. Launch the patch</span></p>
+<p class="paragraph-Default_20_Style"> </p><p class="paragraph-Default_20_Style"> </p>
+<p class="paragraph-Default_20_Style"><span class="text-T1">---&gt; How do I mount shared drives on linux?</span></p>
+<p class="paragraph-Default_20_Style"> </p>
+<p class="paragraph-Default_20_Style"><span class="text-T1">1. SMB is better than AFP.    See: </span><a href="https://support.apple.com/kb/HT1549?viewlocale=en_US" class="text-ListLabel_20_1"><span class="text-T2">https://support.apple.com/kb/HT1549?viewlocale=en_US</span></a></p>
+
+<p class="paragraph-Default_20_Style"><span class="text-T1">2. Mount via the gui. The drive mounts at /run/user/&lt;login&gt;/gvfs/</span></p>
+
+<p class="paragraph-Default_20_Style"><span class="text-T1">3. Check permissions. See the link above.</span></p>
+</body>
+
+</html>
