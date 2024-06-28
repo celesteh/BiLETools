@@ -136,7 +136,7 @@ message.
 * The port is the port of the user that will accept the symbol as a
 message.
 
-#####Example
+##### Example
 
 `/bile/API/registerListener /bile/Nick/freq Shelly 192.168.1.67 57120`
 
