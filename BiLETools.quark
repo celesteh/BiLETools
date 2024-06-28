@@ -3,7 +3,7 @@
   summary: "The Networking Tools developed by BiLE",
   version: "1.0.0",
   schelp: "BiLETools",
-  dependencies: ["ClockFace", "OscGroupClient"],
+  dependencies: ["OscGroupClient"],
   license: "GPL",
   copyright: "Charles Hutchins, Holger Balweg, Jonas Hummel 2011-2024"
 )

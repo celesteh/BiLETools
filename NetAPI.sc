@@ -1,5 +1,3 @@
-// Ver 0.5.0,  11 May 2011
-
 
 // WTF. why is it not finding everyone
 
@@ -13,21 +11,35 @@ NetAPI {
 
 
 	*initClass {
-		var getIP;
+		var getIP, local;
 
 
 
 		all = IdentityDictionary.new;
 		listeners = Dictionary.new;
 
+		local = NetAddr("127.0.0.1", 57120); // local machine
+
 		getIP = {arg action;
 			var before = NetAddr.broadcastFlag;
 			NetAddr.broadcastFlag = true;
-			OSCresponder(nil, '/getMyIP', { arg t,r,msg,addr;
+
+			// OSCresponder is deprecated
+			// from, tag, action
+			//OSCresponder(nil, '/getMyIP', { arg t,r,msg,addr; // time, responder, message
+
+				//action.(addr);
+				//NetAddr.broadcastFlag = before;
+				//r.remove;
+
+			//}).add;
+
+			OSCdef(\getMyIP, {arg msg, t, addr;
+
+				//addr.postln;
 				action.(addr);
 				NetAddr.broadcastFlag = before;
-				r.remove;
-			}).add;
+			}, '/getMyIP').oneShot;
 
 			NetAddr("255.255.255.255", NetAddr.langPort).sendMsg('/getMyIP');
 			nil;
