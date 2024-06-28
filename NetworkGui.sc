@@ -55,6 +55,7 @@ NetworkGui : Environment {
 									).setColors(Color.grey,Color.white, Color.grey
 									(0.7),Color.grey, Color.white, Color.yellow);
 						},
+			/*
 			\voter, 	{|cv, view, key, netgui, sub = 10| EZVoter(
 										view,
 										(view.bounds.width-sub) @ 20,
@@ -66,7 +67,7 @@ NetworkGui : Environment {
 									).setColors(Color.grey,Color.white, Color.grey
 									(0.7),Color.grey, Color.white, Color.yellow);
 						},
-
+			*/
 				/*,
 			\slider2d, {|cvs, view, keys, netgui|
 					var labelSize, numsize, labelView, numberView, slider, spec;
@@ -128,6 +129,12 @@ NetworkGui : Environment {
 	*make { |api, local, func|
 		"output".postln;
 		^super.new.make_init(api, local, func);
+	}
+
+
+	*addGui{ |tag, func|
+		//{|cv, view, key, netgui ... args| returns an gui object of some kind
+		guitypes.put(tag, func);
 	}
 
 
