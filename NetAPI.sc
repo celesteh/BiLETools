@@ -66,7 +66,8 @@ NetAPI {
 
 	*multicast { |username|
 
-		"Depricated: please switch to broadcast".warn;
+		//"Depricated: please switch to broadcast".warn;
+		this.deprecated(thisMethod, this.class.findMethod(\broadcast));
 
 	}
 
@@ -805,13 +806,15 @@ NetAPI {
 
 	chat {
 
-		"Depricated. Use BileChat(NetAPI) instead.".warn;
+		//"Depricated. Use BileChat(NetAPI) instead.".warn;
+		this.deprecated(thisMethod, BileChat.class.findMethod(\new));
 		^BileChat(this)
 	}
 
 	clock {
 
-		"Depricated. Use BileClock(NetAPI) instead.".warn;
+		//"Depricated. Use BileClock(NetAPI) instead.".warn;
+		this.deprecated(thisMethod, BileClock.class.findMethod(\new));
 		^BileClock(this)
 	}
 }
