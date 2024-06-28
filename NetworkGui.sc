@@ -631,6 +631,7 @@ NetworkGui : Environment {
 
 	stop {
 		players.do ({|pl|
+			pl.set(\gate, 0);
 			pl.stop;
 		})
 	}

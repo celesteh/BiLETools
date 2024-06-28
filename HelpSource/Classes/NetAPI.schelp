@@ -1,10 +1,10 @@
 CLASS:: NetAPI
-summary:: a class that does API stuff and communication for BiLE 
+summary:: A class that manages a network based API for calling functions and accessing data
 categories:: Libraries>BiLETools
-related:: OscGroupClient, ClockFace, BileChat, ProcessTools
+related:: OscGroupClient, BileTools
 
 DESCRIPTION::
-This class handles network ommunication for BiLE.  This can be done via the the OscGroup server or via broadcast. 
+This class handles network ommunication for BiLETools.  This can be done via the the OscGroup server or via broadcast.
 
 
 If you want to use the OSCGroup server, the constructor asks for the full path to the client, your username and your password.  (Group authentication is already included.)
@@ -73,25 +73,14 @@ a.sendMsg('speak', "this may not speak here");
 a.call('speak', "this will only speak locally");
 ::
 
-To open a chat window, see [[BileChat]]
+To open a chat window, see link::Classes/BileChat::
+
+To open a shared stopwatch, see link::Classes/BileClock::
 
 
 
 
-If you want to a clock, you can ask for one:
-
-code::
-c = a.clock;
-c.show;
-::
-
-Start and stop the clock via the API:
-
-code::
-a.call('clock/clock', 'start');
-a.call('clock/clock', 'stop');
-a.call('clock/reset');
-::
+I
 
 CLASSMETHODS::
 
@@ -121,401 +110,86 @@ METHOD:: default
 
 returns:: the instance of NetAPI that has already been created elsewhere
 
-METHOD:: call
-invoke a function saved in the NetAPI
-
-argument:: selector
-a symbol key for the function
-
-argument::  ... args
-arguments
 
 
 INSTANCEMETHODS::
 
-METHOD:: client
-(describe method here)
+METHOD:: call
+Locally invoke a function saved in the NetAPI
 
-returns:: (returnvalue)
+argument:: selector
+a symbol key for the function
 
-METHOD:: colleagues
-(describe method here)
+argument::  ... args
+arguments
 
-returns:: (returnvalue)
+discussion::
+We could join the network and register a function.
+code::
+a = NetAPI.broadcast("nick");
+a.add('postln',{arg text;
+	text.postln;
+}, "Echo the text to the post window. Usage: postln, text");
+::
+Later, we can use this function in our own code, via the class method.
+code::
+a.call('postln', "Some text");
+::
 
-METHOD:: name
-(describe method here)
 
-returns:: (returnvalue)
-
-METHOD:: nick
-(describe method here)
-
-argument:: username
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: remote_functions
-(describe method here)
-
-returns:: (returnvalue)
-
-METHOD:: remote_shared
-(describe method here)
-
-returns:: (returnvalue)
-
-METHOD:: init
-(describe method here)
-
-argument:: path
-(describe argument here)
-
-argument:: serveraddress
-(describe argument here)
-
-argument:: username
-(describe argument here)
-
-argument:: userpass
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: local
-(describe method here)
-
-argument::  ... args
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: remote
-(describe method here)
-
-argument::  ... args
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: init_querying
-(describe method here)
-
-returns:: (returnvalue)
-
-METHOD:: addUser
-(describe method here)
-
-argument:: user
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: init_sharing
-(describe method here)
-
-returns:: (returnvalue)
 
 METHOD:: add
-(describe method here)
+Add a function to the API. This will make it available locally and remotelt and advertise it on the network.
 
 argument:: selector
-(describe argument here)
+A unique symbol to identify the function
 
 argument:: func
-(describe argument here)
+The function you wish to be invokable via the NetAPI
 
 argument:: desc
-(describe argument here)
+A short string describing what the function does and what arguments it takes
 
-returns:: (returnvalue)
+discussion::
+code::
+a = NetAPI.broadcast("nick");
+a.add('postln',{arg text;
+	text.postln;
+}, "Echo the text to the post window. Usage: postln, text");
+::
 
-METHOD:: addAll
-(describe method here)
 
-argument:: dict
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: make
-(describe method here)
-
-argument:: func
-(describe argument here)
-
-returns:: (returnvalue)
 
 METHOD:: remove
-(describe method here)
+Remove a function from the API. IT can no longer be called via the API locally or remotely and remote users will be informed of the removal.
 
 argument:: selector
-(describe argument here)
+The unique symbol you used to add the function
 
-returns:: (returnvalue)
+discussion::
+code::
+a=NetAPI.default
+a.remove(\postln);
+::
 
-METHOD:: exposeMethods
-(describe method here)
 
-argument:: obj
-(describe argument here)
 
-argument:: selectors
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: exposeAllExcept
-(describe method here)
-
-argument:: obj
-(describe argument here)
-
-argument:: selectors
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: call
-(describe method here)
-
-argument:: selector
-(describe argument here)
-
-argument::  ... args
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: func
-(describe method here)
-
-argument:: selector
-(describe argument here)
-
-argument::  ... args
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: doesNotUnderstand
-(describe method here)
-
-argument:: selector
-(describe argument here)
-
-argument::  ... args
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: functionNames
-(describe method here)
-
-returns:: (returnvalue)
 
 METHOD:: help
-(describe method here)
+Shows the help text associated with a remote or local API call.
 
-argument:: selector
-(describe argument here)
 
-returns:: (returnvalue)
-
-METHOD:: printOn
-(describe method here)
-
-argument:: stream
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: pr_formatMsg
-(describe method here)
-
-argument::  ... msg
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: pr_formatTag
-(describe method here)
-
-argument:: symbol
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: pr_sharedFormat
-(describe method here)
-
-argument:: symbol
-(describe argument here)
-
-returns:: (returnvalue)
 
 METHOD:: sendMsg
-(describe method here)
+Send a message to the network
 
-argument::  ... msg
-(describe argument here)
+argument::  ... msg
+Any number of arguments
 
-returns:: (returnvalue)
-
-METHOD:: msgUser
-(describe method here)
-
-argument:: user
-(describe argument here)
-
-argument::  ... msg
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: remote_query
-(describe method here)
-
-returns:: (returnvalue)
-
-METHOD:: advertise
-(describe method here)
-
-argument:: selector
-(describe argument here)
-
-argument:: desc
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: share
-(describe method here)
-
-argument:: selector
-(describe argument here)
-
-argument:: data
-(describe argument here)
-
-argument:: desc
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: advertiseShared
-(describe method here)
-
-argument:: selector
-(describe argument here)
-
-argument:: desc
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: subscribe
-(describe method here)
-
-argument:: selector
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: map
-(describe method here)
-
-argument:: selector
-(describe argument here)
-
-argument:: key
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: shareData
-(describe method here)
-
-argument:: selector
-(describe argument here)
-
-argument:: value
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: identify
-(describe method here)
-
-returns:: (returnvalue)
-
-METHOD:: add_remote_update_listener
-(describe method here)
-
-argument:: owner
-(describe argument here)
-
-argument:: action
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: remove_remote_update_listener
-(describe method here)
-
-argument:: owner
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: add_user_update_listener
-(describe method here)
-
-argument:: owner
-(describe argument here)
-
-argument:: action
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: remove_user_update_listener
-(describe method here)
-
-argument:: owner
-(describe argument here)
-
-returns:: (returnvalue)
-
-METHOD:: my_ip
-(describe method here)
-
-returns:: (returnvalue)
-
-METHOD:: hostname
-(describe method here)
-
-returns:: (returnvalue)
-
-METHOD:: echo
-(describe method here)
-
-returns:: (returnvalue)
-
-METHOD:: chat
-(describe method here)
-
-returns:: (returnvalue)
-
-METHOD:: clock
-(describe method here)
-
-returns:: (returnvalue)
-
-
-EXAMPLES::
-
+discussion::
 code::
-(some example code)
+a = NetAPI.default;
+a.sendMsg('any_symbol', "anything can go here and will go out to the group server")
 ::
+
+

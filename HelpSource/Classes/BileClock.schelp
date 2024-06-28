@@ -1,0 +1,126 @@
+TITLE:: BileClock
+summary:: A shared, networked stopwatch
+categories:: Libraries>BiLETools
+related:: NetAPI, BileTools, BileChat, ClockFace
+
+DESCRIPTION::
+This is a fork of the quark link::https://github.com/supercollider-quarks/ClockFace##ClockFace::
+
+CLASSMETHODS::
+
+METHOD:: new
+creates a new BileClock and GUI, linked to the listed NetAPI, that, when played, will start at starttime and increment by inc according to tempo (in beats per SECOND).
+
+(describe method here)
+
+ARGUMENT:: net_api
+An active instance of NetAPI
+
+ARGUMENT:: starttime
+Starting time
+
+ARGUMENT:: tempo
+beats per second
+
+ARGUMENT:: inc
+increment amount
+
+ARGUMENT:: window
+the window to draw the clock in
+
+ARGUMENT:: is_master
+true for one person on the network
+
+
+
+INSTANCEMETHODS::
+
+METHOD:: play
+Starts the clock
+
+
+METHOD:: stop
+Stops the clock
+
+
+
+
+METHOD:: cursecs
+sets the time on the clock to curtime. curtime is passed in seconds.
+
+ARGUMENT:: curtime
+new time in seconds
+
+
+METHOD:: tempo
+	sets the current tempo in beats per second. Adjusts the internal TempoClock.
+
+ARGUMENT:: newBPS
+new tempo in Beats Per Second
+
+
+
+METHOD:: mod
+tell the ClockFace to calculate curtime with a modulo. Set to 0 or nil to remove a modulo.
+
+ARGUMENT:: newMod
+modulo to use in calculating time
+
+
+METHOD:: onMod
+when a mod is set, a Function to evaluate when the  clock resets to 0.
+
+
+
+METHOD:: onBeat
+		if notNil, a Function to be evaluated whenever a new integer boundry is crossed. Can be used
+
+	for metronomic functions.
+
+
+
+
+
+
+
+METHOD:: echoTime
+Send time to network
+
+ARGUMENT:: time
+elapsed time since start in seconds
+
+
+
+METHOD:: setAll
+Send time to network
+
+ARGUMENT:: minutes
+the elapsed time in whole minutes
+
+ARGUMENT:: seconds
+the number of seconds past the current minute
+
+METHOD:: startAll
+Start all clocks on the network
+
+
+METHOD:: stopAll
+Stop all clocks on the network
+
+
+METHOD:: time
+
+returns:: the elapsed time
+
+
+METHOD:: master_
+Set whether we are master clock for the network
+
+ARGUMENT:: is_master
+
+EXAMPLES::
+
+code::
+a = NetAPI.broadcast("nick");
+c = BileClock(a);
+::

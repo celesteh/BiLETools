@@ -1,0 +1,28 @@
+TITLE:: BileTools
+summary:: A library to enable network data sharing for laptop bands
+categories:: Libraries>BiLETools
+related:: NetAPI, BileClock, BileChat
+
+DESCRIPTION::
+This library was designed to allow hread safe network data sharing according to MVC. The most important class is link::Classes/NetAPI::
+
+This particular class offers a convience method for showing a chat window and a shared stopwatch.
+
+CLASSMETHODS::
+
+METHOD:: show
+Show the clock and the chat
+
+ARGUMENT:: api
+(an instance of NetApi
+
+returns:: an array containing a link::Classes/BileClock:: and a link::Classes/BileChat::
+
+
+
+EXAMPLES::
+
+code::
+a = NetAPI.broadcast("nick");
+b = BileTools.show(a);
+::
