@@ -1,10 +1,12 @@
 CLASS:: BileChat
-summary:: a class that does chat and API stuff and communication for BiLE 
+summary:: A chat protocol and GUI built on BileTools
 categories:: Libraries>BiLETools
 related:: NetAPI
 
 DESCRIPTION::
-This class handles a GUI for interactive chat.
+This class handles a GUI for interactive chat. It has support for link::https://growl.github.io/growl/##Growl::, which is now a zombie project. If you want to use Growl, you'll need to install growlnotify, an external program you can find in the extras directory of the Growl install DMG.
+
+If link::Classes/MandelHub:: is installed, it can also use that class.
 
 code::
 a = NetAPI.broadcast("nick");
@@ -14,10 +16,9 @@ b = BileChat(a);
 It will open a communication window to allow you to chat with other members of your group. It also shows your API methods and those that they have published. If you do't see any listed APIs, click on the 'API Methonds' text to refresh.  Or, you can click the name of a particular to get a popup window with the description in it.
 
 
-If you have Growl and growlnotify installed, Growl notifications for new chat messages are enabled by default.  To turn them off:
-
+If you have MandelHub or Growl and growlnotify installed, notifications for new chat messages are enabled by default.  To turn them off, set growl to false
 code::
-b.growl = false;
+b.notify = false;
 ::
 
 CLASSMETHODS::
@@ -25,10 +26,10 @@ CLASSMETHODS::
 METHOD:: new
 
 argument:: net_api
-an instance of NetAPI
+an instance of link::Classes/NetAPI::
 
 argument:: show
-a boolean
+a boolean, set to True to show the GUI
 
 
 
@@ -39,8 +40,8 @@ METHOD:: win
 returns:: the window that contains the BileChat
 
 
-METHOD:: growl
-set a boolean flag to enable or disable growl notification
+METHOD:: notify
+set a boolean flag to enable or disable desktop notifications
 
 
 
