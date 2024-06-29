@@ -1,7 +1,7 @@
 TITLE:: BileTools
 summary:: A library to enable network data sharing for laptop bands
 categories:: Libraries>BiLETools
-related:: NetAPI, BileClock, BileChat
+related:: Classes/NetAPI, Classes/BileClock, Classes/BileChat
 
 DESCRIPTION::
 This library was designed to allow hread safe network data sharing according to MVC. The most important class is link::Classes/NetAPI::

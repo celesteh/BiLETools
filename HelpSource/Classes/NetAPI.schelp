@@ -1,7 +1,7 @@
 CLASS:: NetAPI
 summary:: A class that manages a network based API for calling functions and accessing data
 categories:: Libraries>BiLETools
-related:: OscGroupClient, BileTools
+related:: Classes/OscGroupClient, Classes/BileTools
 
 DESCRIPTION::
 This class handles network ommunication for BiLETools.  This can be done via the the OscGroup server or via broadcast.

@@ -1,7 +1,7 @@
 CLASS:: BileChat
 summary:: A chat protocol and GUI built on BileTools
 categories:: Libraries>BiLETools
-related:: NetAPI
+related:: Classes/NetAPI
 
 DESCRIPTION::
 This class handles a GUI for interactive chat. It has support for link::https://growl.github.io/growl/##Growl::, which is now a zombie project. If you want to use Growl, you'll need to install growlnotify, an external program you can find in the extras directory of the Growl install DMG.

@@ -1,7 +1,7 @@
 TITLE:: NetworkGui
 summary:: draws GUIS for the NetAPI
 categories:: Libraries>BiLETools
-related:: NetAPI, BileTools, SharedCV
+related:: Classes/NetAPI, Classes/BileTools, Classes/SharedCV
 
 DESCRIPTION::
 This class handles a GUI for shared and local variables. It is strongly based on the Conductor class by Ron Kuivila.

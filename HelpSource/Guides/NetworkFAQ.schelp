@@ -1,7 +1,7 @@
 title:: Network FAQ
 summary:: Get your laptop band communicating on a LAN or WAN
 categories:: Libraries>BiLETools, FAQ, Guides
-related:: Reference/FooBar
+related:: Classes/NetAPI
 
 section:: Broadcast
 

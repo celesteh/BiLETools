@@ -1,7 +1,7 @@
 TITLE:: BileClock
 summary:: A shared, networked stopwatch
 categories:: Libraries>BiLETools
-related:: NetAPI, BileTools, BileChat, ClockFace
+related:: Classes/NetAPI, Classes/BileTools, Classes/BileChat, Classes/ClockFace
 
 DESCRIPTION::
 This is a fork of the quark link::https://github.com/supercollider-quarks/ClockFace##ClockFace::
