@@ -113,10 +113,11 @@ METHOD:: time
 returns:: the elapsed time
 
 
-METHOD:: master_
+METHOD:: master
 Set whether we are master clock for the network
 
 ARGUMENT:: is_master
+True if we are the master clock, False if not
 
 EXAMPLES::
 

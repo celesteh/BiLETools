@@ -518,11 +518,11 @@ NetworkGui : Environment {
 		players = players.add(synth);
 	}
 
-	pattern_ { |pbind|
-		var pat;
+	pattern_ { |pat|
+		var patPlayer;
 
-		pat = BilePatternPlayer(pbind);
-		players = players.add(pat);
+		patPlayer = BilePatternPlayer(pat);
+		players = players.add(patPlayer);
 	}
 
 	user_update_action {
@@ -631,26 +631,32 @@ NetworkGui : Environment {
 
 	stop {
 		players.do ({|pl|
-			pl.set(\gate, 0);
+			pl.respondsTo(\set).if({
+				pl.set(\gate, 0);
+			});
 			pl.stop;
 		})
 	}
 
 	pause{
 		players.do ({|pl|
-			pl.pause;
+			pl.respondsTo(\pause).if({
+				pl.pause;
+			});
 		})
 	}
 
 	resume{
 		players.do ({|pl|
-			pl.resume;
+			pl.respondsTo(\resume).if({
+				pl.resume;
+			})
 		})
 	}
 
 
 
-	mapHID { |key, slot|
+	mapHID { |key, element|
 		var scv;
 
 		scv = local[key];
@@ -662,7 +668,7 @@ NetworkGui : Environment {
 		});
 
 		scv.notNil.if({
-			scv.attachHID(slot);
+			scv.attachHID(element);
 		});
 	}
 
@@ -825,10 +831,10 @@ SharedCV {
 		widget = gui;
 	}
 
-	attachHID{ |slot|
+	attachHID{ |element|
 
-		slot.action_({ |val|
-			shared.value_(spec.map(val.value), slot);
+		element.action_({ |val|
+			shared.value_(spec.map(val.value), element);
 		})
 	}
 

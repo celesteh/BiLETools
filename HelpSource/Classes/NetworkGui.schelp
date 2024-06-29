@@ -1,0 +1,354 @@
+TITLE:: NetworkGui
+summary:: draws GUIS for the NetAPI
+categories:: Libraries>BiLETools
+related:: NetAPI, BileTools, SharedCV
+
+DESCRIPTION::
+This class handles a GUI for shared and local variables. It is strongly based on the Conductor class by Ron Kuivila.
+
+
+CLASSMETHODS::
+
+METHOD:: make
+Create a gui for given function
+
+ARGUMENT:: api
+an instance of link::Classes/NetAPI::
+
+ARGUMENT:: local
+an array of symbols you would like to stay local only
+
+ARGUMENT:: func
+This function describes your GUI and how it connects to the synth. Any arguments that aren't in the local list
+will be shared remotely.
+
+discussion::
+This example shows a GUI controlling the \default SynthDef. The amplitude is remote, but the frequency is shared to the network.
+code::
+var api, matrix;
+
+api = NetAPI.broadcast("Nick");
+
+matrix = NetworkGui.make(api, [\amp], {|gui,amp, freq|
+	gui.synth_(
+		(
+			instrument: \default
+		),
+		(
+			amp: amp,
+			freq:freq
+		)
+	);
+}).show;
+::
+Any argument names that are also link::Classes/ControlSpec:: keys will be automagically mapped to the correct ControlSpec.  You can also explicitly set the spec.
+code::
+var api, matrix;
+
+api = NetAPI.broadcast("Nick");
+matrix = NetworkGui.make(api, [\amp], {|gui,amp, freq|
+
+	amp.spec_(\amp);
+	freq.spec_(\freq);
+
+	gui.synth_(
+		(
+			instrument: \default
+		),
+		(
+			amp: amp,
+			freq:freq
+		)
+	);
+}).show;
+::
+It's also possible to specify functions for the synth parameters.
+code::
+var api, matrix;
+
+api = NetAPI.broadcast("Nick");
+matrix = NetworkGui.make(api, [\db], {|gui, db, freq|
+
+	gui.synth_(
+		(
+			instrument: \default
+		),
+		(
+			amp: [db, {|db| db.dbamp}],
+			freq:freq
+		)
+	);
+}).show;
+::
+
+For that we used an array. The first item is the link::Classes/SharedCV:: we're using and then comes a function. The return value of the function gets passed to the synth.
+
+You can specify that you'd rather use knobs than sliders:
+
+code::
+var api, matrix;
+
+api = NetAPI.broadcast("Nick");
+matrix = NetworkGui.make(api, [\amp], {|gui,amp, freq|
+
+	amp.guitype_(\knob);
+	freq.guitype_(\knob);
+
+	gui.synth_(
+		(
+			instrument: \default
+		),
+		(
+			amp: amp,
+			freq:freq
+		)
+	);
+}).show;
+::
+
+
+
+
+METHOD:: addGui
+add a type of link::Classes/EZGui:: object
+
+ARGUMENT:: tag
+the unique tag identifying the object
+
+ARGUMENT:: func
+A link::Classes/Function:: or similar object which will be invoked to draw the gui.
+This function must return an object which understands the messages received by EZGui obbjects.
+  When evaluated it will be passed the following arguments:
+table::
+## cv || a link::Classes/SharedCV:: corresponding to the value to represent
+## view || the link::Classes/View:: which will hold the widget
+## key || the unique id associated with the element being drawn
+## netgui || the strong::NetworkGUI:: object.
+::
+
+
+
+INSTANCEMETHODS::
+
+
+
+METHOD:: copyRemote
+assume remote users have the same named parameters as we do
+
+ARGUMENT:: bool
+true to make this assumtion
+
+discussion::
+code::
+var api, matrix;
+
+api = NetAPI.broadcast("Nick");
+matrix = NetworkGui.make(api, [\amp], {|gui, amp, freq|
+
+	gui.synth_(
+		(
+			instrument: \default
+		),
+		(
+			amp: amp,
+			freq:freq
+		)
+	);
+	gui.copyRemote = true;
+}).show
+::
+
+METHOD:: mountRemote
+Include all advertised remote parameters into our GUI. An attempt is made to guess the right control spec based on the shared item's name.
+
+ARGUMENT:: bool
+true to do this
+
+discussion::
+code::
+var api, matrix;
+
+api = NetAPI.broadcast("Nick");
+matrix = NetworkGui.make(api, [\amp], {|gui, amp, freq|
+
+	gui.synth_(
+		(
+			instrument: \default
+		),
+		(
+			amp: amp,
+			freq:freq
+		)
+	);
+	gui.mountRemote = true;
+}).show;
+::
+
+METHOD:: addRemote
+Add one specific remote parameter into our GUI. An attempt is made to guess the right control spec based on the shared item's name.
+
+ARGUMENT:: key
+the remote key to add
+
+returns:: a link::Classes/SharedCV:: linked to the remote data
+
+discussion::
+code::
+var api, matrix;
+
+api = NetAPI.broadcast("Nick");
+matrix = NetworkGui.make(api, [\amp], {|gui, amp, freq|
+	var dur;
+	dur = gui.addRemote(\dur);
+	dur.sp(1, 0.1, 5, 0, \lin, gui); //default, min, max, step size, warp, changer
+
+	gui.pattern_(
+		Pbind(
+			\freq,	freq,
+			\amp,	amp,
+			\dur,	dur
+		)
+	);
+}).show;
+::
+
+
+METHOD:: synth
+Set the synth to play and the control parameters
+
+ARGUMENT:: evt
+an link::Classes/Event:: object. It must contain the key \instrument, paired with the name of a link::Classes/SynthDef::
+
+ARGUMENT:: dict
+A dictrionary where the keys are the names of arguments to the SynthDef from the event, and the values attached to them are the values to use.
+
+
+
+
+METHOD:: pattern
+Specify a link::Classes/Pattern:: rather than, or in addition to, a synth
+
+ARGUMENT:: pat
+any kind of pattern, such as a link::Classes/Pbind::
+
+discussion::
+code::
+var api, matrix;
+
+api = NetAPI.broadcast("Nick");
+matrix = NetworkGui.make(api, [\amp], {|gui,amp, freq|
+
+	gui.pattern_(
+		Pbind(
+			\freq, freq,
+			\amp, amp,
+			\dur, 0.5
+		)
+	);
+}).show;
+::
+
+
+METHOD:: mapHID
+Attach a joystick to control a parameter
+
+ARGUMENT:: key
+the unique id for the data
+
+ARGUMENT:: element
+the link::Classes/HIDElement:: to map
+
+
+
+
+METHOD:: show
+Draw the GUI
+
+ARGUMENT:: win
+If this is not nil, it will draw the GUI on the specified window.
+
+discussion::
+code::
+var api, chat, matrix;
+
+api = NetAPI.broadcast("Nick");
+chat = BileChat(api);
+matrix = NetworkGui.make(api, [\db], {|gui, db, freq|
+
+	gui.synth_(
+		(
+			instrument: \default
+		),
+		(
+			amp: [db, {|db| db.dbamp}],
+			freq:freq
+		)
+	);
+}).show(chat.win);
+::
+
+
+
+METHOD:: addLocal
+Add GUI items that are local only
+
+ARGUMENT:: key
+the unique id for the local data
+
+ARGUMENT:: item
+optionally specify a pre-existing link::Classes/SharedResource:: or link::Classes/SharedCV::. If nil, a new SharedResource will be created, but not shared to the network.
+
+discussion::
+code::
+var api, matrix;
+
+api = NetAPI.broadcast("Nick");
+matrix = NetworkGui.make(api, [\amp], {|gui,amp, freq|
+
+	gui.name = "Demo";
+	gui.synth_(
+		(
+			instrument: \default
+		),
+		(
+			amp: amp,
+			freq:freq
+		)
+	);
+}).show;
+
+matrix.addLocal(\bipolar);
+::
+
+
+METHOD:: addShared
+Add GUI items that are shared to the network
+
+ARGUMENT:: key
+the unique id for the shared data
+
+ARGUMENT:: item
+optionally specify a pre-existing link::Classes/SharedResource:: or link::Classes/SharedCV::. If nil, a new SharedResource will be created, and shared to the network.
+
+discussion::
+code::
+var api, matrix;
+
+api = NetAPI.broadcast("Nick");
+matrix = NetworkGui.make(api, [\amp], {|gui,amp, freq|
+
+	gui.name = "Demo";
+	gui.synth_(
+		(
+			instrument: \default
+		),
+		(
+			amp: amp,
+			freq:freq
+		)
+	);
+}).show;
+
+matrix.addShared(\bipolar);
+::
+
