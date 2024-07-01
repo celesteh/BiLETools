@@ -1,0 +1,307 @@
+TITLE:: SharedResource
+summary:: A controlled, sharable piece of data
+categories:: Libraries>BiLETools
+related:: Classes/NetAPI, Classes/Semaphore
+
+DESCRIPTION::
+This class holds a piece of data.  Interested parties can register listeners to be notified when the data changes.
+
+
+
+
+
+CLASSMETHODS::
+
+METHOD:: new
+Create a new instance of SharedResource
+
+ARGUMENT:: value
+The initial value to hold in the SharedResource
+
+ARGUMENT:: threadSafe
+A link::Classes/Boolean::. If true, a link::Classes/Semaphore:: controls access to the data. This defaults to false.
+
+ARGUMENT:: changeFunc
+A function that will be called when the value in the the SharedResource is updated. It reeturns a boolean which should determine whether or not to notify dependants.
+When evaluated, it will be passed the following arguments:
+table::
+## old_value || the value that last triggered notifying dependants
+## new_value || the value after the update
+::
+
+The default function is set to code::{|old_value, new_value| old_value != new_value}::
+
+
+INSTANCEMETHODS::
+
+METHOD:: value
+Read or write the value held by the SharedResource. This may be controlled by Semaphore. If the changeFunc evaluates to true, this will notify all depednants of the change and call the changeAction.
+
+ARGUMENT:: newValue
+This can be any sort of object.  it will be sent a value message with the existing
+value as an argument, so if you want to do a mathematical expression, you could use
+something like code::{|old| old + 1}::
+
+Note that if you have made your SharedResource thread safe, this function will be evaluated in a thread safe manner.
+
+ARGUMENT:: theChanger
+The object that has made the change, who will not be notified
+
+ARGUMENT::  ... moreArgs
+Additional arguments to use when calling action functions
+
+
+METHOD:: changeFunc
+a function that returns a boolean which should determine whether or not to notify dependants.
+When evaluated, it will be passed the following arguments:
+table::
+## old_value || the value that last triggered notifying dependants
+## new_value || the value after the update
+::
+
+
+
+METHOD:: spec
+Set a link::Classes/ControlSpec::
+
+ARGUMENT:: s
+s.value.asSpec should return a link::Classes/ControlSpec::
+
+ARGUMENT:: v
+an initial, default value, which will replace the value set in the constructor, if there have not been any subsequent changes.
+
+ARGUMENT:: changer
+If the value is changed, this argument indicates what entity changed it.
+
+
+
+
+METHOD:: mountAPI
+Share this resource across a network.
+
+ARGUMENT:: api
+an instance of link::Classes/NetAPI::
+
+ARGUMENT:: key
+A symbol to use to identify this data, which will be converted to an OSC tag, unless one is specified.
+
+ARGUMENT:: desc
+a String that documents what sort of data we're sharing with this object. This will be shared with other users on the network.
+
+ARGUMENT:: broadcast
+a Boolean. If true, the entire network is notified of updates. If false, only registered listeners are
+
+ARGUMENT:: symbol
+an OSC tag that can be specified instead of or inaddition to the key.
+
+returns:: an instance of link::Classes/SharedRemoteListeners::
+
+
+
+
+
+
+
+subsection::Actions
+
+METHOD:: action
+When there are two arguments:
+
+ARGUMENT:: arg1
+The entity that is adding the action. This action will not be called if the object adding it has caused the change.
+
+ARGUMENT:: arg2
+The action being added. This is a function that will be evaluated when a new value is set and the changeFunc evaluates to true. When evaluated, it will be passed the following arguments:
+table::
+## new_value || The new value held be the SharedResource
+## changer || The entity that caused the update
+## ... moreArgs || Additional arguments passed to value_
+::
+
+
+METHOD:: action
+When there is only one argument, the action is added, but not associated with any particular object and will always be called on a change.
+
+ARGUMENT:: arg1
+The action being added. This is a function that will be evaluated when a new value is set and the changeFunc evaluates to true. When evaluated, it will be passed the following arguments:
+table::
+## new_value || The new value held be the SharedResource
+## changer || The entity that caused the update
+## ... moreArgs || Additional arguments passed to value_
+::
+
+
+METHOD:: removeAction
+Remove an added action
+
+ARGUMENT:: toBeRemoved
+The action to be removed
+
+
+
+
+
+subsection::Dependancy
+
+method::addDependant
+
+Add aDependant to the receiver's list of dependants.
+
+method::removeDependant
+
+Remove aDependant from the receiver's list of dependants.
+
+method::dependants
+
+Returns an IdentitySet of all dependants of the receiver.
+
+method::changed
+
+Notify the receiver's dependants that the receiver has changed. The object making the change should be passed as theChanger.
+
+method::update
+
+An object upon which the receiver depends has changed. theChanged is the object that changed and theChanger is the object that made the change.
+
+method::release
+
+Remove all dependants of the receiver. Any object that has had dependants added must be released in order for it or its dependants to get garbage collected.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EXAMPLES::
+
+code::
+// run each line separately
+
+a = SharedResource(5);
+
+a.action_({|val| val.value.postln; });
+
+a.value_("Wow!");
+
+a.value_(2.2);
+
+::
+
+
+
+An example using changeFunc_
+
+code::
+
+a = SharedResource(5);
+
+a.action_({|val| val.value.postln; });
+
+a.value_({|old| old + 1}); // run this last line a few times
+
+
+a.changeFunc_({|old, new| (old - new).abs > 1}) // only alert people if the
+// change is greater than 1
+
+
+a.value_({|old| old + 1}); // run this last line a few times
+::
+
+
+
+Prevent an infinte loop when two sliders are tied to the same data
+
+code::
+(
+w=Window.new.front;
+w.view.decorator=FlowLayout(w.view.bounds);
+
+a = SharedResource(440);
+
+g = EZSlider(	w,  	// parent
+	390@20,	// bounds
+	" test ",	// label
+	\freq 	// controlSpec
+);
+
+h = EZSlider(	w,  	// parent
+	390@20,	// bounds
+	" test ",	// label
+	\freq 	// controlSpec
+);
+
+g.action_({|ez| a.value_(ez.value, g) }); // when g updates the value, it identifies itself
+h.action_({|ez| a.value_(ez.value, h) }); // when h updates the value, it identifies itself
+
+a.action_(g, {|val| g.value_(val.value)}); // tell the shared reource how to inform g
+a.action_(h, {|val| h.value_(val.value)}); // tell the shared reource how to inform h
+)
+// this does not cause an infinite loop because it does not notify the slider that took
+// credit for changing it.
+::
+
+
+
+The network example requires two computers on the same LAN
+
+code::
+// run this part one computer A
+(
+n = NetAPI.broadcast("A");
+a = SharedResource(3);
+a = a.action_({|val| val.value.postln});
+r = a.mountAPI(n, 'demo', "a small integer"); // returns an instance of SharedRemoteListeners
+)
+::
+
+code::
+// now run this on computer B
+(
+m = NetAPI.broadcast("B");
+b = m.subscribe('A/demo');
+b.action_({|val| val.value.postln});
+)
+::
+
+code::
+// now go back to computer A
+(
+a.value_(6);
+a.value_({|old| old + 1.1});
+)
+::
+
+code::
+// change it to only send every other update across the network:
+
+r.n = 2;  // every n times, send the message
+a.value_({|old| old + 1.1});
+::
+
+
+
+code::
+// now go back to computer B
+(
+m.add('say', { |something| something.asString.speak});
+m.map('A/demo', 'say');
+)
+// that maps a SharedResource with an API key
+// the remote resource 'demo' will call the local API method 'say'
+::
+
+code::
+// and back to computer A
+(
+r.n = 1;
+a.value_(0);
+)
+::

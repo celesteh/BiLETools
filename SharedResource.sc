@@ -1,7 +1,7 @@
 
 SharedResource {
 
-	var <value, <signed_actions, unsigned_actions, semaphore, spec;
+	var value, <signed_actions, unsigned_actions, semaphore, spec;
 	//var <>symbol, remote_listeners, api, <>desc;
 	var <>changeFunc, lastAdvertised, has_ever_changed;
 
@@ -44,8 +44,14 @@ SharedResource {
 			});
 	}
 
+	/*
 	sp	{ | default= 0, lo = 0, hi=0, step = 0, warp = 'lin', changer |
 		this.spec_(ControlSpec(lo,hi, warp, step, default), changer:changer);
+	}
+	*/
+
+	sp {
+		this.deprecated(thisMethod, BileChat.class.findMethod(\spec_));
 	}
 
 	pr_doValue { arg newValue, theChanger ... moreArgs;
@@ -72,6 +78,21 @@ SharedResource {
 		^changed;
 	}
 
+	value{
+
+		var return_val;
+		// If we have semaphore control, it should also be for reading the value, not just for writing it.
+		semaphore.notNil.if({
+			//"ready to wait".postln;
+			semaphore.wait;
+			return_val = value;
+			semaphore.signal;
+		} , {
+			return_val = value;
+		});
+
+		^return_val;
+	}
 
 	value_ { arg newValue, theChanger ... moreArgs;
 
@@ -131,6 +152,38 @@ SharedResource {
 
 	action_ { |arg1, arg2|
 
+		var owner, act;
+
+		//also allow the user to pass in nil, action
+		arg1.isNil.if({
+			act = arg2;
+		}, {
+			arg2.isNil.if({
+				act = arg1;
+			}, {
+				owner = arg1;
+				act = arg2;
+			});
+		});
+
+		act.notNil.if({
+			owner.notNil.if({
+				if (signed_actions.isNil, {
+				signed_actions = IdentityDictionary.new(4);
+			});
+
+			signed_actions.put(owner, act);
+			signed_actions.keys.postln;
+		} , {
+			// unknown owner, add the action to an array
+			if (unsigned_actions.isNil, {
+				unsigned_actions = [act];
+			} , {
+				unsigned_actions = unsigned_actions ++ act;
+			});
+		});
+		});
+		/*
 		arg2.notNil.if({
 			// arg1 is the adder and arg2 is the action
 			if (signed_actions.isNil, {
@@ -147,7 +200,10 @@ SharedResource {
 				unsigned_actions = unsigned_actions ++ arg1;
 			});
 		});
+		*/
 	}
+
+
 
 	removeDependant { arg dependant;
 		signed_actions.notNil.if({
