@@ -3,7 +3,7 @@
 
 NetAPI {
 
-	classvar <all, <listeners,<>defaultResponse ='/response', <ip;
+	classvar <all, <listeners,<>defaultResponse ='/response', <ip, default_name;
 	var <client, <colleagues, user_update_listeners;
 	var <name, functions, <nick;
 	var <remote_functions, remote_update_listeners;
@@ -48,48 +48,64 @@ NetAPI {
 		getIP.value({arg addr;
 			ip =  addr.ip;
 		});
+
+		default_name = 'bile';
 	}
 
-	*new { |path = "broadcast", serveraddress, username, userpass|
+	*new { |path = "broadcast", serveraddress, username, userpass, groupname|
 
-		^(all.at('bile') ?? {
+		groupname = groupname ? default_name;
 
-			^super.new.init(path, serveraddress, username, userpass)});
+		^(all.at(groupname) ?? {
+
+			^super.new.init(path, serveraddress, username, userpass, groupname)});
 	}
 
-	*oscgroup { |path = "broadcast", serveraddress, username, userpass|
+	*oscgroup { |path = "broadcast", serveraddress, username, userpass, groupname|
 
-		^(all.at('bile') ?? {
+		groupname = groupname ? default_name;
 
-			^super.new.init(path, serveraddress, username, userpass)});
+		^(all.at(groupname) ?? {
+
+			^super.new.init(path, serveraddress, username, userpass, groupname)});
 	}
 
-	*multicast { |username|
+	*multicast { |username ... args|
 
 		//"Depricated: please switch to broadcast".warn;
 		this.deprecated(thisMethod, this.class.findMethod(\broadcast));
 
 	}
 
-	*broadcast { |username|
+	*broadcast { |username, groupname|
 
-		if (all.at('bile').notNil, {
+		groupname = groupname ? default_name;
+
+		if (all.at(groupname).notNil, {
 			"Already Connected".warn;
-			^all.at('bile').nick_(username);
+			^all.at(groupname).nick_(username);
 		} , {
-			^super.new.init(\broadcast, nil, username);
+			^super.new.init(\broadcast, nil, username, nil, groupname);
 		});
 	}
 
 
 	*default {
-		^(all.at('bile'))
+		^(all.at(default_name))
 	}
 
-	init { |path = "broadcast", serveraddress, username, userpass|
+	default_ { |obj|
+		obj.isKindOf(NetAPI).if({
+			default_name = obj.name;
+		}, {
+			default_name = obj.asString;
+		});
+	}
+
+	init { |path = "broadcast", serveraddress, username, userpass, groupname|
 
 
-		name = 'bile';
+		name = groupname ? 'bile';
 		remote_functions = Dictionary.new;
 		remote_update_listeners = Dictionary.new;
 		user_update_listeners = Dictionary.new;
@@ -112,7 +128,7 @@ NetAPI {
 				client = OscGroupClient(serveraddress, username, userpass, "bile", "bacon");
 				*/
 				//"APIResponder".postln;
-				client = APIResponder(path, serveraddress, username, userpass);
+				client = OscGroupClientResponder(path, serveraddress, username, userpass);
 			} , {
 
 				"No such path\nDefaulting to broadcast".warn;
@@ -819,7 +835,7 @@ NetAPI {
 	}
 }
 
-APIResponder {
+OscGroupClientResponder {
 
 	classvar client;
 	var responders;
@@ -850,7 +866,7 @@ APIResponder {
 
 
 	join { |action|
-		"join - APIResponder".postln;
+		"join - OscGroupClientResponder".postln;
 		client.join;//(action);
 		action.value;
 	}

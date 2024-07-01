@@ -98,18 +98,25 @@ Your username on the network
 argument:: userpass
 your password on the OscGroupServer
 
+argument:: groupname
+A symbol used for the name of the group in OSC messages
+
 
 
 METHOD:: broadcast
-create a new instance of NetAPI whihc uses broadcast networking
+create a new instance of NetAPI which uses broadcast networking
 argument:: username
 Your username on the network
+argument:: groupname
+A symbol used for the name of the group in OSC messages
+
 
 
 METHOD:: default
+argument:: obj
+A symbol used for the name of the group in OSC messages, used in case no group name is otherwise specified
 
-returns:: the instance of NetAPI that has already been created elsewhere
-
+returns:: When used as a getter, returns the instance of NetAPI that has already been created elsewhere, which uses the default group name
 
 
 INSTANCEMETHODS::
