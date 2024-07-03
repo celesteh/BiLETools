@@ -186,11 +186,8 @@ code::
 // run each line separately
 
 a = SharedResource(5);
-
 a.action_({|val| val.value.postln; });
-
 a.value_("Wow!");
-
 a.value_(2.2);
 
 ::
@@ -202,15 +199,10 @@ An example using changeFunc_
 code::
 
 a = SharedResource(5);
-
 a.action_({|val| val.value.postln; });
-
 a.value_({|old| old + 1}); // run this last line a few times
-
-
 a.changeFunc_({|old, new| (old - new).abs > 1}) // only alert people if the
 // change is greater than 1
-
 
 a.value_({|old| old + 1}); // run this last line a few times
 ::

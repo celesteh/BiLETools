@@ -1,7 +1,7 @@
 TITLE:: SharedCV
 summary:: A dynamic container for a number that can be plugged into Patterns, Streams, GUIs, Synths, etc.
 categories:: Libraries>BiLETools, Control
-related:: Classes/NetworkGui, Classes/NetAPI, Classes/BileTools, Classes/ControlSpec, Classes/CV
+related:: Classes/NetworkGui, Classes/NetAPI, Classes/SharedResource, Classes/ControlSpec, Classes/CV
 DESCRIPTION::
 This class is a fork of the CV class in the Conductor Quark, by Ron Kuivila
 
