@@ -11,43 +11,38 @@ NetAPI {
 
 
 	*initClass {
-		var getIP, local;
-
-
+		var getIPFunc;
 
 		all = IdentityDictionary.new;
 		listeners = Dictionary.new;
 
-		local = NetAddr("127.0.0.1", 57120); // local machine
+		getIPFunc = {
+			var getIP, local, temp_port;
 
-		getIP = {arg action;
-			var before = NetAddr.broadcastFlag;
-			NetAddr.broadcastFlag = true;
+			temp_port = 57121.rrand(58000);
+			local = NetAddr("127.0.0.1", temp_port); // local machine
 
-			// OSCresponder is deprecated
-			// from, tag, action
-			//OSCresponder(nil, '/getMyIP', { arg t,r,msg,addr; // time, responder, message
+			getIP = {arg action;
+				var before = NetAddr.broadcastFlag;
+				NetAddr.broadcastFlag = true;
 
-				//action.(addr);
-				//NetAddr.broadcastFlag = before;
-				//r.remove;
+				OSCdef(\getMyIP, {arg msg, t, addr;
 
-			//}).add;
+					//addr.postln;
+					action.(addr);
+					NetAddr.broadcastFlag = before;
+				}, '/getMyIP', nil, temp_port).oneShot;
 
-			OSCdef(\getMyIP, {arg msg, t, addr;
+				NetAddr("255.255.255.255", temp_port).sendMsg('/getMyIP');
+				nil;
+			};
 
-				//addr.postln;
-				action.(addr);
-				NetAddr.broadcastFlag = before;
-			}, '/getMyIP').oneShot;
-
-			NetAddr("255.255.255.255", NetAddr.langPort).sendMsg('/getMyIP');
-			nil;
+			getIP.value({arg addr;
+				ip =  addr.ip;
+			});
 		};
 
-		getIP.value({arg addr;
-			ip =  addr.ip;
-		});
+		StartUp.add(getIPFunc);
 
 		default_name = 'bile';
 	}
@@ -181,26 +176,26 @@ NetAPI {
 		("You cannot change your name while you are already connected.").warn;
 		/*
 		if (username != nick, {
-			client.canChangeName.if({
-				colleagues[username].isNil.if({
-					nick = username;
-				} , {
-					(username.asString + " is already in use.").warn;
-				});
-			} , {
-				("You cannot change your name while you are already connected.").warn;
-			})
+		client.canChangeName.if({
+		colleagues[username].isNil.if({
+		nick = username;
+		} , {
+		(username.asString + " is already in use.").warn;
+		});
+		} , {
+		("You cannot change your name while you are already connected.").warn;
+		})
 		})
 		*/
 	}
 
 	init_querying {
 
-						// set up API Querying
+		// set up API Querying
 		//"init querying".postln;
 		client.addResp(("/" ++ name ++ "/API/Query").asSymbol,  { arg time, resp, msg;
 			var desc;
-						//"query".postln;
+			//"query".postln;
 			Task({ // pause between sending keys
 				functions.keysValuesDo({ |key, dat|
 
@@ -223,8 +218,8 @@ NetAPI {
 						desc = "";
 
 						(dat.isKindOf(SequenceableCollection)).if({
-							(dat.size > 1).if({
-								desc = dat[1];
+						(dat.size > 1).if({
+						desc = dat[1];
 						})});
 						*/
 						this.advertiseShared(key, dat.desc);
@@ -259,38 +254,38 @@ NetAPI {
 				});
 			});
 
-						//[key.asSymbol, desc, msg].postln;
-						//remote_functions.keys.postln;
-						//remote_functions.includes(key.asSymbol).not.if ({
-							remote_functions.put(key.asSymbol, desc ?? "");
-							remote_update_listeners.do({|action|
-								action.value(key.asSymbol, desc);
-							})
-						//})
+			//[key.asSymbol, desc, msg].postln;
+			//remote_functions.keys.postln;
+			//remote_functions.includes(key.asSymbol).not.if ({
+			remote_functions.put(key.asSymbol, desc ?? "");
+			remote_update_listeners.do({|action|
+				action.value(key.asSymbol, desc);
+			})
+			//})
 		});
 
 		client.addResp(("/" ++ name ++ "/API/IDQuery").asSymbol,  { arg time, resp, msg;
-						"IDquery".postln;
-						//client.sendMsg('/bile/API/ID', nick, this.my_ip, NetAddr.langPort);
-						this.identify;
-							//("key" + key).postln;
+			"IDquery".postln;
+			//client.sendMsg('/bile/API/ID', nick, this.my_ip, NetAddr.langPort);
+			this.identify;
+			//("key" + key).postln;
 		});
 
 		client.addResp(("/" ++ name ++ "/API/ID").asSymbol,  { arg time, resp, msg;
-						var new_user, username, my_nick;
-						//msg.postln;
+			var new_user, username, my_nick;
+			//msg.postln;
 
-						my_nick = nick.asString.replace(" ", "");
-						username = msg[1].asString.replace(" ", "");
+			my_nick = nick.asString.replace(" ", "");
+			username = msg[1].asString.replace(" ", "");
 
-						(username != nick.asString).if ({
-							username = username.asSymbol;
-							colleagues[username].isNil.if({
-								new_user = User.new(msg[2], msg[3], msg[1]);
-								this.addUser(new_user);
-								//("adding" + username + "to" + nick + [msg[2], msg[3], msg[1]]).postln;
-							})
-						});
+			(username != nick.asString).if ({
+				username = username.asSymbol;
+				colleagues[username].isNil.if({
+					new_user = User.new(msg[2], msg[3], msg[1]);
+					this.addUser(new_user);
+					//("adding" + username + "to" + nick + [msg[2], msg[3], msg[1]]).postln;
+				})
+			});
 		});
 
 
@@ -411,7 +406,7 @@ NetAPI {
 					} , {
 						//"error".postln;
 						user.sendMsg(("/" ++ name ++ "/API/Error/noSuchSymbol").asSymbol,
-								("/"++name++"/" ++ nick ++ "/" ++ symbol).asSymbol);
+							("/"++name++"/" ++ nick ++ "/" ++ symbol).asSymbol);
 					});
 				})
 			});
@@ -474,13 +469,13 @@ NetAPI {
 
 	}
 
-		// defining
+	// defining
 	add { arg selector,func, desc;
 		functions.put(selector.asSymbol, [func, desc]);
 		client.addResp(this.pr_formatTag(selector).asSymbol, { arg time, resp, msg;
 			var result,returnAddr,returnPath;
 			result = NetAPI.prFormatResult( this.call(selector,*msg[1..])
-										/*func.value(*msg[1..])*/ );
+			/*func.value(*msg[1..])*/ );
 			//# returnAddr,returnPath = API.prResponsePath(addr);
 			//returnAddr.sendMsg(*([returnPath] ++ result));
 			//msg.postln;
@@ -529,7 +524,7 @@ NetAPI {
 		var m, ret;
 
 		//try {
-			//[selector, args].postln;
+		//[selector, args].postln;
 
 		m = functions[selector.asSymbol];
 
@@ -538,18 +533,18 @@ NetAPI {
 			//args.postln;
 			^m.valueArray(args);
 			//ret = true;
-			}, {
-				//ret = false;
-				^DoesNotUnderstandError(this, selector, args);
-			});
-			// , {
-			//	(remote_functions.includes(selector)). if ({
-			//		this.sendMsg(selector, args);
-			//		"Sending to the network"
-			//	} , {
-			//		(selector.asString + "not found in NetAPI" + name).warn;
-			//	})
-			//})
+		}, {
+			//ret = false;
+			^DoesNotUnderstandError(this, selector, args);
+		});
+		// , {
+		//	(remote_functions.includes(selector)). if ({
+		//		this.sendMsg(selector, args);
+		//		"Sending to the network"
+		//	} , {
+		//		(selector.asString + "not found in NetAPI" + name).warn;
+		//	})
+		//})
 		//} {|exception| exception.throw; }
 		^ret;
 	}
@@ -681,13 +676,13 @@ NetAPI {
 		/*
 		sym = ("/bile/" ++ (msg[0].asString ?? "")).asSymbol;
 		(msg.size > 1).if ({
-			msg[0] = sym;
-			client.sendMsg(*msg);
-			//[[sym] ++ msg[1..]].postln;
-			msg.postln;
+		msg[0] = sym;
+		client.sendMsg(*msg);
+		//[[sym] ++ msg[1..]].postln;
+		msg.postln;
 		} , {
-			client.sendMsg(sym);
-			sym.postln;
+		client.sendMsg(sym);
+		sym.postln;
 		});
 		*/
 		sym = this.pr_formatMsg(*msg);
@@ -844,15 +839,15 @@ OscGroupClientResponder {
 
 	*new {|path, serveraddress, username, userpass|
 
-			^super.new.init(path, serveraddress, username, userpass);
+		^super.new.init(path, serveraddress, username, userpass);
 
-		}
+	}
 
 	init{|path, serveraddress, username, userpass|
 
 		client.isNil.if ({
 
-				//"killall OscGroupClient".unixCmd;
+			//"killall OscGroupClient".unixCmd;
 			OscGroupClient.program_(path);
 
 			client = OscGroupClient(serveraddress, username, userpass, "bile", "bacon");
@@ -915,9 +910,9 @@ BroadcastResponder {
 
 	*new {
 
-			^super.new.init;
+		^super.new.init;
 
-		}
+	}
 
 	init{
 
