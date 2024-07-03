@@ -166,6 +166,38 @@ a.add('postln',{arg text;
 ::
 
 
+METHOD:: map
+map a key to a function known to the API
+
+argument:: selector
+The unquie symbol for the data
+
+argument:: key
+The unique symbol for the function you want to invoke when the data changes.
+discussion::
+code::
+a = NetAPI.broadcast("nick");
+a.add('postln',{arg text;
+	text.postln;
+}, "Echo the text to the post window. Usage: postln, text");
+
+// Now let's say another User on the same LAN has joined as A and used SharedREsource.mountAPI to share some data called 'demo'
+// When demo changes, it will invoke the postln.
+m.map('A/demo', 'postln');
+
+::
+
+
+
+
+
+METHOD:: subscribe
+Ask for updates to shared remote data
+
+argument::  selector
+The unquique symbol for the remote data, which is formatted as an OSC tag, username/data_id
+
+
 
 METHOD:: remove
 Remove a function from the API. IT can no longer be called via the API locally or remotely and remote users will be informed of the removal.

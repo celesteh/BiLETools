@@ -92,7 +92,7 @@ ARGUMENT:: broadcast
 a Boolean. If true, the entire network is notified of updates. If false, only registered listeners are
 
 ARGUMENT:: symbol
-an OSC tag that can be specified instead of or inaddition to the key.
+an OSC tag that can be specified instead of or in addition to the key.
 
 returns:: an instance of link::Classes/SharedRemoteListeners::
 
@@ -291,11 +291,12 @@ a.value_({|old| old + 1.1});
 code::
 // now go back to computer B
 (
-m.add('say', { |something| something.asString.speak});
-m.map('A/demo', 'say');
+m.add('postln', { |something| something.postln;
+}, "Echo the text to the post window. Usage: postln, text");
+m.map('A/demo', 'postln');
 )
 // that maps a SharedResource with an API key
-// the remote resource 'demo' will call the local API method 'say'
+// the remote resource 'demo' will call the local API method 'postln'
 ::
 
 code::

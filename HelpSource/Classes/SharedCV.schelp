@@ -1,0 +1,206 @@
+TITLE:: SharedCV
+summary:: A dynamic container for a number that can be plugged into Patterns, Streams, GUIs, Synths, etc.
+categories:: Libraries>BiLETools, Control
+related:: Classes/NetworkGui, Classes/NetAPI, Classes/BileTools, Classes/ControlSpec, Classes/CV
+DESCRIPTION::
+This class is a fork of the CV class in the Conductor Quark, by Ron Kuivila
+
+A CV models a single floating point value or an array of such values constrained to a specific numerical range by a ControlSpec.
+
+CV is derived from Stream so it can be used directly in Stream and Pattern definitions. CV:connect(view) will connect a CV to a GUI ControlView in both Cocoa and Swing. GUI representations. A similar set of methods have been defined that connect argument arrays consisting of keys and CVs to nodes, buses, buffers, and NodeProxys.
+
+
+
+
+CLASSMETHODS::
+
+
+These objects are ususally created by the link::Classes/NetworkGui::.  For example:
+
+code::
+var api, matrix, rq;
+api = NetAPI.broadcast("Nick");
+
+matrix = NetworkGui.make(api, [\amp], {|gui,amp, freq|
+});
+
+rq = matrix.addShared(\rq);
+matrix.show;
+::
+
+The arguments amp and freq as well as the variable rq are all SharedCVs.
+
+
+
+
+METHOD:: new
+
+
+ARGUMENT:: container
+this would normally refer to the link::Classes/NetworkGui:: that created the object, but can be left nil.
+
+ARGUMENT:: shared
+the link::Classes/SharedResource:: which is being tied to the SharedCV
+
+ARGUMENT:: network
+an instance of link::Classes/NetAPI::. If you are not planning on sharing this value remotely, this can be left as nil.
+
+ARGUMENT:: key
+the key underwhich this SharedResource is shared on the network. If you are not planning on sharing this value remotely, this can be left as nil.
+
+
+INSTANCEMETHODS::
+
+subsection:: Setting the range of values on existing SharedCVs
+
+
+METHOD:: spec
+Atach a ControlSpec
+
+ARGUMENT:: s
+Any object that responds to asSpec (Nil, Symbol, ControlSpec, Array)  with a link::Classes/ControlSpec::
+
+ARGUMENT:: default_value
+ the initial value of the CV
+
+ARGUMENT:: changer
+
+
+METHOD:: sp
+Create and attach a link::Classes/ControlSpec::
+
+ARGUMENT:: default
+the initial value
+
+ARGUMENT:: minval
+The minimum value of the range.
+
+ARGUMENT:: maxval
+The maximum value of the range.
+
+ARGUMENT:: step
+The smallest possible increment.
+
+ARGUMENT:: warp
+a Warp, a symbol (e.g. \lin or \exponential: Default value is \lin), or something else that returns a link::Classes/Warp:: when sent the message .asWarp. A link::Classes/CurveWarp:: is defined by a number.
+
+ARGUMENT:: changer
+
+
+subsection:: Accessing
+
+METHOD:: value
+Answer the current value of the control. This is how the control is read within tasks and patterns. Or set the current value of the control.
+
+ARGUMENT:: val
+The new value
+
+ARGUMENT:: changer
+the entity changing the value
+
+ARGUMENT::  ... moreArgs
+additional arguments passed to action functions and dependants
+
+
+
+
+
+METHOD:: input
+a number ranging form 0 to 1 that corresponds to postion of the current value between min and max.
+
+ARGUMENT:: val
+an inputValue ranging form 0 to 1 results in this.value ranging from min to max.
+
+ARGUMENT:: changer
+the object which has chaned the inputValue
+
+ARGUMENT::  ... moreArgs
+additional arguments passed to action functions and dependants
+
+This method is typically used by external controls (such as MIDI) and GUI views to alter the CV.
+
+discussion::
+Within a function, SharedCVs are accessed using value and input and altered using value_ and input_.
+
+code::
+(
+var api, matrix;
+api = NetAPI.broadcast("Nick");
+
+matrix = NetworkGui.make(api, [], {|gui|
+});
+
+a = matrix.addShared(\freq);
+matrix.show;
+
+
+
+Task({
+	10.do({
+		a.input.post; " ".post;		// print the value scaled to the range [0,1]
+		a.value.postln; 			// print the actual value
+		a.input_(1.0.rand); 		// select a new value at random
+
+		// the weighting of values will conform to the warp
+		// with \exp, values fall uniformly in each octave
+
+		wait(0.1);
+	})
+}).play(AppClock)
+)
+::
+
+subsection:: Patterns
+
+
+
+Within a pattern definition, a SharedCV can directly substitute for a link::Classes/Pattern::
+
+code::
+Pbind(
+	\freq, Pn(a, 20),
+	\dur, 0.2
+).play;
+::
+
+link::Classes/Pfunc:: can be used to change the SharedCV from within a Pattern.
+code::
+Pbind(
+	\set_a, Pfunc({ arg ev; a.value_(100.rrand(1000).round(100), ev) }),
+	\freq, Pn(a, 20),
+	\dur, 0.2
+).play;
+::
+
+subsection:: Busses
+
+A SharedVC can be directly attached to a link::Classes/Bus::
+
+METHOD:: bus
+Create a new Bus on the server and pass all value changes to that Bus
+
+ARGUMENT:: s
+the Server on which to make the Bus
+
+returns:: the new Bus
+
+
+
+
+METHOD:: freeBus
+free the Bus on the server.
+
+returns:: (describe returnvalue here)
+
+
+
+
+
+METHOD:: kr
+JitLib support
+
+
+
+
+
+

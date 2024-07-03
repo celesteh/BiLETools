@@ -1,0 +1,69 @@
+TITLE:: SharedRemoteListeners
+summary:: This holds a dictionary of all the remote listners for a Shared Resource on a particular NetAPI
+categories::  Libraries>BiLETools
+related:: Classes/NetAPI, Classes/SharedResource
+
+DESCRIPTION::
+When a SharedResource is shared via a NetAPI, this class keeps track of the remote users who have expressed
+interest in being notified on a value change.
+
+
+CLASSMETHODS::
+
+METHOD:: new
+(describe method here)
+
+ARGUMENT:: key
+A symbol to use to identify this data, which will be converted to an OSC tag, unless one is specified.
+
+ARGUMENT:: api
+the instance of link::Classes/NetAPI:: that you wish to share the data with.
+
+ARGUMENT:: shared
+the instance of link::Classes/SharedResource:: to share
+
+ARGUMENT:: desc
+a String that documents what sort of data we're sharing with this object. This will be shared with other users on the network.
+
+ARGUMENT:: broadcast
+a Boolean. If true, the entire network is notified of updates. If false, only registered listeners are
+
+
+ARGUMENT:: symbol
+an OSC tag that can be specified instead of or in addition to the key.
+
+
+
+
+
+INSTANCEMETHODS::
+
+METHOD:: addListener
+A remote user registering to be informed of changes to the data
+
+ARGUMENT:: punter
+the user's name on the network, as they set it with link::Classes/NetAPI::
+
+
+METHOD:: removeListener
+remove one of the listeners
+
+ARGUMENT:: punter
+the user's name on the network, as they set it with link::Classes/NetAPI::
+
+
+
+METHOD:: action
+called when the link::Classes/SharedResource:: has changed
+ARGUMENT::  ... args
+arguments passed along with the update in the value
+
+
+METHOD:: n
+Set how often updates are sent, as in send one update for ever n changes. Setting this to 2, would send every other update, for example.
+ARGUMENT:: new
+the new value for n
+
+
+
+

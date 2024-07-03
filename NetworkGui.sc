@@ -755,8 +755,8 @@ SharedCV {
 	}
 
 
-	sp	{ | default= 0, lo = 0, hi=0, step = 0, warp = 'lin', changer |
-		this.spec_(ControlSpec(lo,hi, warp, step, default), changer:changer);
+	sp	{ | default= 0, minval = 0, maxval=0, step = 0, warp = 'lin', changer |
+		this.spec_(ControlSpec(minval, maxval, warp, step, default), changer:changer);
 	}
 
 	local_spec_{|s, default_value, changer|
