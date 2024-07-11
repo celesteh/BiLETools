@@ -47,22 +47,22 @@ NetAPI {
 		default_name = 'bile';
 	}
 
-	*new { |path = "broadcast", serveraddress, username, userpass, groupname|
+	*new { |path = "broadcast", serveraddress, username, userpass, groupname, grouppass, port|
 
 		groupname = groupname ? default_name;
 
 		^(all.at(groupname) ?? {
 
-			^super.new.init(path, serveraddress, username, userpass, groupname)});
+			^super.new.init(path, serveraddress, username, userpass, groupname, grouppass, port)});
 	}
 
-	*oscgroup { |path = "broadcast", serveraddress, username, userpass, groupname|
+	*oscgroup { |path = "broadcast", serveraddress, username, userpass, groupname, grouppass|
 
 		groupname = groupname ? default_name;
 
 		^(all.at(groupname) ?? {
 
-			^super.new.init(path, serveraddress, username, userpass, groupname)});
+			^super.new.init(path, serveraddress, username, userpass, groupname, grouppass)});
 	}
 
 	*multicast { |username ... args|
@@ -72,7 +72,7 @@ NetAPI {
 
 	}
 
-	*broadcast { |username, groupname|
+	*broadcast { |username, groupname, port|
 
 		groupname = groupname ? default_name;
 
@@ -80,7 +80,7 @@ NetAPI {
 			"Already Connected".warn;
 			^all.at(groupname).nick_(username);
 		} , {
-			^super.new.init(\broadcast, nil, username, nil, groupname);
+			^super.new.init(\broadcast, nil, username, nil, groupname, port);
 		});
 	}
 
@@ -97,10 +97,10 @@ NetAPI {
 		});
 	}
 
-	init { |path = "broadcast", serveraddress, username, userpass, groupname|
+	init { |path = "broadcast", serveraddress, username, userpass, groupname, grouppass, port|
 
-
-		name = groupname ? 'bile';
+		groupname = groupname ? default_name;
+		name = groupname;
 		remote_functions = Dictionary.new;
 		remote_update_listeners = Dictionary.new;
 		user_update_listeners = Dictionary.new;
@@ -123,11 +123,11 @@ NetAPI {
 				client = OscGroupClient(serveraddress, username, userpass, "bile", "bacon");
 				*/
 				//"APIResponder".postln;
-				client = OscGroupClientResponder(path, serveraddress, username, userpass);
+				client = OscGroupClientResponder(path, serveraddress, username, userpass, grouppass, port);
 			} , {
 
 				"No such path\nDefaulting to broadcast".warn;
-				client = BroadcastResponder.new;
+				client = BroadcastResponder(port);
 			});
 		} , {
 
@@ -137,8 +137,11 @@ NetAPI {
 
 			});
 
-			client = BroadcastResponder.new;
+			client = BroadcastResponder(port);
 		});
+
+		// Client need to know about the net addresses they have to message
+		this.add_user_update_listener(client, {|user| client.newColleage(user) });
 
 		client.join({
 
@@ -781,7 +784,7 @@ NetAPI {
 
 	identify {
 		"identifying".postln;
-		this.sendMsg('API/ID', nick, this.my_ip, NetAddr.langPort);
+		this.sendMsg('API/ID', nick, this.my_ip, client.recvPort);
 	}
 
 	add_remote_update_listener { |owner, action|
@@ -837,20 +840,20 @@ OscGroupClientResponder {
 	var <echo;
 	var <canChangeName;
 
-	*new {|path, serveraddress, username, userpass|
+	*new {|path, serveraddress, username, userpass, groupname, grouppass|
 
-		^super.new.init(path, serveraddress, username, userpass);
+		^super.new.init(path, serveraddress, username, userpass, groupname, grouppass);
 
 	}
 
-	init{|path, serveraddress, username, userpass|
+	init{|path, serveraddress, username, userpass, groupname, grouppass="bacon"|
 
 		client.isNil.if ({
 
 			//"killall OscGroupClient".unixCmd;
 			OscGroupClient.program_(path);
 
-			client = OscGroupClient(serveraddress, username, userpass, "bile", "bacon");
+			client = OscGroupClient(serveraddress, username, userpass, groupname.toLower, grouppass);
 		});
 
 		responders = Dictionary.new;
@@ -894,7 +897,12 @@ OscGroupClientResponder {
 
 	}
 
+	recvPort {
+		^NetAddr.langPort;
+	}
 
+	newColleage{
+	}
 
 }
 
@@ -902,23 +910,55 @@ BroadcastResponder {
 
 	//classvar client;
 	//classvar <ip;
+	var port;
+	var <recvPort;
 	var responders;
 	var netAddr;
 	var <echo;
 	var <canChangeName;
 
+	*pr_getPort {|requestedPort, maxTries=5|
+		var success, keepTrying = true, i=0;
 
-	*new {
+		{keepTrying}.while({
 
-		^super.new.init;
+			requestedPort = requestedPort + i;
+			success = thisProcess.openUDPPort(requestedPort);
+			keepTrying = success.not; //If we failed, try again
+			i = i +1;
+			// Don't loop this forever
+			keepTrying = keepTrying && ( i <= maxTries);
+		});
+
+		success.if({
+			^requestedPort;
+		}, {
+			"failed to get port".warn;
+			^nil;
+		})
+	}
+
+
+	*new {|port|
+
+		^super.new.init(port);
 
 	}
 
-	init{
+	init{|sharedPort|
 
+		var maxTries = 5;
+
+		port = sharedPort ? NetAddr.langPort;
 		responders = [];//Dictionary.new;
 		NetAddr.broadcastFlag = true;
-		netAddr = NetAddr("255.255.255.255", 57120);
+
+		// Allw some port drift in case of crashes
+		netAddr =  [ NetAddr("255.255.255.255", port) ];
+
+		// Now ask for the port, with the allowable drift
+		recvPort = this.class.pr_getPort(port, maxTries);
+
 		echo = true;
 		canChangeName = true;
 	}
@@ -928,6 +968,7 @@ BroadcastResponder {
 
 		action.value;
 	}
+
 
 
 	addResp{ |key, func|
@@ -962,10 +1003,21 @@ BroadcastResponder {
 
 	sendMsg{  arg ... msg;
 
-		netAddr.sendMsg(*msg);
+		netAddr.do({|n| n.sendMsg(*msg)});
 	}
 
+	newColleage {|user|
 
+		var ports, userPort;
+
+		userPort = user.netAddr.port;
+
+		ports = netAddr.collect({|n| n.port });
+		ports.includes(userPort).not.if ({ // we are not messaging this port
+
+			netAddr = netAddr ++ NetAddr("255.255.255.255", userPort);
+		});
+	}
 }
 
 

@@ -1,12 +1,73 @@
 TITLE:: BileTools
 summary:: A library to enable network data sharing for laptop bands
 categories:: Libraries>BiLETools
-related:: Classes/NetAPI, Classes/BileClock, Classes/BileChat
+related:: Classes/NetAPI, Classes/BileClock, Classes/BileChat, Classes/NetworkGUI, Classes/OscGroupClient
 
 DESCRIPTION::
 This library was designed to allow hread safe network data sharing according to MVC. The most important class is link::Classes/NetAPI::
 
-This particular class offers a convience method for showing a chat window and a shared stopwatch.
+subsection:: Setup
+
+This set of classes allows users to communicate on a LAN or WAN. LAN users can use broadcast.
+
+If broadcast doesn't work, say because your LAN blocks some ports, or if you are on a WAN, you
+will need the link::Classes/OscGroupClient:: quark. code::Quarks.install("https://github.com/supercollider-quarks/OscGroupClient");::
+
+The OscGroupClient Quark requires a separate helper program which is available for Mac, Windows and
+Linux. Mac and Windows users can find binaries from google. link::https://code.google.com/archive/p/oscgroups/downloads::.
+
+Linux users can build from source. link::https://github.com/RossBencina/oscgroups::
+
+subsection:: Demo
+
+Let's say you have a group on a LAN and want to make StuckNote. In this example, we build a GUI and use it to control a SynthDef called \x.
+All users would make their own synthdef and have their own name. Our example user is named "nick".
+
+code::
+s.waitForBoot({
+	var api, matrix;
+
+	api = NetAPI.broadcast("nick", "laptoppers", 67120);
+
+	// nick's synthdef:
+	SynthDef(\x, {|x_factor=0.5, amp=0.2, out=0, pan=0, gate=1|
+		var sin, env, panner;
+
+		sin = SinOsc.ar(x_factor.linexp(0,1,Rand(100.0, 300.0) ,Rand(600.0, 1200.0)),
+			SinOsc.ar(x_factor.linexp(0,1,Rand(600.0, 1200.0), Rand(100.0, 300.0) ),
+				0, Rand(pi/2, 2pi)));
+		env = EnvGen.kr(Env.asr, gate, doneAction:2) * amp;
+
+		panner = Pan2.ar(sin, pan, env);
+
+		Out.ar(out, panner);
+	}).add;
+
+	s.sync;
+
+	matrix = NetworkGui.make(api, nil, {|gui, x, amp|
+
+		x.spec = \unipolar; // scale the x fader
+
+		gui.synth_( // assign the faders to the synth
+			(
+				instrument: \x
+			),
+			(
+				x_factor: x,
+				amp: amp
+			)
+		);
+
+		gui.copyRemote = true; // all other users will also have amp and x,
+		// so create faders for them as they join the network.
+	}). show;
+})
+::
+
+
+subsection:: This class
+The BileTools class offers a convience method for showing a chat window and a shared stopwatch.
 
 CLASSMETHODS::
 

@@ -172,9 +172,12 @@ NetworkGui : Environment {
 
 		var res, scv, arg_list, shared_sym;
 
-		"foo".postln;
+		//"foo".postln;
 
 		api = net_api;
+
+		local_sym = local_sym ? [];
+
 		local = Dictionary.new;
 		shared = Dictionary.new;
 		remote = Dictionary.new;

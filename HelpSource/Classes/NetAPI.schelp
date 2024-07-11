@@ -7,16 +7,16 @@ DESCRIPTION::
 This class handles network ommunication for BiLETools.  This can be done via the the OscGroup server or via broadcast.
 
 
-If you want to use the OSCGroup server, the constructor asks for the full path to the client, your username and your password.  (Group authentication is already included.)
+If you want to use the OSCGroup server, the constructor asks for the full path to the client, the URL of the serverm your username, your password, the group name and the group password. Your group must agree ahead on the server url, the group name and the group password. You can put anything you want for your name, as long as it has no spaces or special characters. You can also put anything you want for your password. You can change it between sessions, but may run into problems if you change it in the middle of a gig or rehearsal.
 
 code::
-a = NetAPI("/Applications/Media/pro/audio/SuperCollider/OscGroup/OscGroupClient", "localhost", "nick", "passwd");
+a = NetAPI("/Applications/Media/pro/audio/SuperCollider/OscGroup/OscGroupClient", "oscgroups.iua.upf.edu", "nick", "passwd", "laptoppers", "laptoppers_password");
 ::
 
-If you want to use broadcast, you only need to provide your username.
+If you want to use broadcast, you only need to provide your username, groupname and ideally a port.
 
 code::
-a = NetAPI.broadcast("nick");
+a = NetAPI.broadcast("nick", "laptoppers", 67120);
 ::
 
 This class  knows your hostname and ip address, so if you want those:
@@ -84,31 +84,37 @@ I
 
 CLASSMETHODS::
 
-METHOD:: new
-create a new instance of NetAPI which uses OSCGroups
+METHOD:: oscgroup
+Create a new instance of NetAPI which uses OSCGroups
 argument:: path
-path to the OSCGroupClient program
+Path to the OSCGroupClient program
 
 argument:: serveraddress
-the address of the OscGroupServer
+The address of the OscGroupServer
 
 argument:: username
-Your username on the network
+Your username on the network. This should not include spaces, commas or special characters that can't be used in an OSC tag.
 
 argument:: userpass
-your password on the OscGroupServer
+Your password on the OscGroupServer. You can put anything you want for this and can change it between sessions. You may run into problem if you try to change your password in the middle of a gig or rehearsal.
 
 argument:: groupname
-A symbol used for the name of the group in OSC messages
+A symbol used for the name of the group in OSC messages and, for WAN users, the name of the group on the OSCGroupServer. This should not include spaces, commas or special characters that can't be used in an OSC tag.
+
+argument:: grouppass
+For WAN users, he password for the OscGroup on the OscGroupServer
 
 
 
 METHOD:: broadcast
-create a new instance of NetAPI which uses broadcast networking
+Create a new instance of NetAPI which uses broadcast networking
 argument:: username
-Your username on the network
+Your username on the network. This should not include spaces, commas or special characters that can't be used in an OSC tag.
 argument:: groupname
-A symbol used for the name of the group in OSC messages
+A symbol used for the name of the group in OSC messages. This should not include spaces, commas or special characters that can't be used in an OSC tag.
+
+argument:: port
+The port you would like to receive messages on and send messages to. Broadcast users must all specify the same port. It can be a good idea to use a different port than the default langPort, especially if anyone is having problems with crashing sclang.
 
 
 
