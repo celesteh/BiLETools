@@ -89,7 +89,7 @@ NetAPI {
 		^(all.at(default_name))
 	}
 
-	default_ { |obj|
+	*default_ { |obj|
 		obj.isKindOf(NetAPI).if({
 			default_name = obj.name;
 		}, {
@@ -100,6 +100,7 @@ NetAPI {
 	init { |path = "broadcast", serveraddress, username, userpass, groupname, grouppass, port|
 
 		groupname = groupname ? default_name;
+		default_name = groupname; // the one you made last is the default
 		name = groupname;
 		remote_functions = Dictionary.new;
 		remote_update_listeners = Dictionary.new;
@@ -117,16 +118,11 @@ NetAPI {
 			path = path.standardizePath;
 			File.exists(path).if({
 
-				/*
-				OscGroupClient.program_(path);
-
-				client = OscGroupClient(serveraddress, username, userpass, "bile", "bacon");
-				*/
 				//"APIResponder".postln;
 				client = OscGroupClientResponder(path, serveraddress, username, userpass, grouppass, port);
 			} , {
 
-				"No such path\nDefaulting to broadcast".warn;
+				"No such path %\nDefaulting to broadcast".format(path).warn;
 				client = BroadcastResponder(port);
 			});
 		} , {
@@ -394,7 +390,7 @@ NetAPI {
 
 					user = colleagues[username];
 					user.isNil.if({
-						user = User(ip, port, username);
+						user = BileUser(ip, port, username);
 						this.addUser(user);
 						//"new user".postln;
 					});
@@ -751,12 +747,13 @@ NetAPI {
 
 	subscribe { | selector|
 		var resource;
+
 		selector = selector.asSymbol;
 		resource = SharedResource.new;
 		//resource.mountAPI(this, selector);
 		//SharedRemoteListener(selector, this, resource);
 		selector = this.pr_formatTag(selector);
-		this.sendMsg('API/registerListener', selector, nick, this.my_ip, NetAddr.langPort);
+		this.sendMsg('API/registerListener', selector, nick, this.my_ip, client.recvPort);
 		//("subscribing to" + selector).postln;
 		this.add(selector, { |input|
 			resource.value_(input, this);
@@ -904,6 +901,11 @@ OscGroupClientResponder {
 	newColleage{
 	}
 
+	// this needs more thought
+	myAddr{
+		^[client.netAddr.ip, client.netAddr.port]; // this is who you message to reach me
+	} // but you have to be logged in, so this doesn't help
+
 }
 
 BroadcastResponder {
@@ -945,16 +947,17 @@ BroadcastResponder {
 
 	}
 
-	init{|sharedPort|
+	init{|sharedPort, ip|
 
 		var maxTries = 5;
 
+		ip = ip ? "255.255.255.255";
 		port = sharedPort ? NetAddr.langPort;
 		responders = [];//Dictionary.new;
 		NetAddr.broadcastFlag = true;
 
 		// Allw some port drift in case of crashes
-		netAddr =  [ NetAddr("255.255.255.255", port) ];
+		netAddr =  [ NetAddr(ip, port) ];
 
 		// Now ask for the port, with the allowable drift
 		recvPort = this.class.pr_getPort(port, maxTries);
@@ -1018,6 +1021,60 @@ BroadcastResponder {
 			netAddr = netAddr ++ NetAddr("255.255.255.255", userPort);
 		});
 	}
+
+
+	myAddr{
+		^[NetAPI.ip, recvPort];
+
+	}
+
+
+
 }
 
+IndividualResponder : BroadcastResponder {
 
+	// Exactly the same, but we don't broadcast
+
+	*new {|port|
+		^super.new.init(port);
+	}
+
+	init {|port|
+
+		super.init(port);
+		netAddr = [];
+		echo = false;
+
+	}
+
+	// Add every user
+	newColleage {|user|
+		this.addAddress(user.netAddr);
+	}
+
+	// Add any address, including the one from an OscGroupClient
+	addAddress{|addr|
+
+		var ips, userIp, shouldAdd = true;
+
+		userIp = addr.ip;
+
+		ips = netAddr.collect({|n| n.ip });
+		ips.includes(userIp).if ({ // we are not messaging this port
+			netAddr.do({|n|
+				((n.ip == addr.ip) && (n.port == addr.port)).if({
+					// we already have them
+					shouldAdd = false;
+				})
+			});
+		});
+
+		shouldAdd.if({
+
+			netAddr = netAddr ++ addr;
+		});
+	}
+
+
+}

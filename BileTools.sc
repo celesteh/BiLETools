@@ -4,7 +4,7 @@ BileChat {
 	var <win, api, <string, disp, >notify, exists, view, <>color;
 
 	* new { |net_api, show = true|
-			^super.new.init(net_api, show)
+		^super.new.init(net_api, show)
 	}
 
 	init { |net_api, show = true|
@@ -30,12 +30,12 @@ BileChat {
 			/*
 			flag = true;
 			{flag}.while({
-				color = Color.rand;
-				if (((color.red < 0.5)
-					|| (color.green < 0.5)
-					|| (color.blue < 0.5)), {
-						flag = false;
-				});
+			color = Color.rand;
+			if (((color.red < 0.5)
+			|| (color.green < 0.5)
+			|| (color.blue < 0.5)), {
+			flag = false;
+			});
 			});
 			*/
 			//color = Color(0.6.rand + 0.1, 0.6.rand, 0.6.rand + 0.1);
@@ -57,9 +57,9 @@ BileChat {
 		view.resize_(5);
 
 		disp = TextView(view,Rect(0,0, 380,300))
-			.editable = false;
+		.editable = false;
 		disp.resize_(5);
-			//.focus(true);
+		//.focus(true);
 		disp.hasVerticalScroller = true;
 		disp.autohidesScrollers_(true);
 		//disp.autoScrolls = true;
@@ -74,7 +74,7 @@ BileChat {
 					user_names = api.colleagues.keys.collect({|k| k});
 
 					user_list.items = (["All APIs", "Remote Data" , api.nick] ++ user_names)
-										.collect({|a| a.asString});
+					.collect({|a| a.asString});
 					api_methods.refresh;
 					nil;
 				});
@@ -129,22 +129,22 @@ BileChat {
 
 		api_methods = ListView(view ,Rect(390,40,90,260));
 		api_methods.items = (["API Methods"] ++ api.functionNames
-							++ api.remote_functions.keys).
-								collect({|a| a.asString});
+			++ api.remote_functions.keys).
+		collect({|a| a.asString});
 		api_methods.resize_(6);
 		/*
 		update_action = {
-			//"remote_action_update_listener_fucked_your_mom".postln;
-			win.isClosed.not.if({
-				AppClock.sched(0, {
-					api_methods.items = ["API Methods"]
-						++ api.functionNames++ api.remote_functions.keys;
-					api_methods.refresh;
-					nil;
-				});
-			}, {
-				api.remove_remote_update_listener(this);
-			});
+		//"remote_action_update_listener_fucked_your_mom".postln;
+		win.isClosed.not.if({
+		AppClock.sched(0, {
+		api_methods.items = ["API Methods"]
+		++ api.functionNames++ api.remote_functions.keys;
+		api_methods.refresh;
+		nil;
+		});
+		}, {
+		api.remove_remote_update_listener(this);
+		});
 		};
 		*/
 		api_methods.action = { |v|
@@ -154,20 +154,20 @@ BileChat {
 			//(index ==0). if ({
 			//	api.init_querying; // just in case
 			//	api.remote_query;
-				//update_action.value
+			//update_action.value
 			//} , {
-				// open a new window with the description
-				selector = api_methods.items[index];
-				dialog =  Window.new(selector, Rect (118,64, 200, 80));
-				text = api.help(selector) ?? "No description available";
-				(text.size == 0).if ({ text = "No description available"});
+			// open a new window with the description
+			selector = api_methods.items[index];
+			dialog =  Window.new(selector, Rect (118,64, 200, 80));
+			text = api.help(selector) ?? "No description available";
+			(text.size == 0).if ({ text = "No description available"});
 
-				desc_text = TextView(dialog.asView,Rect(10, 10, 170, 60))
-					.string_(text)
-					.hasVerticalScroller_(true)
-					.autohidesScrollers_(true)
-					.editable = false;
-				dialog.front;
+			desc_text = TextView(dialog.asView,Rect(10, 10, 170, 60))
+			.string_(text)
+			.hasVerticalScroller_(true)
+			.autohidesScrollers_(true)
+			.editable = false;
+			dialog.front;
 			//})
 		};
 
@@ -291,7 +291,7 @@ BileChat {
 			disp.respondsTo('innerBounds').if({
 				bounds = disp.innerBounds;
 				//"bottom is at %\n".postf(bounds.bottom);
- 				disp.respondsTo('visibleOrigin').if ({
+				disp.respondsTo('visibleOrigin').if ({
 					disp.visibleOrigin = Point(0,bounds.bottom);
 					//"Set point at %\n".postf(bounds.bottom);
 					scrolled = true;
@@ -398,7 +398,7 @@ BileClock {
 		api.add('clock/reset', { this.reset}, "Reset the clock");
 
 		api.add('clock/set', {|minutes, seconds| this.set(minutes, seconds);}, "Set the clock time."
-				+ "Usage: clock/set minutes, seconds");
+			+ "Usage: clock/set minutes, seconds");
 
 		cursecs = starttime;
 
@@ -412,42 +412,35 @@ BileClock {
 	show { |window|
 		/*
 		clock.notNil.if({
-			clock.window.front;
+		clock.window.front;
 		} , {
-			clock = ClockFace.new;
+		clock = ClockFace.new;
 		});
 		*/
 
-		var text, resetButton;
+		var text, resetButton, spacing;
 
 		win = window;
 
 		win.isNil.if({
 			win = Window("Clock", Rect(0, 0, 450, 80));
 			win.view.background_(BileTools.light_colour);
-			view = win.view;
-			view.isNil.if({ view = win});
-		}, {
-			win.view.decorator.isNil.if({
-				 win.view.decorator = FlowLayout(win.view.bounds);
-			});
-			view = CompositeView(win, (win.view.bounds.width - 2) @ 30);
 		});
 
-		view.decorator = FlowLayout(view.bounds);
-		view.decorator.gap=10@5;
+		view = view ? win;
 
-
-		timeString = StaticText.new(view, 240@80)
-			.string_(cursecs.asTimeString)
-			.font_(Font("Arial", 40));
+		timeString = StaticText.new()
+		.string_(cursecs.asTimeString)
+		.font_(Font("Arial", 40));
+		BileTools.hintSize(timeString);
 
 		// add a button to start and stop the clock.
-		startButton = Button(view, 85 @ 20);
+		startButton = Button();
 		startButton.states = [
 			["Start Clock", Color.black, Color.green(0.7)],
 			["Stop Clock", Color.white, Color.red(0.7)]
 		];
+		BileTools.hintSize(startButton);
 		startButton.action = {|view|
 			if (view.value == 1, {
 
@@ -458,13 +451,27 @@ BileClock {
 			});
 		};
 
-		resetButton = Button(view, 85 @ 20);
+		resetButton = Button();
+		BileTools.hintSize(resetButton);
 		resetButton.states = [
 			["Reset Clock", Color.white, Color.blue(0.7)]];
 		resetButton.action = {|view|
 			this.resetAll;
 		};
 
+		spacing = startButton.sizeHint.width + resetButton.sizeHint.width;
+
+		view.layout_(
+			VLayout(
+				[HLayout(nil, nil, startButton, resetButton), align:\right, stretch:3],
+				[timeString, s:5]
+			)
+		);
+
+
+		view.bounds.size.postln;
+		view.bounds.size_(Rect(0, 0, (spacing*2) @ (timeString.sizeHint.height *2)));
+		view.bounds.size.postln;
 
 		win.front;
 		win.onClose_({this.pr_stop});
@@ -608,13 +615,13 @@ BileClock {
 	reset {
 		/*
 		clock.notNil.if({
-			AppClock.sched(0, {
-				clock.stop;
-				clock.window.close;
-			nil })});
+		AppClock.sched(0, {
+		clock.stop;
+		clock.window.close;
+		nil })});
 
 		AppClock.sched(0.1, {
-			clock = ClockFace.new; nil
+		clock = ClockFace.new; nil
 		});
 		*/
 		//this.set(0, 0);
@@ -682,63 +689,63 @@ ClockPanel : BileClock {
 	var <win, <view, api, <clock;
 
 	*new { |api, win, clock|
-		^super.new.init(api, win, clock);
+	^super.new.init(api, win, clock);
 	}
 
 	init  {|a, w, c|
 
-		var text, startButton, resetButton;
+	var text, startButton, resetButton;
 
-		api = a;
-		clock = c;
+	api = a;
+	clock = c;
 
-		clock.isNil.if({
-			clock = BileClock(api);
-		});
+	clock.isNil.if({
+	clock = BileClock(api);
+	});
 
 
-		win = w;
+	win = w;
 
-		win.isNil.if({
-			win = Window("Clock Control");
-			win.view.background_(Color.rand);
-			view = win.view;
-			view.isNil.if({ view = win});
-		}, {
-			win.view.decorator.isNil.if({
-				 win.view.decorator = FlowLayout(win.view.bounds);
-			});
-			view = CompositeView(win, (win.view.bounds.width - 2) @ 30);
-		});
+	win.isNil.if({
+	win = Window("Clock Control");
+	win.view.background_(Color.rand);
+	view = win.view;
+	view.isNil.if({ view = win});
+	}, {
+	win.view.decorator.isNil.if({
+	win.view.decorator = FlowLayout(win.view.bounds);
+	});
+	view = CompositeView(win, (win.view.bounds.width - 2) @ 30);
+	});
 
-		view.decorator = FlowLayout(view.bounds);
-		view.decorator.gap=5@5;
+	view.decorator = FlowLayout(view.bounds);
+	view.decorator.gap=5@5;
 
-		// add a button to start and stop the sound.
-		startButton = Button(view, 85 @ 20);
-		startButton.states = [
-			["Start Clock", Color.black, Color.green(0.7)],
-			["Stop Clock", Color.white, Color.red(0.7)]
-		];
-		startButton.action = {|view|
-			if (view.value == 1, {
-				clock.show;
-				clock.startAll;
-			} , {
-				clock.stopAll;
-			});
-		};
+	// add a button to start and stop the sound.
+	startButton = Button(view, 85 @ 20);
+	startButton.states = [
+	["Start Clock", Color.black, Color.green(0.7)],
+	["Stop Clock", Color.white, Color.red(0.7)]
+	];
+	startButton.action = {|view|
+	if (view.value == 1, {
+	clock.show;
+	clock.startAll;
+	} , {
+	clock.stopAll;
+	});
+	};
 
-		resetButton = Button(view, 85 @ 20);
-		resetButton.states = [
-			["Reset Clock", Color.white, Color.blue(0.7)]];
-		resetButton.action = {|view|
-			clock.resetAll;
-		};
+	resetButton = Button(view, 85 @ 20);
+	resetButton.states = [
+	["Reset Clock", Color.white, Color.blue(0.7)]];
+	resetButton.action = {|view|
+	clock.resetAll;
+	};
 	}
 
 	show {
-		win.front;
+	win.front;
 	}
 	*/
 }
@@ -827,5 +834,10 @@ BileTools {
 
 	*light_colour {
 		^ Color(0.5.rand + 0.5, 0.5.rand + 0.5, 0.5.rand + 0.5);
+	}
+
+	*hintSize{|gui|
+		gui.bounds = gui.bounds.size_(gui.sizeHint);
+		^gui;
 	}
 }
