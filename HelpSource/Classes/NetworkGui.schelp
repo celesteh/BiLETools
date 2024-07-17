@@ -350,5 +350,37 @@ matrix = NetworkGui.make(api, [\amp], {|gui,amp, freq|
 }).show;
 
 matrix.addShared(\bipolar);
+
+::
+
+METHOD:: layout
+Set youw own layout
+
+ARGUMENT:: newlayout
+An instance of link::Classes/Layout:: holding the GUI widgets you wish to display
+
+discussion::
+code::
+(
+var api, matrix;
+
+api = NetAPI.broadcast("Nick");
+
+matrix = NetworkGui.make(api, [\amp], {|gui, amp, freq|
+    gui.synth_(
+        (
+            instrument: \default
+        ),
+        (
+            amp: amp,
+            freq:freq
+        )
+    );
+	gui.getWidgets.postln;
+	"about to change the layout".postln;
+	gui.layout = HLayout(freq.widget, amp.widget );
+}).show;
+matrix.addLocal(\bipolar);
+)
 ::
 

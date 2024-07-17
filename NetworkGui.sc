@@ -5,10 +5,11 @@ NetworkGui : Environment {
 	var <players;
 	var <copyRemote, <mountRemote;
 	var changed, major_change;
-	var <win, view, <name, <>color;
+	var <win, view, <name, <>color, <>light_color;
 	var <>redrawRate, clock;
-	var <>gui_items;
+	var <>gui_items; // not used
 	var keys;
+	var layout;
 
 	classvar guitypes;
 
@@ -18,103 +19,147 @@ NetworkGui : Environment {
 
 		guitypes.putPairs([
 
-			\slider, {|cv, view, key, netgui, sub = 10| view.decorator.nextLine;
-									EZSlider(
-										view,
-										(view.bounds.width-sub) @ 20,
-										key.asString,
-										cv.spec ? key.asSymbol.asSpec,
-										{|ez| cv.value_(ez.value, netgui)},
-										cv.value,
-										unitWidth:30
-									).setColors(Color.grey,Color.white, Color.grey
-									(0.7),Color.grey, Color.white, Color.yellow);
-						},
+			\slider, {|cv, view, key, netgui, sub = 10, bgcolor|
+				var spec;
+
+
+				spec = cv.spec ? key.asSymbol.asSpec;
+				bgcolor = bgcolor ? BileTools.light_colour;
+
+				spec.postln;
+				key.postln;
+				spec.units.postln;
+				//view.decorator.nextLine;
+				BtSlider(
+					key.asString,
+					spec,
+					{|ez| cv.value_(ez.value, netgui)},
+					cv.value,
+					false,
+					\horizontal,
+					true
+				).background_(bgcolor); //.setColors(Color.grey.(0.2, 0.8),Color.white, Color.grey
+				//(0.7),Color.grey, Color.white, Color.yellow).background_(Color.yellow);//.layout_(view.layout);
+
+				/*
+				EZSlider(
+				view,
+				(view.bounds.width-sub) @ 20,
+				key.asString,
+				cv.spec ? key.asSymbol.asSpec,
+				{|ez| cv.value_(ez.value, netgui)},
+				cv.value,
+				unitWidth:30
+				).setColors(Color.grey,Color.white, Color.grey
+				(0.7),Color.grey, Color.white, Color.yellow);
+				*/
+			},
+			\vslider, {|cv, view, key, netgui, sub = 10, bgcolor|
+				var spec;
+
+
+				spec = cv.spec ? key.asSymbol.asSpec;
+				bgcolor = bgcolor ? BileTools.light_colour;
+
+				spec.postln;
+				key.postln;
+				spec.units.postln;
+				//view.decorator.nextLine;
+				BtSlider(
+					key.asString,
+					spec,
+					{|ez| cv.value_(ez.value, netgui)},
+					cv.value,
+					false,
+					\vertical,
+					true
+				).background_(bgcolor);
+			},
 			/*
 			\vslider, {|cv, view, key, netgui| EZSlider(
-										view,
-										//20 @ (view.bounds.width-10),
-										label: key.asString,
-										controlSpec: cv.spec ? key.asSymbol.asSpec,
-										action: {|ez| cv.value_(ez.value, netgui)},
-										initVal: cv.value,
-										unitWidth:30,
-										layout: \vert
-									).setColors(Color.grey,Color.white, Color.grey
-									(0.7),Color.grey, Color.white, Color.yellow);
-						},
+			view,
+			//20 @ (view.bounds.width-10),
+			label: key.asString,
+			controlSpec: cv.spec ? key.asSymbol.asSpec,
+			action: {|ez| cv.value_(ez.value, netgui)},
+			initVal: cv.value,
+			unitWidth:30,
+			layout: \vert
+			).setColors(Color.grey,Color.white, Color.grey
+			(0.7),Color.grey, Color.white, Color.yellow);
+			},
 			*/
 			\knob,	{|cv, view, key, netgui| EZKnob(
-										view,
-										50 @ 90,
-										label: key.asString,
-										controlSpec: cv.spec ? key.asSymbol.asSpec,
-										action: {|ez| cv.value_(ez.value, netgui)},
-										initVal: cv.value,
-										unitWidth:20
-									).setColors(Color.grey,Color.white, Color.grey
-									(0.7),Color.grey, Color.white, Color.yellow);
-						},
+				view,
+				50 @ 90,
+				label: key.asString,
+				controlSpec: cv.spec ? key.asSymbol.asSpec,
+				action: {|ez| cv.value_(ez.value, netgui)},
+				initVal: cv.value,
+				unitWidth:20
+			).setColors(Color.grey,Color.white, Color.grey
+				(0.7),Color.grey, Color.white, Color.yellow);
+			},
 			/*
 			\voter, 	{|cv, view, key, netgui, sub = 10| EZVoter(
-										view,
-										(view.bounds.width-sub) @ 20,
-										key.asString,
-										cv.spec ? key.asSymbol.asSpec,
-										{|ez| /*"ez change".postln;*/ cv.value_(ez.value, netgui)},
-										cv.value,
-										unitWidth:30
-									).setColors(Color.grey,Color.white, Color.grey
-									(0.7),Color.grey, Color.white, Color.yellow);
-						},
+			view,
+			(view.bounds.width-sub) @ 20,
+			key.asString,
+			cv.spec ? key.asSymbol.asSpec,
+			{|ez| /*"ez change".postln;*/ cv.value_(ez.value, netgui)},
+			cv.value,
+			unitWidth:30
+			).setColors(Color.grey,Color.white, Color.grey
+			(0.7),Color.grey, Color.white, Color.yellow);
+			},
 			*/
-				/*,
+			/*,
 			\slider2d, {|cvs, view, keys, netgui|
-					var labelSize, numsize, labelView, numberView, slider, spec;
+			var labelSize, numsize, labelView, numberView, slider, spec;
 
-					labelSize = 30 @ 20;
-					numsize = 40 @ 20;
+			labelSize = 30 @ 20;
+			numsize = 40 @ 20;
 
-					labelView = [
-						GUI.staticText.new(view, labelSize),
-						GUI.staticText.new(view, labelSize)];
+			labelView = [
+			GUI.staticText.new(view, labelSize),
+			GUI.staticText.new(view, labelSize)];
 
-					labelView[0].string = keys[0];
-					labelView[1].string = keys[1];
+			labelView[0].string = keys[0];
+			labelView[1].string = keys[1];
 
-					numberView = [
-						GUI.numberBox.new(view, numsize),
-						GUI.numberBox.new(view, numsize)
-					];
+			numberView = [
+			GUI.numberBox.new(view, numsize),
+			GUI.numberBox.new(view, numsize)
+			];
 
-					spec  = [
-						cvs[0].spec ? keys[0].asSymbol.asSpec,
-						cvs[1].spec ? keys[1].asSymbol.asSpec
-					];
+			spec  = [
+			cvs[0].spec ? keys[0].asSymbol.asSpec,
+			cvs[1].spec ? keys[1].asSymbol.asSpec
+			];
 
-					slider = Slider2D(view, 60 @ 60)
-						.action_({ |sl|
-							cvs[0].input_(sl.x, netgui);
-							cvs[1].input_(sl.y, netgui);
-							numberView[0] = cvs[0].value;
-							numberView[1] = cvs[1].value;
-						});
+			slider = Slider2D(view, 60 @ 60)
+			.action_({ |sl|
+			cvs[0].input_(sl.x, netgui);
+			cvs[1].input_(sl.y, netgui);
+			numberView[0] = cvs[0].value;
+			numberView[1] = cvs[1].value;
+			});
 
-					cvs[0].action_(slider,
-						{ |val|
-							AppClock.sched(0.0, {
-								slider.x = cvs[0].input;
-							})
-						});
+			cvs[0].action_(slider,
+			{ |val|
+			AppClock.sched(0.0, {
+			slider.x = cvs[0].input;
+			})
+			});
 
-					cvs[0].action_(slider,
-						{ |val|
-							AppClock.sched(0.0, {
-								slider.y = cvs[1].input;
-							})
-						});
+			cvs[0].action_(slider,
+			{ |val|
+			AppClock.sched(0.0, {
+			slider.y = cvs[1].input;
+			})
+			});
 
-					slider;
+			slider;
 			}*/
 		])
 	}
@@ -127,7 +172,7 @@ NetworkGui : Environment {
 
 
 	*make { |api, local, func|
-		"output".postln;
+
 		^super.new.make_init(api, local, func);
 	}
 
@@ -141,6 +186,10 @@ NetworkGui : Environment {
 	makeArgs { arg func, local;
 		var argList, size, names, argNames;
 
+		// Set this deinfitely before we make any widgets
+		light_color = light_color ? BileTools.light_colour;
+
+
 		size = func.def.argNames.size;
 		argList = Array(size);
 		//argNames = Array(size);
@@ -152,8 +201,8 @@ NetworkGui : Environment {
 				name = names[i];
 				local.notNil.if({
 					local.includes(name).if({
-					//argNames = argNames.add(name);
-					argList = argList.add(this.addLocal(name))
+						//argNames = argNames.add(name);
+						argList = argList.add(this.addLocal(name))
 					} , {
 						argList = argList.add(this.addShared(name));
 					});
@@ -172,7 +221,6 @@ NetworkGui : Environment {
 
 		var res, scv, arg_list, shared_sym;
 
-		//"foo".postln;
 
 		api = net_api;
 
@@ -200,28 +248,104 @@ NetworkGui : Environment {
 
 		var startButton, cv;
 
-		color.isNil.if({ color = Color(0.6.rand + 0.1, 0.6.rand, 0.6.rand+ 0.1);});
+		//color.isNil.if({ color = Color(0.6.rand + 0.1, 0.6.rand, 0.6.rand+ 0.1);});
+		color = color ? BileTools.colour;
+		light_color = light_color ? BileTools.light_colour;
 
 		win = w;
 
 		win.isNil.if({
 			win = Window(name);
-			win.view.background_(color);
-			view = win.view;
-			view.isNil.if({ view = win});
-		}, {
-			win.view.decorator.isNil.if({
-				 win.view.decorator = FlowLayout(win.view.bounds);
-			});
-			view = CompositeView(win, (win.view.bounds.width - 2) @ 30);
+			win.background_(color);
+			//view = win.view;
+			//view.isNil.if({ view = win});
+			//}, {
+			//	win.view.decorator.isNil.if({
+			//		 win.view.decorator = FlowLayout(win.view.bounds);
+			//	});
+			//	view = CompositeView(win, (win.view.bounds.width - 2) @ 30);
 		});
 		//view.postln;
+		view = view ? win;
 
-		view.decorator = FlowLayout(view.bounds);
-		view.decorator.gap=2@2;
+		//view.decorator = FlowLayout(view.bounds);
+		//view.decorator.gap=2@2;
+
+		/*
+		// add a button to start and stop the sound.
+		startButton = Button(/*view, 75 @ 20*/);
+		startButton.states = [
+		["Start", Color.black, Color.green(0.7)],
+		["Stop", Color.white, Color.red(0.7)]
+		];
+		startButton.action = {|view|
+		if (view.value == 1, {
+		this.play;
+		} , {
+		this.stop;
+		});
+		};
+		BileTools.hintSize(startButton);
+		startButton.resizeToHint;
+		startButton.resize = 1;
+		*/
+		//view.layout = VLayout( HLayout([startButton, stretch:0], nil)  );
+		//view.layout.spacing = 2;
+
+		layout.notNil.if({
+			view.layout = layout;
+		}, {
+			view.layout = VLayout( this.pr_header );
+		});
+		//view.decorator.nextLine;
+		/*
+		keys = keys.flatten;
+
+		keys.do({|key|
+		"making gui".postln;
+		//view.decorator.nextLine;
+		cv = this.at(key);
+
+		/*
+		cv.widget = EZSlider(
+		view,
+		(view.bounds.width) @ 20,
+		key.asString,
+		cv.spec ? key.asSymbol.asSpec,
+		{|ez| cv.value_(ez.value, this);/* "%\t%\t%\n".postf(key, cv.tag, cv.value)*/},
+		cv.value,
+		unitWidth:30
+		)
+		.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey,
+		Color.white, Color.yellow);
+		*/
+		cv.guitype.isNil.if({
+		cv.guitype = \slider;
+		});
+
+		guitypes[cv.guitype].isNil.if({
+		cv.guitype = \slider;
+		});
+
+		cv.widget = guitypes[cv.guitype].value(cv, view, key, this);
+		});
+		*/
+
+		major_change = true;
+		this.pr_major_gui_update;
+
+		//win.bounds= win.view.decorator.bounds;
+	}
+
+	pr_header {
+
+		var startButton;
+		//win.isNil.if({
+		//	"no window!".warn;
+		//});
 
 		// add a button to start and stop the sound.
-		startButton = Button(view, 75 @ 20);
+		startButton = Button(/*view, 75 @ 20*/);
 		startButton.states = [
 			["Start", Color.black, Color.green(0.7)],
 			["Stop", Color.white, Color.red(0.7)]
@@ -233,50 +357,17 @@ NetworkGui : Environment {
 				this.stop;
 			});
 		};
+		BileTools.hintSize(startButton);
+		startButton.resizeToHint;
+		startButton.resize = 1;
 
-		view.decorator.nextLine;
-		/*
-		keys = keys.flatten;
+		^HLayout([startButton, stretch:0], nil);
 
-		keys.do({|key|
-			"making gui".postln;
-			//view.decorator.nextLine;
-			cv = this.at(key);
-
-			/*
-			cv.widget = EZSlider(
-				view,
-				(view.bounds.width) @ 20,
-				key.asString,
-				cv.spec ? key.asSymbol.asSpec,
-				{|ez| cv.value_(ez.value, this);/* "%\t%\t%\n".postf(key, cv.tag, cv.value)*/},
-				cv.value,
-				unitWidth:30
-			)
-				.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey,
-					Color.white, Color.yellow);
-			*/
-			cv.guitype.isNil.if({
-				cv.guitype = \slider;
-			});
-
-			guitypes[cv.guitype].isNil.if({
-				cv.guitype = \slider;
-			});
-
-			cv.widget = guitypes[cv.guitype].value(cv, view, key, this);
-		});
-		*/
-
-		major_change = true;
-		this.pr_major_gui_update;
-
-		//win.bounds= win.view.decorator.bounds;
 	}
 
 	pr_major_gui_update {
 
-		var bounds, cv, gui_builder;
+		var bounds, widgets, widget;
 
 		win.isNil.if({
 
@@ -285,6 +376,7 @@ NetworkGui : Environment {
 			// we do have a gui and need to add new sliders or change the name
 
 			"major update".postln;
+			widgets = [];
 
 			major_change = false;
 
@@ -292,57 +384,178 @@ NetworkGui : Environment {
 				win.name = name.asString;
 			});
 
+			layout.isNil.if({ // if you set your own layout, this is your problem
 
-			keys = keys.flatten;
+				keys = keys.flatten;
+				keys.postln;
 
-			keys.do({|item|
+				keys.do({|key|
 
+					widget = this.getWidget(key);
+					view.layout.add(widget);
+					view.layout.setStretch(widget, 0);
+					widgets = widgets ++ widget;
 
-
-				item.isKindOf(Collection).if ({
-					// thing goes on a line by itself
-					win.view.decorator.nextLine;
 				});
 
-				item.do({ |key|
+				/*
+				"Equalise widths".postln;
+				// make all the labels the same width
+				biggest =widgets.maxItem({|w| w.labelWidth });
+				biggest.postln;
+				widgets.do({|w| w.labelWidth = biggest.labelWidth });
 
-					cv = this[key];
+				// make all units the same width
+				biggest =widgets.maxItem({|w| w.unitWidth });
+				biggest.postln;
+				widgets.do({|w| w.unitWidth = biggest.unitWidth });
+				*/
 
-					cv.widget.isNil.if({
-
-						cv.guitype.isNil.if({
-							cv.guitype = \slider;
-						});
-
-						cv.guitype.isKindOf(Function).if({
-							gui_builder = cv.guitype;
-						} , {
-							gui_builder = guitypes[cv.guitype];
-							gui_builder.isNil.if({
-								cv.guitype = \slider;
-								gui_builder = guitypes[cv.guitype];
-							});
-						});
-
-						"new".postln;
-						cv.widget = gui_builder.value(cv, view, key, this, 10);
-					});
-				});
-
-				item.isKindOf(Collection).if ({
-					// thing goes on a line by itself
-					win.view.decorator.nextLine;
-				});
-
-			});
+				this.class.equalise(widgets);
+			}, { "own layout".postln; });
 
 			bounds = win.bounds;
-			bounds.height = win.view.decorator.top + 35;
+			//bounds.height = win.view.decorator.top + 35;
 			//bounds.width = 442;
-			win.bounds_(bounds);
+			//win.bounds_(bounds);
+			BileTools.hintSize(view);
 			//win.front;
 
 		});
+	}
+
+	keys {
+		^keys.flatten;
+	}
+
+	layout_{|newlayout|
+
+		var mylayout = VLayout(
+			this.pr_header,
+			newlayout
+		);
+
+		view.notNil.if({
+			"immediately live".postln;
+			view.layout= mylayout;
+		});
+
+		layout = mylayout;
+	}
+
+	addWidget{|widget, regenerate=true|
+
+		"add a widget";
+
+		layout.notNil.if({
+			"add to layout".postln;
+			layout.add(widget);
+			layout.setStretch(widget, 0);
+		}, {
+			regenerate.not.if({
+				"add to view".postln;
+				view.notNil.if({
+					widget.isKindOf(SharedCV).if({
+						widget = widget.widget;
+					});
+					view.layout.add(widget);
+					view.layout.setStretch(widget, 0);
+				});
+			}, {
+				"push it off".postln;
+				major_change = true;
+			});
+		});
+	}
+
+	*equalise{ |widgets|
+
+		var biggest;
+
+		"Equalise widths".postln;
+		// make all the labels the same width
+		biggest =widgets.maxItem({|w| w.respondsTo(\labelWidth).if ({w.labelWidth}, {0}) });
+		//biggest.postln;
+		widgets.do({|w| w.respondsTo(\labelWidth_).if({ w.labelWidth = biggest.labelWidth })});
+
+		// make all units the same width
+		biggest =widgets.maxItem({|w| w.respondsTo(\unitWidth).if  ({w.unitWidth}, {0}) });
+		//biggest.postln;
+		widgets.do({|w| w.respondsTo(\unitWidth_).if({w.unitWidth = biggest.unitWidth })});
+	}
+
+	// this.class.getCVWidget(cv, key, view, this, bgcolor);
+	*getCVWidget{|cv, key, viewToSpecify, mvc_agent, bgcolor|
+		var gui_builder, guiWidget;
+
+		cv.notNil.if({
+			cv.widget.isNil.if({
+
+				cv.guitype.isNil.if({
+					cv.guitype = \slider;
+				});
+
+				cv.guitype.isKindOf(Function).if({
+					gui_builder = cv.guitype;
+				} , {
+					gui_builder = guitypes[cv.guitype];
+					gui_builder.isNil.if({
+						cv.guitype = \slider;
+						gui_builder = guitypes[cv.guitype];
+					});
+				});
+
+				//"new".postln;
+				//"gui_build args %, %, %, %, %, %".format(cv, viewToSpecify, key, mvc_agent, 10, bgcolor).postln;
+				cv.widget = gui_builder.value(cv, viewToSpecify, key, mvc_agent, 10, bgcolor);
+
+			});
+
+			guiWidget = cv.widget;
+		});
+
+		^guiWidget;
+
+	}
+
+	getWidget {|key, bgcolor, layoutClass, equalise_collections=true|
+
+		var cv, gui_builder, guiWidget, collected_widgets = [];
+
+		//"get widget key %".format(key).postln;
+
+		layoutClass = layoutClass ? HLayout;
+		bgcolor = bgcolor ? light_color;
+
+		key.isKindOf(Collection).if({
+			collected_widgets = key.collect( this.getWidget(_)); // see Partial Application helpfile
+			equalise_collections.if({
+				this.equalise(collected_widgets);
+			});
+			guiWidget = layoutClass.new(*collected_widgets);
+		}, {
+
+			key.isKindOf(SharedCV).if({
+				cv = key;
+				key = cv.tag;
+			}, {
+				cv = this[key];
+			});
+
+			//"getCVWidget args % % % % %".format(cv,key,view, this,bgcolor).postln;
+			guiWidget = this.class.getCVWidget(cv, key, view, this, bgcolor);
+
+			guiWidget.isNil.if ({ "no such item %".format(key.asString).warn; });
+
+
+		});
+
+		^guiWidget;
+	}
+
+	getWidgets { |bgcolor, layoutClass, equalise_collections|
+
+		^ this.keys.collect( this.getWidget(_, bgcolor, layoutClass, equalise_collections) );
 	}
 
 	pr_gui_update {
@@ -405,17 +618,17 @@ NetworkGui : Environment {
 		^redrawRate;
 	}
 
-	addLocal {|key, item|
-		^this.pr_add(key, item, true);
+	addLocal {|key, item, redraw_all|
+		^this.pr_add(key, item, true, redraw_all);
 	}
 
 
-	addShared {|key, item|
-		^this.pr_add(key, item, false);
+	addShared {|key, item, redraw_all|
+		^this.pr_add(key, item, false, redraw_all);
 	}
 
 
-	addRemote {|key|
+	addRemote {|key, redraw_all|
 
 		var tag, res, rcv, split, spec;
 
@@ -437,7 +650,15 @@ NetworkGui : Environment {
 			remote.put(tag, rcv);
 			this.put(tag, rcv);
 			keys = keys ++ tag;
-			major_change = true;
+
+			redraw_all = redraw_all ? layout.notNil;
+
+			redraw_all.if({
+				major_change = redraw_all;
+			}, {
+				//getCVWidget(cv, key, view, this, bgcolor);
+				this.addWidget(this.class.getCVWidget(rcv, tag, view, this, light_color));
+			});
 			//rcv.action_(this, {"changed".postln; this.update});
 			//this.remote_update_action;
 
@@ -447,7 +668,7 @@ NetworkGui : Environment {
 	}
 
 
-	pr_add {|key, item, is_local|
+	pr_add {|key, item, is_local, redraw_all|
 		var spec;
 
 		item.notNil.if({
@@ -458,21 +679,21 @@ NetworkGui : Environment {
 				//local.put(key, item);
 			} , {
 
-			item.isKindOf(SharedResource).if({
-				is_local.if({
-					item = SharedCV.local(this, item, api);
-				}, {
-					item = SharedCV.shared(this, item, api);
-				});
-				item.action_(this, {this.update});
+				item.isKindOf(SharedResource).if({
+					is_local.if({
+						item = SharedCV.local(this, item, api);
+					}, {
+						item = SharedCV.shared(this, item, api);
+					});
+					item.action_(this, {this.update});
 
-			} , {
-				is_local.if({
-					item = SharedCV.local(this, SharedResource(item), api);
-				}, {
-					item = SharedCV.shared(this, SharedResource(item), api);
-				});
-				item.action_(this, {this.update});
+				} , {
+					is_local.if({
+						item = SharedCV.local(this, SharedResource(item), api);
+					}, {
+						item = SharedCV.shared(this, SharedResource(item), api);
+					});
+					item.action_(this, {this.update});
 			})});
 
 		} , {
@@ -501,7 +722,15 @@ NetworkGui : Environment {
 		});
 		this.put(key, item);
 		keys = keys ++ key;
-		major_change = true;
+
+		redraw_all = redraw_all ? layout.isNil;
+
+		redraw_all.if({
+			major_change = redraw_all;
+		}, {
+			// getCVWidget(cv, key, view, this, bgcolor);
+			this.addWidget(this.class.getCVWidget(item, key, view, this, light_color));
+		});
 
 		item.value.postln;
 
@@ -552,8 +781,8 @@ NetworkGui : Environment {
 							res.action_(this, {this.update});
 							rcv = SharedCV(this, res);
 							cv.notNil.if({if( cv.copy_spec, {
-									rcv.spec = cv.spec;
-									rcv.guitype = cv.guitype;
+								rcv.spec = cv.spec;
+								rcv.guitype = cv.guitype;
 							});});
 							remote.put(tag, rcv);
 							this.put(tag, rcv);
@@ -694,21 +923,29 @@ NetworkGui : Environment {
 		major_change = true;
 	}
 
-	show { |win|
+	show { |argwin|
 		var bounds;
+
+		win = argwin ? win;
 
 		changed = false;
 		major_change = false;
 
 		this.pr_makegui(win);
 
-		bounds = this.win.bounds;
-		bounds.height = this.win.view.decorator.top + 35;
+		(view.notNil && layout.notNil).if({
+			view.layout_(layout);
+		});
+
+		//bounds = this.win.bounds;
+		//bounds.height = this.win.view.decorator.top + 35;
 		//bounds.width = 442;
-		this.win.bounds_(bounds);
+		//this.win.bounds_(bounds);
+		BileTools.hintSize(this.win);
 		this.win.front;
 
-		redrawRate.isNil.if({ redrawRate = 0.1});
+		//redrawRate.isNil.if({ redrawRate = 0.1});
+		redrawRate = redrawRate ? 0.1;
 
 		clock = AppClock.sched(redrawRate, { this.pr_gui_update; });
 
@@ -827,9 +1064,9 @@ SharedCV {
 			//});
 
 
-				spec.notNil.if({
-					gui.controlSpec = spec;
-				});
+			spec.notNil.if({
+				gui.controlSpec = spec;
+			});
 		});
 		widget = gui;
 	}
@@ -873,7 +1110,7 @@ SharedCV {
 		bus = nil;
 	}
 
-// JITLib support
+	// JITLib support
 	kr{
 		/*@
 		desc: JitLib support
@@ -912,47 +1149,47 @@ BilePatternPlayer {
 /*
 (
 
-	var api, matrix;
+var api, matrix;
 
-	api = NetAPI.broadcast("Les");
+api = NetAPI.broadcast("Les");
 
-	matrix = NetworkGui.make(api, [\amp], {|gui, amp, x, y, z, freq, freq1|
+matrix = NetworkGui.make(api, [\amp], {|gui, amp, x, y, z, freq, freq1|
 
-		amp.spec_(\amp);
-		x.spec_(\unipolar);
-		y.spec_(\unipolar);
-		z.spec_(\bipolar);
-		freq1.spec_(\freq);
+amp.spec_(\amp);
+x.spec_(\unipolar);
+y.spec_(\unipolar);
+z.spec_(\bipolar);
+freq1.spec_(\freq);
 
-		gui.copyRemote = true; // will create x, y, z sliders for all other users
+gui.copyRemote = true; // will create x, y, z sliders for all other users
 
-		gui.name = "XYZ";
+gui.name = "XYZ";
 
-		gui.synth_(
-			(
-				instrument: \default
-			),
-			(
-				amp: amp,
-				x:	x,
-				y:	y,
-				z:	[z, {|z| z * 2}],
-				freq:freq
-			)
-		);
+gui.synth_(
+(
+instrument: \default
+),
+(
+amp: amp,
+x:	x,
+y:	y,
+z:	[z, {|z| z * 2}],
+freq:freq
+)
+);
 
-		//x.attachHID(wii[\ax]);
-		//y.attachHID(wii[\ay]);
-		//z.attachHID(wii[\az]);
+//x.attachHID(wii[\ax]);
+//y.attachHID(wii[\ay]);
+//z.attachHID(wii[\az]);
 
-	});
+});
 
-	matrix.addLocal(\db);
-	matrix.addLocal(\bipolar);
+matrix.addLocal(\db);
+matrix.addLocal(\bipolar);
 
-	matrix.show;
+matrix.show;
 
-	m = matrix;
+m = matrix;
 )
 
 */
