@@ -139,24 +139,24 @@ WiiOSCClient : OSCHID{
 
 	deviceSpec {
 		^(
-			ax: OscSlot(\relative, '/wii/acc', nil, 1),
-			ay: OscSlot(\relative, '/wii/acc', nil, 2),
-			az: OscSlot(\relative, '/wii/acc', nil, 3),
+			ax: OscHIDSlot(\relative, '/wii/acc', nil, 1),
+			ay: OscHIDSlot(\relative, '/wii/acc', nil, 2),
+			az: OscHIDSlot(\relative, '/wii/acc', nil, 3),
 
-			apitch: OscSlot(\relative, '/wii/orientation', nil, 1),
-			aroll: OscSlot(\relative, '/wii/orientation', nil, 2),
+			apitch: OscHIDSlot(\relative, '/wii/orientation', nil, 1),
+			aroll: OscHIDSlot(\relative, '/wii/orientation', nil, 2),
 
-			bA: OscSlot(\button, '/wii/button/a'),
-			bB: OscSlot(\button, '/wii/button/b'),
-			bOne: OscSlot(\button, '/wii/button/one'),
-			bTwo: OscSlot(\button, '/wii/button/two'),
-			bMinus: OscSlot(\button, '/wii/button/minus'),
-			bHome: OscSlot(\button, '/wii/button/home'),
-			bPlus: OscSlot(\button, '/wii/button/plus'),
-			bUp: OscSlot(\button, '/wii/button/up'),
-			bDown: OscSlot(\button, '/wii/button/down'),
-			bLeft: OscSlot(\button, '/wii/button/left'),
-			bRight: OscSlot(\button, '/wii/button/right')
+			bA: OscHIDSlot(\button, '/wii/button/a'),
+			bB: OscHIDSlot(\button, '/wii/button/b'),
+			bOne: OscHIDSlot(\button, '/wii/button/one'),
+			bTwo: OscHIDSlot(\button, '/wii/button/two'),
+			bMinus: OscHIDSlot(\button, '/wii/button/minus'),
+			bHome: OscHIDSlot(\button, '/wii/button/home'),
+			bPlus: OscHIDSlot(\button, '/wii/button/plus'),
+			bUp: OscHIDSlot(\button, '/wii/button/up'),
+			bDown: OscHIDSlot(\button, '/wii/button/down'),
+			bLeft: OscHIDSlot(\button, '/wii/button/left'),
+			bRight: OscHIDSlot(\button, '/wii/button/right')
 
 /*			px: { remote_ir[0] },
 			py: { remote_ir[1] },
@@ -249,7 +249,7 @@ Acceleration {
 }
 */
 
-OscSlot {
+OscHIDSlot {
 
 	/*@
 	shortDesc: A wrapper class for OSCresponderNodes
