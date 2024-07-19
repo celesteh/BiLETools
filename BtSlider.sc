@@ -1,4 +1,4 @@
-BtSlider :BtGui {
+BtSlider :BtNumGui {
 
 	// This object is based on a reimplementation of EZSlider by Sam Pluta
 	// https://github.com/spluta/LiveModularInstrument/blob/e0ee5eeee36dcbd9613f8c9539702bea7ab45b96/GUI/QtEZSlider.sc
@@ -394,7 +394,7 @@ BtSlider :BtGui {
 
 }
 
-BtKnob : BtGui {
+BtKnob : BtNumGui {
 
 		*new { arg label, controlSpec, action, initVal,
 		initAction=false, mode=\vert, viewUnits=false;
@@ -479,13 +479,12 @@ BtKnob : BtGui {
 
 }
 
-BtGui : View {
+BtNumGui : BtGui{
 
-	var <>controlSpec, <>sliderView, <>numberView, <>labelView, /*<>layout,*/ <>units;
+	var <>controlSpec, <>sliderView, <>numberView, /*<>layout,*/ <>units;
 	var <>round = 0.001;
-	var <>action, <value, <>zAction, viewArray;
 	//var <view;
-	var slLayout, labelContainer, unitContainer, slider_alt_scale;
+	var slider_alt_scale;
 
 	init { arg label, argControlSpec, argAction, initVal, initAction, viewUnits;
 		var numberStep, unitText;
@@ -577,17 +576,6 @@ BtGui : View {
 	view {}
 
 
-	pr_text {|text = "", font|
-		var staticText;
-
-		font = font ? Font("Arial", 14);
-
-		staticText = StaticText();
-		staticText.font = font;
-		staticText.string = text.asString;
-		^staticText
-	}
-
 	pr_numberBox{|spec, font|
 		var numberBox, width;
 
@@ -634,29 +622,6 @@ BtGui : View {
 			this.maxHeight = height + (numberView.bounds.height * 1.5);
 		});
 
-	}
-
-
-	labelWidth {
-		^labelView.bounds.width;
-	}
-
-	labelWidth_ {|width|
-		var bounds;
-
-
-		// get the bounds, change only the width, re-set the bounds
-		bounds = labelView.bounds;
-		width = width ? bounds.width; // Unlikely to be nil, but whatevs
-		//bounds.width = width;
-		//labelView.bounds = bounds;
-		//labelView.fixedWidth = width;
-		labelView.resizeTo(width, bounds.height);
-		labelView.fixedWidth = width;
-		//labelView.background = Color.white;
-		//"labelWidth_( % ) % %".format(width, labelView.bounds.width, this.bounds.width).postln;
-		//labelView.refresh; this.refresh;
-		this.resizeToGreatest;
 	}
 
 	unitWidth {
@@ -734,13 +699,6 @@ BtGui : View {
 		^controlSpec.unmap(val);
 	}
 
-	valueAction_ { arg val;
-		this.value_(val);
-		this.doAction;
-	}
-
-	doAction { action.value(this) }
-
 	set { arg label, spec, argAction, initVal, initAction = false;
 		labelView.notNil.if { labelView.string = label.asString };
 		spec.notNil.if { controlSpec = spec.asSpec };
@@ -761,6 +719,135 @@ BtGui : View {
 		numberView.font=font;
 		units.font = font;
 	}
+
+
+
+
+}
+
+
+BtText : BtGui {
+
+	var <textField;
+
+	*new { arg label, action, initVal, initAction=false, orientation=\horz;
+
+		^super.new.init(label, action, initVal, initAction, orientation);
+	}
+
+	init { arg label, argAction, initVal, initAction, orientation;
+
+		labelView = this.pr_text(label);
+		labelView.resizeToHint;
+
+		if(label!=nil,{
+			this.name = label;
+		});
+
+		textField = TextField();
+		textField.font = Font("Arial", 14);
+		textField.string = initVal;
+
+
+		zAction = {};
+		action = argAction;
+
+
+		textField.action = { this.valueAction_(textField.value) };
+
+		if (initAction) {
+			this.valueAction_(initVal);
+		}{
+			this.value_(initVal);
+		};
+
+		slLayout = HLayout(
+			[labelView, stretch:1],
+			[textField, stretch:10]
+		);
+
+		this.layout = slLayout;
+
+	}
+
+	value_{|val|
+		value = val;
+		textField.value = val;
+	}
+
+	greatestWidth {
+
+		^inf
+	}
+
+	greatestHeight {
+		^labelView.bounds.height;
+	}
+
+
+	resizeToGreatest {
+		var width, height;
+
+		height = this.greatestHeight;
+
+		(height.notNil && (height != inf)).if ({
+
+			this.maxHeight = height + (labelView.bounds.height * 1.5);
+		});
+
+	}
+
+
+}
+
+BtGui : View {
+
+	var <>labelView;
+	var <>action, <value, <>zAction, viewArray;
+	//var <view;
+	var slLayout;
+
+
+	init {arg label, argAction;
+		labelView = this.pr_text(label);
+
+		if(label!=nil,{
+			this.name = label;
+		});
+		zAction = {};
+		action = argAction;
+
+	}
+
+	labelWidth {
+		^labelView.bounds.width;
+	}
+
+	labelWidth_ {|width|
+		var bounds;
+
+
+		// get the bounds, change only the width, re-set the bounds
+		bounds = labelView.bounds;
+		width = width ? bounds.width; // Unlikely to be nil, but whatevs
+		//bounds.width = width;
+		//labelView.bounds = bounds;
+		//labelView.fixedWidth = width;
+		labelView.resizeTo(width, bounds.height);
+		labelView.fixedWidth = width;
+		//labelView.background = Color.white;
+		//"labelWidth_( % ) % %".format(width, labelView.bounds.width, this.bounds.width).postln;
+		//labelView.refresh; this.refresh;
+		this.resizeToGreatest;
+	}
+
+	valueAction_ { arg val;
+		this.value_(val);
+		this.doAction;
+	}
+
+	doAction { action.value(this) }
+
 
 	pr_set_if_visible{|gui, background|
 
@@ -783,6 +870,46 @@ BtGui : View {
 		})
 	}
 
+	pr_text {|text = "", font|
+		var staticText;
+
+		font = font ? Font("Arial", 14);
+
+		staticText = StaticText();
+		staticText.font = font;
+		staticText.string = text.asString;
+		^staticText
+	}
+
+	font_{}
+
+	greatestWidth {
+
+		^labelView.bounds.width.max;
+	}
+
+	greatestHeight {
+		^labelView.bounds.height;
+	}
+
+
+	resizeToGreatest {
+		var width, height;
+		width = this.greatestWidth;
+		height = this.greatestHeight;
+
+		(width.notNil && (width != inf)).if ({
+
+			this.maxWidth = width + (labelView.bounds.height * 1.1);
+		});
+
+		(height.notNil && (height != inf)).if ({
+
+			this.maxHeight = height + (labelView.bounds.height * 1.5);
+		});
+
+	}
+
 
 	pr_isBlank {|gui|
 		var blank = true;
@@ -800,23 +927,7 @@ BtGui : View {
 
 		stringBackground.notNil.if{
 			this.pr_set_if_visible(labelView, stringBackground);
-			this.pr_set_if_visible(units, stringBackground);
 		};
-		stringColor.notNil.if{
-			labelView.notNil.if{labelView.stringColor_(stringColor)};
-			units.notNil.if{units.stringColor_(stringColor)};};
-		numBackground.notNil.if{
-			numberView.background_(numBackground);};
-		numNormalColor.notNil.if{
-			numberView.normalColor_(numNormalColor);};
-		numTypingColor.notNil.if{
-			numberView.typingColor_(numTypingColor);};
-		numStringColor.notNil.if{
-			numberView.stringColor_(numStringColor);};
-		sliderBackground.notNil.if{
-			sliderView.background_(sliderBackground);};
-		//knobColor.notNil.if{
-		//	sliderView.knobColor_(knobColor);}; */
 		background.notNil.if{
 			this.background=background;};
 		//numberView.refresh;
