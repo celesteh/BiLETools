@@ -3,6 +3,8 @@ BtSlider :BtGui {
 	// This object is based on a reimplementation of EZSlider by Sam Pluta
 	// https://github.com/spluta/LiveModularInstrument/blob/e0ee5eeee36dcbd9613f8c9539702bea7ab45b96/GUI/QtEZSlider.sc
 
+	//var orientation;
+
 
 	*new { arg label, controlSpec, action, initVal,
 		initAction=false, orientation=\horz, viewUnits=false;
@@ -14,8 +16,10 @@ BtSlider :BtGui {
 	init { arg argLabel, argControlSpec, argAction, initVal, initAction, orientation, viewUnits;
 		var numberStep, unitText;
 
-		//viewArray = List.newClear;
+		//orientation = argOrientation;
 
+		//viewArray = List.newClear;
+		/*
 		controlSpec = argControlSpec.asSpec;
 		controlSpec.addDependant(this);
 
@@ -111,8 +115,22 @@ BtSlider :BtGui {
 		//view.layout.gap_(0.0 @ 0.0)
 		this.layout = slLayout;
 
+		*/
+
+
+		super.init(argLabel, argControlSpec, argAction, initVal, initAction, viewUnits);
+		initVal = initVal ? controlSpec.default;
+		sliderView = Slider();
+		sliderView.value = controlSpec.unmap(controlSpec.default);
+		this.pr_orient(orientation);
+		this.pr_sliderInit(initVal);
+
+
+		this.layout = slLayout;
+
 	}
 
+	/*
 	labelWidth {
 		^labelView.bounds.width;
 	}
@@ -156,80 +174,82 @@ BtSlider :BtGui {
 		width = width ? bounds.width; // Unlikely to be nil, but whatevs
 		//bounds.width = width;
 		//labelView.bounds = bounds;
-		numberView.maxWidth = width;
+		//numberView.maxWidth = width;
 		numberView.fixedWidth = width;
-		(sliderView.orientation == \vertical).if({
-			super.maxWidth = width + sliderView.bounds.width;
-		});
+		//(sliderView.orientation == \vertical).if({
+		//	super.maxWidth = width + sliderView.bounds.width;
+		//});
 	}
-
+*/
 
 	pr_orient{|orientation|
 
-		var vert, horz, long = 130, short, nboxWidth;
+		var vert, horz, long = 130, short, nboxWidth, maxWidth;
 
 		short = numberView.sizeHint.height;
-		nboxWidth = "20000".bounds(numberView.font).width * 1.1;
 
 		vert = {
 
-			var maxWidth;
 
-			sliderView.orientation=\vertical;
+			sliderView.orientation= orientation = \vertical;
 			//sliderView.with = short;
-			sliderView.maxWidth = short;
+			sliderView.fixedWidth = short;
 			//sliderView.height = long;
-			sliderView.bounds = Rect(0,0, short, long);
 
 			numberView.font.postln;
 			controlSpec.maxval.asString.postln;
 
-			maxWidth = (controlSpec.maxval.asString ++ ".0").bounds(numberView.font).width * 1.1;
 
+			/*
 			maxWidth.postln;
 
-			numberView.fixedWidth = maxWidth.ceil.max(nboxWidth);
-			numberView.bounds = Rect(0,0,short,maxWidth.ceil);
+			//numberView.fixedWidth = maxWidth.ceil.max(nboxWidth);
+
 			super.maxWidth = short + maxWidth.ceil;
 
 			labelView.resize = 1;
 			sliderView.resize = 4;
 			numberView.resize = 7;
 			units.resize = 7;
+			*/
 
-			slLayout = VLayout(
-				[labelView, s:1],
-				[sliderView, s:4],
-				[numberView, s:7],
-				[units, s:7]
-			)
+			slLayout = VLayout(labelView,sliderView, numberView, units
+				//[labelView, s:1],
+				//[sliderView, s:4],
+				//[numberView, s:7],
+				//[units, s:7]
+			);
+			this.resize_(4);
 		};
 
 		horz = {
 
-			sliderView.orientation = \horizontal;
+			sliderView.orientation = orientation = \horizontal;
 			//sliderView.height = short;
-			sliderView.maxHeight = short;
+			sliderView.fixedHeight = short;
 			//sliderView.width = long;
-			sliderView.bounds = Rect(0,0, long, short);
+			//sliderView.bounds = Rect(0,0, long, short);
 
-			numberView.maxWidth = numberView.sizeHint.width;
-			numberView.minWidth = nboxWidth;
-			numberView.bounds = numberView.bounds.size_(Size(numberView.sizeHint.width/2, numberView.sizeHint.height));
-			super.maxHeight = numberView.sizeHint.height * 1.5;
+			//numberView.maxWidth = numberView.sizeHint.width;
+			//numberView.minWidth = nboxWidth;
+			//numberView.bounds = numberView.bounds.size_(Size(numberView.sizeHint.width/2, numberView.sizeHint.height));
+			//super.maxHeight = numberView.sizeHint.height * 1.5;
 
+			/*
 			labelView.resize = 1;
 			sliderView.resize = 2;
 			numberView.resize_(3);
 			//numberView.asView.resize = 3;
 			units.resize = 3;
-
+*/
 			slLayout = HLayout(labelView,sliderView, numberView, units
 				//[labelView, s:1],
 				//[sliderView, s:2],
 				//[numberView, s:3],
 				//[units, s:3]
-			)
+			);
+
+			this.resize_(2);
 		};
 
 
@@ -241,23 +261,24 @@ BtSlider :BtGui {
 
 	}
 
-	asView {/*^layout*/ ^this}
-	view {}
-
+	//asView {/*^layout*/ ^this}
+	//view {}
+	/*
 	maxHeight_ {arg val;
 		val.notNil.if({
 			sliderView.maxHeight_(val * 1.5.reciprocal);
 			super.maxHeight = val;
 		});
 	}
+	*/
 
-	maxWidth_ {arg val;
+	//maxWidth_ {arg val;
 	//	viewArray.do{arg item;
 	//		item.maxWidth_(val);
 	//	}
-		sliderView.maxWidth = val;
-	}
-
+	//	sliderView.maxWidth = val;
+	//}
+	/*
 	onClose{controlSpec.removeDependant(this)}
 
 	value_ { arg val;
@@ -313,6 +334,26 @@ BtSlider :BtGui {
 			})
 		})
 	}
+	*/
+
+	greatestWidth {
+
+		(sliderView.orientation == \vertical).if ({
+			^super.greatestWidth;
+		}, {
+			^inf
+		})
+	}
+
+	greatestHeight {
+
+		(sliderView.orientation == \horizontal).if ({
+			^super.greatestHeight;
+		}, {
+			^inf
+		})
+	}
+
 
 	setColors{arg stringBackground,stringColor,sliderBackground,numBackground,
 		numStringColor,numNormalColor,numTypingColor,knobColor,background;
@@ -355,35 +396,21 @@ BtGui : View {
 	var <>round = 0.001;
 	var <>action, <value, <>zAction, viewArray;
 	//var <view;
-	var slLayout;
+	var slLayout, labelContainer, unitContainer, slider_alt_scale;
 
-	init { arg argLabel, argControlSpec, argAction, initVal, initAction, orientation, viewUnits;
+	init { arg label, argControlSpec, argAction, initVal, initAction, viewUnits;
 		var numberStep, unitText;
 
 		controlSpec = argControlSpec.asSpec;
 		controlSpec.addDependant(this);
 
-		argLabel = argLabel ? "";
+		labelView = this.pr_text(label);
 
-		if(argLabel!=nil,{
-			labelView = StaticText();
-			labelView.string = argLabel;
-			labelView.maxHeight_(15).maxWidth_(60).font_(Font("Arial", 14));
-			labelView.bounds = Rect(0,0, 15, 30);
-			BileTools.hintSize(labelView);
-			//viewArray.add([labelView, stretch:4]);
-			this.name = argLabel;
-		},{
-			labelView=nil
+		if(label!=nil,{
+			this.name = label;
 		});
 
-			numberView = NumberBox();
-		//numberView.maxWidth_(60);
-		//numberView.maxHeight_(15);
-		numberView.string = controlSpec.default.asString;
-		numberView.font_(Font("Arial", 13));
-		BileTools.hintSize(numberView);
-		//if(viewNumberBox, {viewArray.add(numberView)});
+		numberView = this.pr_numberBox();
 
 		zAction = {}; //the default zAction is to do nothing
 
@@ -391,35 +418,16 @@ BtGui : View {
 		// set view parameters and actions
 
 		//(controlSpec.units.notNil && viewUnits).if({
-		unitText = "";
 		viewUnits.if({
-			"view units".postln;
-			unitText = controlSpec.units ? unitText;
-			unitText.postln;
-			controlSpec.units.postln;
+			unitText = controlSpec.units;
 		});
-			units = StaticText();
-			units.string = unitText;
-			units.maxHeight_(15).maxWidth_(60).font_(Font("Arial", 14));
-			BileTools.hintSize(units);
-		//});
 
-		this.pr_orient(orientation);
+		units = this.pr_text(unitText);
+
 
 		initVal = initVal ? controlSpec.default;
 		action = argAction;
 
-		sliderView.action = {
-			this.valueAction_(controlSpec.map(sliderView.value));
-		};
-
-		sliderView.receiveDragHandler = { arg slider;
-			slider.valueAction = controlSpec.unmap(GUI.view.currentDrag);
-		};
-
-		sliderView.beginDragAction = { arg slider;
-			controlSpec.map(slider.value)
-		};
 
 		numberView.action = { this.valueAction_(numberView.value) };
 
@@ -428,7 +436,7 @@ BtGui : View {
 			numberStep = controlSpec.guessNumberStep
 		}{
 			numberView.alt_scale = 1.0;
-			sliderView.alt_scale = 1.0;
+			slider_alt_scale = 1.0;
 		};
 
 		numberView.step = numberStep;
@@ -448,9 +456,97 @@ BtGui : View {
 
 		//view = View().layout = layout;
 		//view.layout.gap_(0.0 @ 0.0)
-		this.layout = slLayout;
+		//this.layout = slLayout;
 
 	}
+
+	pr_sliderInit {|value|
+
+		sliderView.action = {
+			this.valueAction_(controlSpec.map(sliderView.value));
+		};
+
+		sliderView.receiveDragHandler = { arg slider;
+			slider.valueAction = controlSpec.unmap(GUI.view.currentDrag);
+		};
+
+		sliderView.beginDragAction = { arg slider;
+			controlSpec.map(slider.value)
+		};
+
+		slider_alt_scale.notNil.if({
+			sliderView.alt_scale = slider_alt_scale;
+		});
+
+		value.notNil.if({
+			sliderView.value = controlSpec.unmap(value);
+		});
+
+	}
+
+	asView {/*^layout*/ ^this}
+	view {}
+
+
+	pr_text {|text = "", font|
+		var staticText;
+
+		font = font ? Font("Arial", 14);
+
+		staticText = StaticText();
+		staticText.font = font;
+		staticText.string = text.asString;
+		^staticText
+	}
+
+	pr_numberBox{|spec, font|
+		var numberBox, width;
+
+		spec = spec ? controlSpec;
+		font = font ? Font("Arial", 13);
+
+		numberBox = NumberBox();
+		numberBox.string = spec.default.round(0.01).asString;
+		numberBox.font_(font);
+
+		width = "20000".bounds(font).width .max(
+			spec.maxval.round(0.01).asString.bounds(font).width. max (
+				spec.minval.round(0.01).asString.bounds(font).width
+		)) * 1.1;
+
+		numberBox.fixedWidth = width;
+		^numberBox;
+	}
+
+	greatestWidth {
+
+		^numberView.bounds.width.max(
+			labelView.bounds.width.max(
+				units.bounds.width));
+	}
+
+	greatestHeight {
+		^numberView.bounds.height;
+	}
+
+
+	resizeToGreatest {
+		var width, height;
+		width = this.greatestWidth;
+		height = this.greatestHeight;
+
+		(width.notNil && (width != inf)).if ({
+
+			this.maxWidth = width + (numberView.bounds.height * 1.1);
+		});
+
+		(height.notNil && (height != inf)).if ({
+
+			this.maxHeight = height + (numberView.bounds.height * 1.5);
+		});
+
+	}
+
 
 	labelWidth {
 		^labelView.bounds.width;
@@ -459,12 +555,19 @@ BtGui : View {
 	labelWidth_ {|width|
 		var bounds;
 
+
 		// get the bounds, change only the width, re-set the bounds
 		bounds = labelView.bounds;
 		width = width ? bounds.width; // Unlikely to be nil, but whatevs
 		//bounds.width = width;
 		//labelView.bounds = bounds;
+		//labelView.fixedWidth = width;
+		labelView.resizeTo(width, bounds.height);
 		labelView.fixedWidth = width;
+		//labelView.background = Color.white;
+		//"labelWidth_( % ) % %".format(width, labelView.bounds.width, this.bounds.width).postln;
+		//labelView.refresh; this.refresh;
+		this.resizeToGreatest;
 	}
 
 	unitWidth {
@@ -474,12 +577,21 @@ BtGui : View {
 	unitWidth_ {|width|
 		var bounds;
 
-		// get the bounds, change only the width, re-set the bounds
-		bounds = units.bounds;
-		width = width ? bounds.width; // Unlikely to be nil, but whatevs
-		//bounds.width = width;
-		//labelView.bounds = bounds;
-		units.fixedWidth = width;
+		//pr_isBlank(units).not.if({
+			"unitWidth_".postln;
+			//this.bounds.width.postln;
+			//width.postln;
+			// get the bounds, change only the width, re-set the bounds
+			bounds = units.bounds;
+			width = width ? bounds.width; // Unlikely to be nil, but whatevs
+			//bounds.width = width;
+			//labelView.bounds = bounds;
+			//bounds.width.postln;
+			//width.postln;
+			units.fixedWidth = width;
+		//units.resizeTo(width, bounds.height);
+		//})
+		this.resizeToGreatest;
 	}
 
 	numberWidth {
@@ -495,14 +607,129 @@ BtGui : View {
 		width = width ? bounds.width; // Unlikely to be nil, but whatevs
 		//bounds.width = width;
 		//labelView.bounds = bounds;
-		numberView.maxWidth = width;
+		//numberView.maxWidth = width;
 		numberView.fixedWidth = width;
-		(sliderView.orientation == \vertical).if({
-			super.maxWidth = width + sliderView.bounds.width;
-		});
+		//(sliderView.orientation == \vertical).if({
+		//	super.maxWidth = width + sliderView.bounds.width;
+		//});
+		//numberView.resizeTo(width, bounds.height);
+		"numberWidth_( % ) % % hint %".format(width, numberView.bounds.width, this.bounds.width,
+			this.sizeHint.width
+		).postln;
+		this.resizeToGreatest;
+		//this.refresh;
+	}
+
+	width{|w|
+
+		"width!!--------------------------------------------------".postln;
+		^super.width_(w)
+	}
+
+	onClose{controlSpec.removeDependant(this)}
+
+	value_ { arg val;
+		value = controlSpec.constrain(val);
+		{
+			numberView.value = value.round(round);
+			sliderView.notNil.if({
+				sliderView.value = controlSpec.unmap(value);
+			});
+		}.defer;
+	}
+
+	map {arg val;
+		^controlSpec.unmap(val);
+	}
+
+	valueAction_ { arg val;
+		this.value_(val);
+		this.doAction;
+	}
+
+	doAction { action.value(this) }
+
+	set { arg label, spec, argAction, initVal, initAction = false;
+		labelView.notNil.if { labelView.string = label.asString };
+		spec.notNil.if { controlSpec = spec.asSpec };
+		argAction.notNil.if { action = argAction };
+
+		initVal = initVal ? value ? controlSpec.default;
+
+		if (initAction) {
+			this.valueAction_(initVal);
+		}{
+			this.value_(initVal);
+		};
+	}
+
+	font_{ arg font;
+
+		labelView.notNil.if{labelView.font=font};
+		numberView.font=font;
+		units.font = font;
+	}
+
+	pr_set_if_visible{|gui, background|
+
+		background.notNil.if({
+			//gui.notNil.if({
+			//	("^[[:space:]]*$".matchRegexp(gui.string)
+			//			|| (gui.string != "")).if({
+			//		gui.background = background;
+			//	}, {
+			//		gui.background = background.alpha_(0);
+			//	})
+			//})
+			this.pr_isBlank(gui).if({
+				// yes
+				gui.background = background.alpha_(0);
+			} , {
+				// not blank
+				gui.background = background;
+			})
+		})
 	}
 
 
+	pr_isBlank {|gui|
+		var blank = true;
+		gui.notNil.if({
+			("^[[:space:]]*$".matchRegexp(gui.string)
+						|| (gui.string != "")).if({
+					blank = false;
+				})
+			})
+		^blank
+	}
+
+	setColors{arg stringBackground,stringColor,sliderBackground,numBackground,
+		numStringColor,numNormalColor,numTypingColor,knobColor,background;
+
+		stringBackground.notNil.if{
+			this.pr_set_if_visible(labelView, stringBackground);
+			this.pr_set_if_visible(units, stringBackground);
+		};
+		stringColor.notNil.if{
+			labelView.notNil.if{labelView.stringColor_(stringColor)};
+			units.notNil.if{units.stringColor_(stringColor)};};
+		numBackground.notNil.if{
+			numberView.background_(numBackground);};
+		numNormalColor.notNil.if{
+			numberView.normalColor_(numNormalColor);};
+		numTypingColor.notNil.if{
+			numberView.typingColor_(numTypingColor);};
+		numStringColor.notNil.if{
+			numberView.stringColor_(numStringColor);};
+		sliderBackground.notNil.if{
+			sliderView.background_(sliderBackground);};
+		//knobColor.notNil.if{
+		//	sliderView.knobColor_(knobColor);}; */
+		background.notNil.if{
+			this.background=background;};
+		//numberView.refresh;
+
+	}
 }
 
 BtRanger {

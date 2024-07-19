@@ -9,7 +9,7 @@ NetworkGui : Environment {
 	var <>redrawRate, clock;
 	var <>gui_items; // not used
 	var keys;
-	var layout;
+	var layout, user_layout;
 
 	classvar guitypes;
 
@@ -389,12 +389,13 @@ NetworkGui : Environment {
 				keys = keys.flatten;
 				keys.postln;
 
-				keys.do({|key|
+				widgets = keys.collect({|key|
 
 					widget = this.getWidget(key);
 					view.layout.add(widget);
 					view.layout.setStretch(widget, 0);
-					widgets = widgets ++ widget;
+					//widgets = widgets ++ widget;
+					widget;
 
 				});
 
@@ -412,6 +413,8 @@ NetworkGui : Environment {
 				*/
 
 				this.class.equalise(widgets);
+				widgets.do( _.resizeToHint);
+
 			}, { "own layout".postln; });
 
 			bounds = win.bounds;
@@ -435,6 +438,8 @@ NetworkGui : Environment {
 			newlayout
 		);
 
+		user_layout = newlayout;
+
 		view.notNil.if({
 			"immediately live".postln;
 			view.layout= mylayout;
@@ -443,14 +448,15 @@ NetworkGui : Environment {
 		layout = mylayout;
 	}
 
+
 	addWidget{|widget, regenerate=true|
 
 		"add a widget";
 
-		layout.notNil.if({
+		user_layout.notNil.if({
 			"add to layout".postln;
-			layout.add(widget);
-			layout.setStretch(widget, 0);
+			user_layout.add(widget);
+			user_layout.setStretch(widget, 0);
 		}, {
 			regenerate.not.if({
 				"add to view".postln;
@@ -474,14 +480,22 @@ NetworkGui : Environment {
 
 		"Equalise widths".postln;
 		// make all the labels the same width
-		biggest =widgets.maxItem({|w| w.respondsTo(\labelWidth).if ({w.labelWidth}, {0}) });
-		//biggest.postln;
+		biggest =widgets.maxItem({|w| w.respondsTo(\labelWidth).if ({w.labelWidth.postln; w.labelWidth}, {0}) });
+		//biggest.controlSpec.postln;
 		widgets.do({|w| w.respondsTo(\labelWidth_).if({ w.labelWidth = biggest.labelWidth })});
+		//widgets.do({|w| w.respondsTo(\labelWidth_).if({ w.labelWidth = 50 })});
 
 		// make all units the same width
-		biggest =widgets.maxItem({|w| w.respondsTo(\unitWidth).if  ({w.unitWidth}, {0}) });
-		//biggest.postln;
+		biggest =widgets.maxItem({|w| w.respondsTo(\unitWidth).if  ({w.unitWidth.postln; w.unitWidth}, {0}) });
+		//biggest.controlSpec.postln;
 		widgets.do({|w| w.respondsTo(\unitWidth_).if({w.unitWidth = biggest.unitWidth })});
+		//widgets.do({|w| w.respondsTo(\unitWidth_).if({w.unitWidth = 100 })});
+		//widgets.do({|w| w.respondsTo(\unitWidth_).if({ w.unitWidth_(100) })});
+
+		biggest =widgets.maxItem({|w| w.respondsTo(\numberWidth).if  ({w.numberWidth.postln; w.numberWidth}, {0}) });
+		//biggest.controlSpec.postln;
+		"numberWidth".postln;
+		widgets.do({|w| w.respondsTo(\numberWidth_).if({w.numberWidth = biggest.numberWidth })});
 	}
 
 	// this.class.getCVWidget(cv, key, view, this, bgcolor);
