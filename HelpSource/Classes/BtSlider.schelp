@@ -1,0 +1,262 @@
+TITLE:: BtSlider
+summary:: Wrapper class for label,slider, number box
+categories:: Libraries>BiLETools
+related:: Classes/NetworkGui, Classes/Slider, Classes/NumberBox, Classes/StaticText
+
+DESCRIPTION::
+BtSlider is wrapper class which creates an (optional) link::Classes/StaticText::, and a link::Classes/Slider:: plus a link::Classes/NumberBox::.
+
+
+subsection:: Scrolling and Arrow Keys
+BtSlider's number box scrolls by default, using the step size of the link::Classes/ControlSpec::. If the controlSpec's step is set to 0, or is not set, then the stepping and scrolling will be guessed according to the code::minval:: and code::maxval:: values of the spec on creation of the view.  Unlike the step variable of a regular link::Classes/NumberBox::, code::controlSpec.step:: is also the smallest possible increment for the link::Classes/NumberBox::. By default, the shift-key modifier will allow you to step by 100x code::controlSpec.step::, while the ctrl-key will give you 10x code::controlSpec.step::.  Since the alt-key would give you 0.1 of the minimum step, it is disabled by default, but you can change that by setting code::numberView.alt_step:: to any value you like. Accordingly you can customize the other modifiers to fit your needs. See link::Classes/NumberBox:: and link::Classes/Slider::. This also effects the arrow keys for the slider.
+
+CLASSMETHODS::
+
+subsection:: Creation / Class Methods
+
+METHOD:: new
+
+ARGUMENT:: label
+The label. Default value is code::nil::. If code::nil::, then the link::Classes/StaticText:: is invisible.
+
+ARGUMENT:: controlSpec
+The link::Classes/ControlSpec:: for scaling the value.
+
+ARGUMENT:: action
+A link::Classes/Function:: called when the value changes. The function is passed the BtSlider instance as its argument.
+
+ARGUMENT:: initVal
+The value to initialize the slider and number box with. If code::nil::, then it uses the link::Classes/ControlSpec::'s default value.
+
+ARGUMENT:: initAction
+A link::Classes/Boolean:: indicating whether the action function should be called when setting the initial value. The default is false.
+
+ARGUMENT:: orientation
+code::\vert::, or code::\horz::. The default is code::\horz::.
+
+
+ARGUMENT:: viewUnits
+A link::Classes/Boolean:: indicating whether to display a label with the units specified in the link::Classes/ControlSpec::.
+
+
+discussion::
+code::
+(
+w = Window.new.front.layout_(
+	HLayout(
+		g = BtSlider( " test ",  // label
+			\freq,     // controlSpec
+			{ |ez| (ez.value.asString ++" is the value of " ++ ez).postln }, // action
+			440,
+			false,
+			\horizontal,
+			true
+		)
+	)
+);
+g.setColors(Color.grey,Color.white)
+);
+
+// Simplest version, no parent view, so a window is created
+(
+	g = BtSlider(label:" test ").front;
+	g.action_({ |ez| (ez.value.asString ++" is the value of " ++ ez).postln });
+);
+::
+The contained views can be accessed via the BtSlider instance variables: code::labelView::, code::sliderView::, code::numberView::.
+
+
+INSTANCEMETHODS::
+
+subsection:: Accessing Instance and Class Variables
+
+method:: numberView
+Returns the numberView.
+
+method:: action
+A link::Classes/Function:: or link::Classes/FunctionList:: to be evaluated when the value changes. The first argument will be the BtSlider.
+
+
+method:: round
+Rounds the values in the number box.
+
+method:: controlSpec
+An instance of ControlSpec for scaling the values.
+
+method:: value
+Gets/sets the list/menu to the index at value. Does not perform the action.
+argument:: val
+A number.
+
+method:: valueAction
+Sets the value and performs the action at the index value and the global action.
+argument:: val
+A number.
+
+method:: doAction
+Performs the action at the current index and the global action.
+
+method:: set
+Set the args after creation. You can only set the label if it was not nil from the beginning.
+
+
+
+
+
+
+subsection:: Changing Appearance
+
+method:: setColors
+argument:: stringBackground
+An instance of link::Classes/Color::. The code::background:: of the label and unit views.
+argument:: stringColor
+An instance of link::Classes/Color::. The code::stringColor:: of the label and unit views.
+argument:: sliderBackground
+An instance of link::Classes/Color::. The slider code::background::.
+argument:: numBackground
+An instance of link::Classes/Color::. The code::numColor:: of the number view.
+argument:: numStringColor
+An instance of link::Classes/Color::. The code::stringColor:: of the number view.
+argument:: numNormalColor
+An instance of link::Classes/Color::. The code::normalColor:: of the number view.
+argument:: numTypingColor
+An instance of link::Classes/Color::. The code::typingColor:: of the number view.
+argument:: knobColor
+An instance of link::Classes/Color::. The code::knobColor:: of the knob view.
+argument:: background
+An instance of link::Classes/Color::. The code::background:: of the enclosing view.
+
+method:: font
+Set the Font used by all the views.
+argument:: font
+An instance of link::Classes/Font::.
+
+method:: visible
+Sets/gets it the component views are visible.
+argument:: bool
+An instance of link::Classes/Boolean::. Default is code::true::.
+
+
+
+
+
+METHOD:: labelWidth
+Sets/gets the width of labelView
+
+ARGUMENT:: width
+The new width
+
+
+METHOD:: numberWidth
+Sets/gets the width of numberView
+
+ARGUMENT:: width
+The new width
+
+
+METHOD:: unitWidth
+Sets/gets the width of units
+
+ARGUMENT:: width
+The new width
+
+
+
+
+
+
+
+
+
+
+METHOD:: zAction
+Set the zAction
+
+
+
+
+
+
+
+
+
+EXAMPLES::
+
+code::
+// Horizontal sliders
+(
+b = [
+	BtSlider( "freq",  // label
+			\freq,     // controlSpec
+			{ |ez| (ez.value.asString ++" is the value of " ++ ez).postln }, // action
+			440,
+			false,
+			\horz,
+			true
+	).background_(BileTools.light_colour),
+		BtSlider( "phase",  // label
+			\phase,     // controlSpec
+			{ |ez| (ez.value.asString ++" is the value of " ++ ez).postln }, // action
+			440,
+			false,
+			\horz,
+			true
+	).background_(BileTools.light_colour),
+		BtSlider( "modulation",  // label
+			\freq,     // controlSpec
+			{ |ez| (ez.value.asString ++" is the value of " ++ ez).postln }, // action
+			440,
+			false,
+			\horz,
+			true
+		).background_(BileTools.light_colour)
+];
+NetworkGui.equalise(b); // make the labels, number bozes and units equal lengths
+
+w = Window.new.front.layout_(
+	VLayout(
+		*b
+	)
+);
+
+)
+
+// Vertical Sliders
+(
+b = [
+	BtSlider( "freq",  // label
+			\freq,     // controlSpec
+			{ |ez| (ez.value.asString ++" is the value of " ++ ez).postln }, // action
+			440,
+			false,
+			\vert,
+			true
+	).background_(BileTools.light_colour),
+		BtSlider( "phase",  // label
+			\phase,     // controlSpec
+			{ |ez| (ez.value.asString ++" is the value of " ++ ez).postln }, // action
+			440,
+			false,
+			\vert,
+			true
+	).background_(BileTools.light_colour),
+		BtSlider( "modulation",  // label
+			\freq,     // controlSpec
+			{ |ez| (ez.value.asString ++" is the value of " ++ ez).postln }, // action
+			440,
+			false,
+			\vert,
+			true
+		).background_(BileTools.light_colour)
+];
+NetworkGui.equalise(b); // make the labels, number bozes and units equal lengths
+
+w = Window.new.front.layout_(
+	HLayout(
+		*b
+	)
+);
+
+)
+
+::

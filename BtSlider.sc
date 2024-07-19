@@ -215,7 +215,7 @@ BtSlider :BtGui {
 
 			slLayout = VLayout(
 				[labelView, align:\center, stretch:1],
-				sliderView,
+				[sliderView, stretch:20],
 				[numberView, align:\center, stretch:1],
 				[units, align:\center, stretch:1]
 				//[labelView, s:1],
