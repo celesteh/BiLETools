@@ -213,7 +213,11 @@ BtSlider :BtGui {
 			units.resize = 7;
 			*/
 
-			slLayout = VLayout(labelView,sliderView, numberView, units
+			slLayout = VLayout(
+				[labelView, align:\center, stretch:1],
+				sliderView,
+				[numberView, align:\center, stretch:1],
+				[units, align:\center, stretch:1]
 				//[labelView, s:1],
 				//[sliderView, s:4],
 				//[numberView, s:7],
@@ -415,10 +419,10 @@ BtKnob : BtGui {
 		units.resize = 0;
 
 		slLayout = VLayout(
-			[labelView, stretch:2],
-			sliderView,
-			[numberView, stretch:2],
-			[units, stretch:2]
+			[labelView, stretch:2, align:\center],
+			[sliderView, stretch:5],
+			[numberView, stretch:2, align:\center],
+			[units, stretch:2, align:\center]
 		);
 
 		this.pr_sliderInit(initVal);
