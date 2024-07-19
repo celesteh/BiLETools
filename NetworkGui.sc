@@ -89,17 +89,35 @@ NetworkGui : Environment {
 			(0.7),Color.grey, Color.white, Color.yellow);
 			},
 			*/
+			// arg label, controlSpec, action, initVal, initAction=false, mode=\vert, viewUnits=false;
+			\knob,	{|cv, view, key, netgui, sub=10, bgcolor|
+				var spec;
+
+				spec = cv.spec ? key.asSymbol.asSpec;
+				bgcolor = bgcolor ? BileTools.light_colour;
+
+				BtKnob(
+					key.asString,
+					spec,
+					{|ez| cv.value_(ez.value, netgui)},
+					cv.value,
+					false,
+					\vert,
+					true
+				).background_(bgcolor);
+			}//,
+			/*
 			\knob,	{|cv, view, key, netgui| EZKnob(
-				view,
-				50 @ 90,
-				label: key.asString,
-				controlSpec: cv.spec ? key.asSymbol.asSpec,
-				action: {|ez| cv.value_(ez.value, netgui)},
-				initVal: cv.value,
-				unitWidth:20
+			view,
+			50 @ 90,
+			label: key.asString,
+			controlSpec: cv.spec ? key.asSymbol.asSpec,
+			action: {|ez| cv.value_(ez.value, netgui)},
+			initVal: cv.value,
+			unitWidth:20
 			).setColors(Color.grey,Color.white, Color.grey
-				(0.7),Color.grey, Color.white, Color.yellow);
-			},
+			(0.7),Color.grey, Color.white, Color.yellow);
+			},*/
 			/*
 			\voter, 	{|cv, view, key, netgui, sub = 10| EZVoter(
 			view,

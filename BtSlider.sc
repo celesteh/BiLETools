@@ -390,6 +390,91 @@ BtSlider :BtGui {
 
 }
 
+BtKnob : BtGui {
+
+		*new { arg label, controlSpec, action, initVal,
+		initAction=false, mode=\vert, viewUnits=false;
+
+		^super.new.init(label, controlSpec, action, initVal,
+			initAction, mode, viewUnits);
+	}
+
+	init { arg argLabel, argControlSpec, argAction, initVal, initAction, mode, viewUnits;
+		var numberStep, unitText;
+
+		super.init(argLabel, argControlSpec, argAction, initVal, initAction, viewUnits);
+		initVal = initVal ? controlSpec.default;
+		sliderView = Knob();
+		sliderView.mode = mode;
+		sliderView.value = controlSpec.unmap(controlSpec.default);
+		//this.pr_orient(orientation);
+		//this.pr_sliderInit(initVal);
+
+		labelView.resize = 0;
+		numberView.resize = 0;
+		units.resize = 0;
+
+		slLayout = VLayout(
+			[labelView, stretch:2],
+			sliderView,
+			[numberView, stretch:2],
+			[units, stretch:2]
+		);
+
+		this.pr_sliderInit(initVal);
+
+		this.layout = slLayout;
+
+	}
+
+	greatestWidth {
+
+		//^super.greatestWidth.max(sliderView.bounds.width);
+		^inf;
+	}
+
+	greatestHeight {
+
+		//^super.greatestHeight.max(sliderView.bounds.height);
+		^inf;
+	}
+
+
+
+	setColors{arg stringBackground,stringColor,sliderBackground,numBackground,
+		numStringColor,numNormalColor,numTypingColor,knobColor,background;
+
+		stringBackground.notNil.if{
+			this.pr_set_if_visible(labelView, stringBackground);
+			this.pr_set_if_visible(units, stringBackground);
+		};
+		stringColor.notNil.if{
+			labelView.notNil.if{labelView.stringColor_(stringColor)};
+			units.notNil.if{units.stringColor_(stringColor)};};
+		numBackground.notNil.if{
+			numberView.background_(numBackground);};
+		numNormalColor.notNil.if{
+			numberView.normalColor_(numNormalColor);};
+		numTypingColor.notNil.if{
+			numberView.typingColor_(numTypingColor);};
+		numStringColor.notNil.if{
+			numberView.stringColor_(numStringColor);};
+		sliderBackground.notNil.if{
+			sliderView.background_(sliderBackground);};
+		knobColor.notNil.if{
+			knobColor.isKinfOf(SequenceableCollection).not.if({
+				knobColor = [knobColor];
+			});
+			sliderView.color_(knobColor);};
+		background.notNil.if{
+			this.background=background;};
+		//numberView.refresh;
+
+	}
+
+
+}
+
 BtGui : View {
 
 	var <>controlSpec, <>sliderView, <>numberView, <>labelView, /*<>layout,*/ <>units;
@@ -619,6 +704,9 @@ BtGui : View {
 		this.resizeToGreatest;
 		//this.refresh;
 	}
+
+
+
 
 	width{|w|
 
