@@ -800,10 +800,153 @@ BtText : BtGui {
 
 }
 
+BtPopUpMenu : BtLists {
+
+	initViews{ |argOrientation|
+		var labelBounds, listBounds, orientation;
+
+		orientation=argOrientation ? \horz;
+
+		widget = PopUpMenu.new();
+
+		slLayout = HLayout(
+			[labelView, stretch:1],
+			[widget, stretch:3]
+		);
+
+		this.layout = slLayout;
+	}
+
+	menu {^ widget}
+
+	setColors{arg stringBackground, stringColor, menuBackground,  menuStringColor,background ;
+
+			stringBackground.notNil.if{
+				labelView.notNil.if{labelView.background_(stringBackground)};};
+			stringColor.notNil.if{
+				labelView.notNil.if{labelView.stringColor_(stringColor)};};
+			menuBackground.notNil.if{
+				this.menu.background_(menuBackground);};
+			menuStringColor.notNil.if{
+				this.menu.stringColor_(menuStringColor);};
+			background.notNil.if{
+				this.background=background;};
+	}
+
+		greatestWidth {
+
+		^inf
+	}
+
+	greatestHeight {
+		^labelView.bounds.height;
+	}
+
+
+	resizeToGreatest {
+		var width, height;
+
+		height = this.greatestHeight;
+
+		(height.notNil && (height != inf)).if ({
+
+			this.maxHeight = height + (labelView.bounds.height * 1.5);
+		});
+
+	}
+
+}
+
+BtLists : BtGui {
+
+	// VListef from the EZLists
+
+	var <items, <>globalAction;
+
+	*new { |label,items, globalAction, initVal, initAction = false, orientation =\horz|
+
+		^super.new.init(label, items, globalAction, initVal,
+			initAction, orientation);
+	}
+
+
+	init {arg label, argItems, argGlobalAction, initVal, initAction, orientation;
+
+		super.init(label);
+
+		this.initViews( orientation );
+		this.items = argItems ? [];
+
+		globalAction = argGlobalAction;
+
+		widget.action = { |obj|
+			items.at(obj.value).value.value(this);
+			globalAction.value(this);
+		};
+
+		this.value_(initVal);
+
+		items.notNil.if {
+			if(initAction) {
+				items.at(initVal).value.value(this); // You must do this like this
+				globalAction.value(this);	// since listView's array is not accessible yet
+			};
+			this.value_(initVal);
+		};
+
+	}
+
+	initViews { }  // override this for your subclass views
+
+	value { ^widget.value }
+	value_ {|val| widget.value = val }
+
+	valueAction_ { |val| widget.value_(val); this.doAction }
+
+	doAction { widget.doAction }
+
+	items_{ |assocArray|
+		assocArray = assocArray.collect { |it| if (it.isKindOf(Association), { it }, { it -> nil }) };
+		items = assocArray;
+		widget.items = assocArray.collect { |item| item.key };
+	}
+
+	item { ^items.at(this.value).key }
+	itemFunc { ^items.at(this.value).value }
+
+	addItem { |name, action|
+		this.insertItem(nil, name, action);
+	}
+
+	insertItem { |index, name, action|
+		var temp;
+		index = index ? items.size;
+		this.items = items.insert(index, name.asSymbol -> action);
+	}
+
+	removeItemAt { |index|
+		var temp;
+		items.removeAt(index);
+		this.items_(items)
+
+	}
+
+	replaceItemAt { |index, name, action|
+		var temp;
+		name = name ? items.at(index).key;
+		action = action ? items.at(index).value;
+		this.removeItemAt(index);
+		this.insertItem(index, name, action);
+
+	}
+
+}
+
 BtGui : View {
 
 	var <>labelView;
 	var <>action, <value, <>zAction, viewArray;
+	var <widget;
 	//var <view;
 	var slLayout;
 
@@ -878,6 +1021,7 @@ BtGui : View {
 		staticText = StaticText();
 		staticText.font = font;
 		staticText.string = text.asString;
+		//staticText.bounds = text.bounds(font);
 		^staticText
 	}
 

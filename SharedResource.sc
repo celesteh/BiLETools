@@ -24,7 +24,9 @@ SharedResource {
 			changeFunc = {|old, new| old != new}
 		});
 
-		has_ever_changed = false;
+		has_ever_changed = item.notNil;//false;
+
+		"SharedResource %".format(value).postln;
 
 	}
 

@@ -251,12 +251,12 @@ NetworkGui : Environment {
 		keys = [];
 		gui_items = [];
 
-		arg_list = this.makeArgs(func, local_sym);
+		func.notNil.if({ arg_list = this.makeArgs(func, local_sym)});
 
 		mountRemote = false;
 		copyRemote = false;
 
-		func.value(*arg_list);
+		func.notNil.if({ func.value(*arg_list)});
 
 		//this.pr_make_gui;
 	}

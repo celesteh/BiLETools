@@ -1,4 +1,158 @@
 
+SplitHPanel : View {
+
+	//var <leftPanel, <rightPanel, splitter, leftResize, rightResize;
+
+	//*qtClass { ^'SplitHPanel' }
+
+
+	*new{|parent, bounds, leftPanel, rightPanel, dominant=\left|
+		^super.new(parent, bounds).initPanes();//(leftPanel, rightPanel, dominant);
+	}
+
+	initPanes {
+
+		^this
+
+	}
+
+	//initPanes {|left, right, dominant|
+
+		/*
+		//this.front;
+
+		//view = View(parent, bounds);
+
+		//"in init".postln;
+
+		leftPanel = left? View();
+		rightPanel = right? View();
+		splitter = View().background_(Color.gray(1, 0.5)).maxWidth_(4);
+		this.layout = HLayout(leftPanel, splitter, rightPanel);
+
+		//rightPanel.dump;
+		//leftPanel.dump;
+
+		//this.front;
+
+		leftResize = {|view, x|
+			(x != 0).if({
+				leftPanel.fixedWidth = (leftPanel.bounds.width + x).max(10).min(this.bounds.width-50);
+				//rightPanel.fixedWidth = (rightPanel.bounds.width - x).max(10).min(view.bounds.width-50);
+			})
+		};
+
+		rightResize = {|view, x|
+			(x != 0).if({
+				//leftPanel.fixedWidth = (leftPanel.bounds.width + x).max(10).min(this.bounds.width-50);
+				rightPanel.fixedWidth = (rightPanel.bounds.width - x).max(10).min(view.bounds.width-50);
+			})
+		};
+
+		(dominant != \right).if({
+			splitter.mouseMoveAction = leftResize;
+		} , {
+			splitter.mouseMoveAction = rightResize;
+		});
+
+		this.toFrontAction = { "Something should have happened".postln};
+
+		//this.dump;
+		*/
+
+	//}
+
+	/*
+	leftPanel_ {|left|
+		left.fixedWidth = leftPanel.bounds.width;
+		leftPanel = left;
+		layout = HLayout(leftPanel, splitter, rightPanel);
+	}
+
+	rightPanel_{|right|
+		rightPanel = right;
+		layout = HLayout(leftPanel, splitter, rightPanel);
+	}
+
+	splitterWidth {
+		^splitter.bounds.width;
+	}
+
+	splitterWidth_{|width|
+		splitter.maxWidth = width;
+	}
+
+	splitterColour {
+		^splitter.background;
+	}
+
+	splitterColour_{|colour|
+		splitter.background = colour;
+	}
+
+	//layout_{|layout|
+	//	view.layout = layout;
+	//}
+
+	//layout {
+	//	^view.layout
+	//}
+
+	asView{
+		^this
+	}
+
+	//front {
+	//	view.front
+	//}
+
+	//bounds {
+	//	^view.bounds
+	//}
+
+	//fixedWidth_{|width|
+	//	view.fixedWidth = width;
+	//}
+
+	//minWidth_ {|width|
+	//	view.minWidth = width;
+	//}
+
+	//maxWidth_{|width|
+	//	view.maxWidth = width;
+	//}
+	*/
+}
+
+/*
+(
+var leftPanel, rightPanel, splitter, view, hl;
+
+view = View().background_(BileTools.colour);
+leftPanel = View().background_(BileTools.light_colour);
+splitter = View().background_(Color.gray(1, 0.5)).maxWidth_(4);
+rightPanel = View().background_(BileTools.light_colour);
+
+hl = HLayout(leftPanel, splitter, rightPanel);
+
+view.layout = hl;
+view.front;
+
+//splitter.mouseMoveAction = {|...args| args.postln};
+splitter.mouseMoveAction = {|v, x|
+	(x != 0).if({
+		leftPanel.fixedWidth = (leftPanel.bounds.width + x).max(10).min(view.bounds.width-50);
+		//rightPanel.fixedWidth = (rightPanel.bounds.width - x).max(10).min(view.bounds.width-50);
+	})
+};
+
+l = leftPanel;
+v = view
+)*/
+
+// SplitHPanel(nil, nil,View().background_(BileTools.light_colour), View().background_(BileTools.light_colour)).front;
+
+
 BileChat {
 
 	var <win, api, <string, disp, >notify, exists, view, <>color;
