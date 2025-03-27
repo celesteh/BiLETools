@@ -158,12 +158,12 @@ SharedResource {
 
 		//also allow the user to pass in nil, action
 		arg1.isNil.if({
-			act = arg2;
+			act = arg2;  //this.action_(nil, {})
 		}, {
 			arg2.isNil.if({
-				act = arg1;
+				act = arg1; // this.action_({})
 			}, {
-				owner = arg1;
+				owner = arg1;  //this.action_(action_owner, {})
 				act = arg2;
 			});
 		});
@@ -171,36 +171,38 @@ SharedResource {
 		act.notNil.if({
 			owner.notNil.if({
 				if (signed_actions.isNil, {
-				signed_actions = IdentityDictionary.new(4);
-			});
+					signed_actions = Dictionary.new();//IdentityDictionary.new(4);
+				});
 
-			signed_actions.put(owner, act);
-			signed_actions.keys.postln;
-		} , {
-			// unknown owner, add the action to an array
-			if (unsigned_actions.isNil, {
-				unsigned_actions = [act];
+				signed_actions.put(owner, act);
+				"let's look at the dictionary".debug(this);
+				signed_actions.dump;
+				//signed_actions.keys.debug(this);
 			} , {
-				unsigned_actions = unsigned_actions ++ act;
+				// unknown owner, add the action to an array
+				if (unsigned_actions.isNil, {
+					unsigned_actions = [act];
+				} , {
+					unsigned_actions = unsigned_actions ++ act;
+				});
 			});
-		});
 		});
 		/*
 		arg2.notNil.if({
-			// arg1 is the adder and arg2 is the action
-			if (signed_actions.isNil, {
-				signed_actions = IdentityDictionary.new(4);
-			});
+		// arg1 is the adder and arg2 is the action
+		if (signed_actions.isNil, {
+		signed_actions = IdentityDictionary.new(4);
+		});
 
-			signed_actions.put(arg1, arg2);
-			signed_actions.keys.postln;
+		signed_actions.put(arg1, arg2);
+		signed_actions.keys.postln;
 		} , {
-			// arg1 is the action
-			if (unsigned_actions.isNil, {
-				unsigned_actions = [arg1];
-			} , {
-				unsigned_actions = unsigned_actions ++ arg1;
-			});
+		// arg1 is the action
+		if (unsigned_actions.isNil, {
+		unsigned_actions = [arg1];
+		} , {
+		unsigned_actions = unsigned_actions ++ arg1;
+		});
 		});
 		*/
 	}
