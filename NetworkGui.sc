@@ -2,7 +2,7 @@ NetworkGui : Environment {
 
 	var api;
 	var local, shared, remote;
-	var <players;
+	var <players, synthDefs;
 	var <copyRemote, <mountRemote;
 	var changed, major_change;
 	var <win, view, <name, <>color, <>light_color;
@@ -787,6 +787,19 @@ NetworkGui : Environment {
 
 		patPlayer = BilePatternPlayer(pat);
 		players = players.add(patPlayer);
+	}
+
+	synthDef_{|def|
+
+		synthDefs.notNil.if({
+			synthDefs.includes(def.name).not.if({
+				synthDefs = synthDefs.add(def.name);
+			});
+		} , {
+			synthDefs = [def.name];
+		});
+
+		api.synthDefs.add(def);
 	}
 
 	user_update_action {

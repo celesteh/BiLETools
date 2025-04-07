@@ -8,6 +8,7 @@ NetAPI {
 	var <name, functions, <nick;
 	var <remote_functions, remote_update_listeners;
 	var shared, <remote_shared;
+	var synthDefs;
 
 
 	*initClass {
@@ -339,6 +340,12 @@ NetAPI {
 				});
 			})
 		})
+	}
+
+	getUser{ |username|
+
+		username = username.asSymbol;
+		^colleagues[username];
 	}
 
 
@@ -800,6 +807,18 @@ NetAPI {
 
 	remove_user_update_listener { |owner|
 		user_update_listeners.removeAt(owner);
+	}
+
+	synthDefs {
+
+		synthDefs.isNil.if({
+			synthDefs = SharedSynthDefs.default;
+			synthDefs.isNil.if({
+				synthDefs = SharedSynthDefs(this);
+			})
+		});
+
+		^synthDefs
 	}
 
 	my_ip {
