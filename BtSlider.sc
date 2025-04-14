@@ -481,7 +481,7 @@ BtKnob : BtNumGui {
 
 BtNumGui : BtGui{
 
-	var <>controlSpec, <>sliderView, <>numberView, /*<>layout,*/ <>units;
+	var <>sliderView, <>numberView, /*<>layout,*/ <>units;
 	var <>round = 0.001;
 	//var <view;
 	var slider_alt_scale;
@@ -775,6 +775,8 @@ BtText : BtGui {
 		textField.value = val;
 	}
 
+
+
 	greatestWidth {
 
 		^inf
@@ -949,6 +951,7 @@ BtGui : View {
 	var <widget;
 	//var <view;
 	var slLayout;
+	var <>controlSpec;
 
 
 	init {arg label, argAction;
@@ -988,6 +991,14 @@ BtGui : View {
 		this.value_(val);
 		this.doAction;
 	}
+
+	map {arg val;
+		controlSpec.notNil.if({
+			^controlSpec.unmap(val);
+		});
+		^val;
+	}
+
 
 	doAction { action.value(this) }
 

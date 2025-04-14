@@ -155,7 +155,7 @@ v = view
 
 BileChat {
 
-	var <win, api, <string, disp, >notify, exists, view, <>color;
+	var <win, api, <string, disp, >notify, exists, view, <>color, inputWidget;
 
 	* new { |net_api, show = true|
 		^super.new.init(net_api, show)
@@ -163,7 +163,7 @@ BileChat {
 
 	init { |net_api, show = true|
 
-		var api_methods, update_action, talk, user_list, user_update_action, side, flag;
+		var api_methods, update_action, user_list, user_update_action, side, flag;
 
 
 		exists = true;
@@ -367,29 +367,29 @@ BileChat {
 		}, "For chatting. Usage: msg, nick, text");
 
 		win.view.decorator.nextLine;
-		talk = TextView(win.view,480@30)
+		inputWidget = TextView(win.view,480@30)
 		.focus(true)
 		.autohidesScrollers_(true);
-		talk.resize_(8);
+		inputWidget.resize_(8);
 
-		talk.keyDownAction_({ arg view, char, modifiers, unicode, keycode;
+		inputWidget.keyDownAction_({ arg view, char, modifiers, unicode, keycode;
 
 			var blah;
 
 			(char == 13.asAscii).if({
-				blah = talk.string;
+				blah = inputWidget.string;
 				//blah = blah.stripRTF;
 				//.escapeChar(13.asAscii).escapeChar(10.asAscii);
 				//.tr(13.asAscii, $ ).tr(10.asAscii, $ ).replace("  ", " ");
 				blah = blah.stripWhiteSpace;
 				blah = blah.replace(""++13.asAscii, "\\n");
 				blah = blah.replace(""++10.asAscii, "\\n");
-				talk.string = "";
+				inputWidget.string = "";
 				this.say(blah);
 			});
 
 
-			talk.keyDownAction(view, char, modifiers, unicode, keycode);
+			inputWidget.keyDownAction(view, char, modifiers, unicode, keycode);
 		});
 
 		show.if ({
@@ -502,6 +502,9 @@ BileChat {
 		});
 	}
 
+	title_{|title|
+		this.name_(title);
+	}
 
 }
 

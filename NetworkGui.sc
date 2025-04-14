@@ -16,8 +16,8 @@ NetworkGui : Environment {
 	*initClass {
 
 		guitypes = IdentityDictionary.new;
-
 		guitypes.putPairs([
+
 
 			\slider, {|cv, view, key, netgui, sub = 10, bgcolor|
 				var spec;
@@ -26,9 +26,6 @@ NetworkGui : Environment {
 				spec = cv.spec ? key.asSymbol.asSpec;
 				bgcolor = bgcolor ? BileTools.light_colour;
 
-				spec.postln;
-				key.postln;
-				spec.units.postln;
 				//view.decorator.nextLine;
 				BtSlider(
 					key.asString,
@@ -54,6 +51,23 @@ NetworkGui : Environment {
 				(0.7),Color.grey, Color.white, Color.yellow);
 				*/
 			},
+
+			\text, {|cv, view, key, netgui, sub = 10, bgcolor|
+				//var spec;
+
+				bgcolor = bgcolor ? BileTools.light_colour;
+
+				////arg label, action, initVal, initAction=false, orientation=\horz;
+				BtText(
+					key.asString,
+					{|ez| cv.value_(ez.value, netgui)},
+					cv.value,
+					false,
+					\horizontal
+				).background_(bgcolor);
+			},
+
+
 			\vslider, {|cv, view, key, netgui, sub = 10, bgcolor|
 				var spec;
 
@@ -61,9 +75,6 @@ NetworkGui : Environment {
 				spec = cv.spec ? key.asSymbol.asSpec;
 				bgcolor = bgcolor ? BileTools.light_colour;
 
-				spec.postln;
-				key.postln;
-				spec.units.postln;
 				//view.decorator.nextLine;
 				BtSlider(
 					key.asString,
@@ -393,7 +404,7 @@ NetworkGui : Environment {
 		} , {
 			// we do have a gui and need to add new sliders or change the name
 
-			"major update".postln;
+			"major update".debug(this);
 			widgets = [];
 
 			major_change = false;
@@ -405,7 +416,7 @@ NetworkGui : Environment {
 			layout.isNil.if({ // if you set your own layout, this is your problem
 
 				keys = keys.flatten;
-				keys.postln;
+				//keys.postln;
 
 				widgets = keys.collect({|key|
 
@@ -523,14 +534,21 @@ NetworkGui : Environment {
 		cv.notNil.if({
 			cv.widget.isNil.if({
 
+
 				cv.guitype.isNil.if({
-					cv.guitype = \slider;
+					cv.spec.notNil.if({
+						cv.spec.isKindOf(EmptySpec).if({
+							cv.guitype = \text;
+						});
+					});
 				});
+				cv.guitype = cv.guitype ? \slider;
 
 				cv.guitype.isKindOf(Function).if({
 					gui_builder = cv.guitype;
 				} , {
 					gui_builder = guitypes[cv.guitype];
+
 					gui_builder.isNil.if({
 						cv.guitype = \slider;
 						gui_builder = guitypes[cv.guitype];
@@ -743,6 +761,17 @@ NetworkGui : Environment {
 			if (spec.isNil) {
 				spec = ControlSpec.specs[key.asString.select{ | c | c.isAlpha}.asSymbol]
 			};
+			if (spec.isNil) {
+
+				if (item.value.isKindOf(String)) {
+					spec = \string.asSpec;
+					item.guitype = \text;
+				};
+				if (item.value.isKindOf(Symbol)) {
+					spec = \symbol.asSpec;
+					item.guitype = \text;
+				};
+			};
 
 			item.spec = spec;
 		});
@@ -811,15 +840,15 @@ NetworkGui : Environment {
 		if (copyRemote, {
 			"copyRemote".postln;
 			user_names.do({ |name|
-				name.postln;
+				//name.postln;
 				shared.keysValuesDo({|key, cv|
 
 					(name.asSymbol != api.nick.asSymbol).if ({
-						name.postln;
+						//name.postln;
 						name.isNil.if({"wtf".warn});
 						tag = ("" ++ name ++ "/" ++ key).asSymbol;
 
-						tag.postln;
+						//tag.postln;
 
 						remote[tag.asSymbol].isNil.if ({
 							res = api.subscribe(tag);
@@ -852,7 +881,7 @@ NetworkGui : Environment {
 			"mountRemote".postln;
 			api.remote_shared.keys.do({|key|
 				tag = key.asSymbol;
-				tag.postln;
+				//tag.postln;
 				remote[tag].isNil.if({
 					res = api.subscribe(tag);
 					res.action_(this, {this.update});
@@ -1165,6 +1194,82 @@ SharedCV {
 
 
 }
+
+
+
+// ControlSpecs for non-numeric Items
+
+
+EmptySpec : Spec {
+
+	var <warp, <>default;
+
+	*new {|warp, default|
+		^super.newCopyArgs(warp, default).init;
+	}
+
+
+	*newFrom { arg similar;
+		^this.new(similar.warp, similar.default);
+	}
+
+	init {
+		warp = warp.asWarp(this);
+	}
+
+	units { ^"" }
+
+	map { arg value;
+		// maps a value from [0..1] to spec range
+		^warp.map(value);
+	}
+	unmap { arg value;
+		// maps a value from spec range to [0..1]
+		^warp.unmap(value);
+	}
+
+	constrain { arg value;
+		^value;
+	}
+
+
+
+
+	*initClass {
+		Class.initClassTree(Warp);
+
+		// This is dodgy, but I get a circular dependancy otherwise
+		Warp.warps.put(\empty, Warp);
+		Warp.warps.put(\symbol, SymbolWarp);
+
+		specs = specs.addAll([
+			\string -> EmptySpec(\empty, ""),
+			\symbol -> EmptySpec(\symbol, "".asSymbol)
+		]);
+	}
+
+}
+
+SymbolWarp : Warp {
+
+	map {|value|
+		value.isKindOf(Symbol).if({
+			^value
+		});
+		^value.asString.asSymbol;
+	}
+
+	unmap {|value|
+		value.isKindOf(Symbol).if({
+			^value
+		});
+		^value.asString.asSymbol;
+	}
+}
+
+
+
+
 
 // This class nicked from the Conductor classes by Ron Kuivila
 
