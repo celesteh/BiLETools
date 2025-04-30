@@ -175,8 +175,8 @@ SharedResource {
 				});
 
 				signed_actions.put(owner, act);
-				"let's look at the dictionary".debug(this);
-				signed_actions.dump;
+				//"let's look at the dictionary".debug(this);
+				//signed_actions.dump;
 				//signed_actions.keys.debug(this);
 			} , {
 				// unknown owner, add the action to an array
@@ -374,7 +374,7 @@ SharedResourceEvent : Event {
 
 	init_synth { |evt, dict|
 
-		this.isPlaying = false;
+		this[\isPlaying] = false;
 		this.parent = this[\synthEvent];
 		//var keys, objects;
 		this.pr_keyvalues(evt, dict);
@@ -468,12 +468,14 @@ SharedResourceEvent : Event {
 
 
 		//this[\isPlaying].not.if({
-			this.isPlaying = true;
+			//this.isPlaying = true;
+		this[\isPlaying] = true;
 			super.play(*args);
 		//} , {
 		//	this.resume;
 		//})
 
+		//this.isPlaying.debug(this);
 
 		//evt = this.copy;
 
@@ -488,5 +490,14 @@ SharedResourceEvent : Event {
 		super.stop(*args);
 	}
 
+	isPlaying {
+		var ret = true;
+
+		this[\gate].notNil.if({
+			ret = (this[\gate] != 0);
+		});
+		ret = ret && this[\isPlaying];
+		^ret
+	}
 
 }

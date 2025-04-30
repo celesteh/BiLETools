@@ -10,6 +10,7 @@ NetworkGui : Environment {
 	var <>gui_items; // not used
 	var keys;
 	var layout, user_layout;
+	var <>manyPlayers;
 
 	classvar guitypes;
 
@@ -251,6 +252,7 @@ NetworkGui : Environment {
 		var res, scv, arg_list, shared_sym;
 
 
+		manyPlayers = true;
 		api = net_api;
 
 		local_sym = local_sym ? [];
@@ -404,7 +406,7 @@ NetworkGui : Environment {
 		} , {
 			// we do have a gui and need to add new sliders or change the name
 
-			"major update".debug(this);
+			//"major update".debug(this);
 			widgets = [];
 
 			major_change = false;
@@ -444,7 +446,7 @@ NetworkGui : Environment {
 				this.class.equalise(widgets);
 				widgets.do( _.resizeToHint);
 
-			}, { "own layout".postln; });
+			}, { /*"own layout".postln;*/ });
 
 			bounds = win.bounds;
 			//bounds.height = win.view.decorator.top + 35;
@@ -798,24 +800,58 @@ NetworkGui : Environment {
 		^item;
 	}
 
+	pr_getActivePlayers{
+		var active = players.select({|pl| pl.isPlaying});
+		^active;
+	}
+
 	synth_{ |evt, dict|
-		var synth;
-		//dict.notNil.if({
-		//	dict.keysValuesDo({|key, val|
-		//		val.isKindOf(SharedCV).if({
-		//			dict[key] = val.shared;
-		//		});
-		//	});
-		//});
+		var synth, old, isPlaying;
+
+		isPlaying = (this.pr_getActivePlayers().size > 0);
+
 		synth = SharedResourceEvent.synth(evt, dict);
-		players = players.add(synth);
+		manyPlayers.if({
+			players = players.add(synth);
+			isPlaying.if({
+				synth.play;
+			});
+		} , {
+			isPlaying = (this.pr_getActivePlayers().size > 0);
+			this.stop;
+			players = [synth];
+			isPlaying.if({
+				this.play;
+			});
+		});
 	}
 
 	pattern_ { |pat|
-		var patPlayer;
+		var patPlayer, old, active, isPlaying;
 
-		patPlayer = BilePatternPlayer(pat);
-		players = players.add(patPlayer);
+		active = this.pr_getActivePlayers;
+		isPlaying = (active.size > 0);
+		//isPlaying.debug(this);
+
+		manyPlayers.if({
+			patPlayer = BilePatternPlayer(pat);
+			players = players.add(patPlayer);
+		} , {
+			players.do({|pl|
+				pl.respondsTo(\set).if({
+					pl.set(\gate, 0);
+				});
+			});
+			patPlayer = BilePatternPlayer(Pdef(this, pat));
+			//players = [patPlayer]
+			// we don't want to lose past players in case we accidentally get two going at once
+			players = active.add(patPlayer);
+		});
+
+		isPlaying.if({
+			patPlayer.play;
+		});
+
 	}
 
 	synthDef_{|def|
@@ -941,7 +977,13 @@ NetworkGui : Environment {
 				pl.set(\gate, 0);
 			});
 			pl.stop;
-		})
+		});
+		// only keep the last one if we're not multiPlayer
+		manyPlayers.not.if({
+			(players.size > 0).if({
+				players = [players.last]
+			});
+		});
 	}
 
 	pause{
@@ -1273,12 +1315,14 @@ SymbolWarp : Warp {
 
 // This class nicked from the Conductor classes by Ron Kuivila
 
-BilePatternPlayer {
+BilePatternPlayer  {
 
-	var <>pattern, <>clock, <>event, <>quant, eventStreamPlayer;
+	var <>pattern, <>clock, <>event, <>quant, <eventStreamPlayer;
 
 	*new { |pattern, clock, event, quant|
-		^super.newCopyArgs(pattern, clock ? TempoClock.default, event ? Event.default, quant ? 0)
+		var pdef;
+		pdef = Pdef(this, pattern);
+		^super.newCopyArgs(pdef, clock ? TempoClock.default, event ? Event.default, quant ? 0)
 	}
 
 	play { |argClock, argEvent, argQuant|
@@ -1287,6 +1331,27 @@ BilePatternPlayer {
 		quant = argQuant ? quant;
 
 		eventStreamPlayer = pattern.play(clock, event.value, quant)
+	}
+
+	fadeTime {
+		pattern.respondsTo(\fadeTime).if({
+			^pattern.fadeTime;
+		});
+		^nil;
+	}
+	fadeTime_ {arg ...args;
+				pattern.respondsTo(\fadeTime_).if({
+			^pattern.fadeTime_(*args);
+		});
+		^nil;
+	}
+
+	isPlaying {
+		eventStreamPlayer.notNil.if({
+			^eventStreamPlayer.isPlaying;
+		}, {
+			^false;
+		})
 	}
 
 	pause { eventStreamPlayer.pause }

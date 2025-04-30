@@ -753,7 +753,10 @@ BtText : BtGui {
 		action = argAction;
 
 
-		textField.action = { this.valueAction_(textField.value) };
+		textField.action = {
+			this.valueActionIfChanged_(textField.value);
+		};
+		//.action = { this.valueAction_(textField.value) };
 
 		if (initAction) {
 			this.valueAction_(initVal);
