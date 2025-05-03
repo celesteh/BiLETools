@@ -9,6 +9,7 @@ NetAPI {
 	var <remote_functions, remote_update_listeners;
 	var shared, <remote_shared;
 	var synthDefs;
+	var <>silence;
 
 
 	*initClass {
@@ -121,6 +122,7 @@ NetAPI {
 		colleagues = Dictionary.new;
 		//shared = Dictionary.new;
 		remote_shared = Dictionary.new;
+		silence = false;
 
 		//ip = MulticastResponder.ip;
 
@@ -759,9 +761,12 @@ NetAPI {
 
 	advertise { | selector, desc = ""|
 
-		desc.isNil.if({ desc =" ";});
+		silence.not.if({
 
-		this.sendMsg('API/Key', this.pr_formatTag(selector), desc, nick)
+			desc.isNil.if({ desc =" ";});
+
+			this.sendMsg('API/Key', this.pr_formatTag(selector), desc, nick)
+		});
 	}
 
 
@@ -784,9 +789,13 @@ NetAPI {
 
 	advertiseShared {| selector, desc = ""|
 
-		"advertising".postln;
+		silence.not.if({
+			"advertising".debug(this);
 
-		this.sendMsg('API/Shared', this.pr_sharedFormat(selector), desc)
+			this.sendMsg('API/Shared', this.pr_sharedFormat(selector), desc);
+		}, {
+			"not advertising".debug(this);
+		});
 	}
 
 	subscribe { | selector|
@@ -824,8 +833,13 @@ NetAPI {
 
 
 	identify {
-		"identifying".postln;
-		this.sendMsg('API/ID', nick, this.my_ip, client.recvPort);
+
+		silence.not.if({
+			"identifying".debug(this);
+			this.sendMsg('API/ID', nick, this.my_ip, client.recvPort);
+		}, {
+			"not identifying".debug(this);
+		});
 	}
 
 	add_remote_update_listener { |owner, action|
