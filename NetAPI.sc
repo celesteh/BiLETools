@@ -30,7 +30,6 @@ NetAPI {
 
 				OSCdef(\getMyIP, {arg msg, t, addr;
 
-					//addr.postln;
 					action.(addr);
 					NetAddr.broadcastFlag = before;
 				}, '/getMyIP', nil, temp_port).oneShot;
@@ -140,7 +139,6 @@ NetAPI {
 				filePath = path.standardizePath;
 				File.exists(filePath).if({
 
-					//"APIResponder".postln;
 					client = OscGroupClientResponder(filePath, serveraddress, username, userpass, grouppass, port);
 				} , {
 					path = path.asSymbol;
@@ -231,10 +229,10 @@ NetAPI {
 	init_querying {
 
 		// set up API Querying
-		//"init querying".postln;
+
 		client.addResp(("/" ++ name ++ "/API/Query").asSymbol,  { arg time, resp, msg;
 			var desc;
-			//"query".postln;
+
 			Task({ // pause between sending keys
 				functions.keysValuesDo({ |key, dat|
 
@@ -245,7 +243,7 @@ NetAPI {
 							desc = dat[1];
 					})});
 					this.advertise(key, desc, nick);
-					//("key" + key).postln;
+
 					0.1.rand.wait;
 				})
 			}).play;
@@ -262,7 +260,7 @@ NetAPI {
 						})});
 						*/
 						this.advertiseShared(key, dat.desc);
-						//("key" + key).postln;
+
 						0.1.rand.wait;
 					})
 				})
@@ -271,8 +269,6 @@ NetAPI {
 
 		client.addResp(("/" ++ name ++ "/API/Key").asSymbol, { arg time, resp, msg;
 			var key, desc, user, username;
-
-			//msg.postln;
 
 			key = msg[1];
 			desc = msg[2];
@@ -293,8 +289,6 @@ NetAPI {
 				});
 			});
 
-			//[key.asSymbol, desc, msg].postln;
-			//remote_functions.keys.postln;
 			//remote_functions.includes(key.asSymbol).not.if ({
 			remote_functions.put(key.asSymbol, desc ?? "");
 			remote_update_listeners.do({|action|
@@ -304,15 +298,13 @@ NetAPI {
 		});
 
 		client.addResp(("/" ++ name ++ "/API/IDQuery").asSymbol,  { arg time, resp, msg;
-			"IDquery".postln;
+			//"IDquery".postln;
 			//client.sendMsg('/bile/API/ID', nick, this.my_ip, NetAddr.langPort);
 			this.identify;
-			//("key" + key).postln;
 		});
 
 		client.addResp(("/" ++ name ++ "/API/ID").asSymbol,  { arg time, resp, msg;
 			var new_user, username, my_nick;
-			//msg.postln;
 
 			my_nick = nick.asString.replace(" ", "");
 			username = msg[1].asString.replace(" ", "");
@@ -349,7 +341,6 @@ NetAPI {
 
 				desc = desc ? "";
 
-				//"%\t%\n".postf(key, desc);
 				remote_shared = remote_shared.put(key, desc);
 
 				//and let listeners know
@@ -368,7 +359,7 @@ NetAPI {
 
 		username = user.nick;
 
-		["username", username].postln;
+		//["username", username].postln;
 
 		(username != nick).if ({
 			colleagues[username].isNil.if({
@@ -390,7 +381,7 @@ NetAPI {
 
 	init_sharing {
 
-		"init sharing".postln;
+		//"init sharing".postln;
 
 		shared.isNil.if({
 			shared = Dictionary.new;
@@ -408,11 +399,10 @@ NetAPI {
 
 			symbol = symbol.asString;
 			sym = symbol;
-			//symbol.postln;
 
 			(symbol.containsStringAt(0, "/"++name++"/")).if ({
 				symbol = symbol[6..];
-				//symbol.postln;
+
 				(symbol.containsStringAt(0, nick.asString++"/")).if ({
 
 					//"it's me!".postln;
@@ -431,8 +421,6 @@ NetAPI {
 							});
 						});
 					});
-
-					//symbol.postln;
 
 					user = colleagues[username];
 					user.isNil.if({
@@ -568,7 +556,6 @@ NetAPI {
 	call { arg selector ... args;
 		var m, ret;
 
-		//try {
 		//[selector, args].postln;
 
 		m = functions[selector.asSymbol];
@@ -753,7 +740,7 @@ NetAPI {
 	remote_query {
 		Task({
 			this.sendMsg('API/IDQuery');
-			"done IDQuery".postln;
+			//"done IDQuery".postln;
 			0.2.wait;
 			this.sendMsg('API/Query');
 		}).play;
@@ -790,11 +777,11 @@ NetAPI {
 	advertiseShared {| selector, desc = ""|
 
 		silence.not.if({
-			"advertising".debug(this);
+			//"advertising".debug(this);
 
 			this.sendMsg('API/Shared', this.pr_sharedFormat(selector), desc);
 		}, {
-			"not advertising".debug(this);
+			//"not advertising".debug(this);
 		});
 	}
 
@@ -835,10 +822,10 @@ NetAPI {
 	identify {
 
 		silence.not.if({
-			"identifying".debug(this);
+			//"identifying".debug(this);
 			this.sendMsg('API/ID', nick, this.my_ip, client.recvPort);
 		}, {
-			"not identifying".debug(this);
+			//"not identifying".debug(this);
 		});
 	}
 

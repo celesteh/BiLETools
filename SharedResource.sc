@@ -26,7 +26,7 @@ SharedResource {
 
 		has_ever_changed = item.notNil;//false;
 
-		"SharedResource %".format(value).postln;
+		//"SharedResource %".format(value).postln;
 
 	}
 
@@ -256,7 +256,7 @@ SharedResource {
 		//desc = description;
 		remote = SharedRemoteListeners(key, api, this, desc, broadcast, symbol);
 		//api.share(symbol, remote, desc);
-		"api mounted".postln;
+		//"api mounted".postln;
 		^remote;
 	}
 
@@ -300,7 +300,7 @@ SharedRemoteListeners {
 
 			if (tag.notNil && broadcast, {  // use the tag we passed in
 				api.sendMsg(tag, value.value);
-				"sent to api".postln;
+				//"sent to api".postln;
 			} , {
 				if((broadcast && (listeners.size > 0)),{
 					api.shareData(key, value.value);
