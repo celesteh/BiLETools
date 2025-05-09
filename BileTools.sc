@@ -1,33 +1,34 @@
 
 SplitHPanel : View {
 
-	//var <leftPanel, <rightPanel, splitter, leftResize, rightResize;
+	var <leftPanel, <rightPanel, splitter, leftResize, rightResize;
 
 	//*qtClass { ^'SplitHPanel' }
 
 
 	*new{|parent, bounds, leftPanel, rightPanel, dominant=\left|
-		^super.new(parent, bounds).initPanes();//(leftPanel, rightPanel, dominant);
+		^super.new(parent, bounds).initPanes(leftPanel, rightPanel, dominant);
 	}
 
-	initPanes {
+	//initPanes {
 
-		^this
+	//	^this
 
-	}
+	//}
 
-	//initPanes {|left, right, dominant|
+	initPanes {|left, right, dominant=\left|
 
-		/*
+		//var rview = View(), lview = View();
+
 		//this.front;
 
 		//view = View(parent, bounds);
 
-		//"in init".postln;
+		//"in init".debug;
 
-		leftPanel = left? View();
-		rightPanel = right? View();
-		splitter = View().background_(Color.gray(1, 0.5)).maxWidth_(4);
+		leftPanel = View().layout_(VLayout(left));//left? View();
+		rightPanel = View().layout_(VLayout(right));//right? View();
+		splitter = View().background_(Color.gray(1, 0.5)).maxWidth_(4).minWidth_(4);
 		this.layout = HLayout(leftPanel, splitter, rightPanel);
 
 		//rightPanel.dump;
@@ -37,7 +38,7 @@ SplitHPanel : View {
 
 		leftResize = {|view, x|
 			(x != 0).if({
-				leftPanel.fixedWidth = (leftPanel.bounds.width + x).max(10).min(this.bounds.width-50);
+				leftPanel.asView.fixedWidth = (leftPanel.bounds.width + x).max(10).min(this.bounds.width-50);
 				//rightPanel.fixedWidth = (rightPanel.bounds.width - x).max(10).min(view.bounds.width-50);
 			})
 		};
@@ -45,7 +46,7 @@ SplitHPanel : View {
 		rightResize = {|view, x|
 			(x != 0).if({
 				//leftPanel.fixedWidth = (leftPanel.bounds.width + x).max(10).min(this.bounds.width-50);
-				rightPanel.fixedWidth = (rightPanel.bounds.width - x).max(10).min(view.bounds.width-50);
+				rightPanel.asView.fixedWidth = (rightPanel.bounds.width - x).max(10).min(view.bounds.width-50);
 			})
 		};
 
@@ -58,9 +59,9 @@ SplitHPanel : View {
 		this.toFrontAction = { "Something should have happened".postln};
 
 		//this.dump;
-		*/
 
-	//}
+
+	}
 
 	/*
 	leftPanel_ {|left|
@@ -155,15 +156,15 @@ v = view
 
 BileChat {
 
-	var <win, api, <string, disp, >notify, exists, view, <>color, inputWidget;
+	var <view, api, <string, disp, >notify, <exists, top, <>color, inputWidget;
 
-	* new { |net_api, show = true|
+	* new { |net_api, show = true, view|
 		^super.new.init(net_api, show)
 	}
 
-	init { |net_api, show = true|
+	init { |net_api, show = true, iview|
 
-		var api_methods, update_action, user_list, user_update_action, side, flag;
+		var api_methods, update_action, user_list, user_update_action, side, flag, bounds;
 
 
 		exists = true;
@@ -196,34 +197,45 @@ BileChat {
 			color = BileTools.colour;
 		});
 
-		win = Window.new("Communication", Rect(128, 64, 500, 360));
-		win.view.background_(color);
-		win.view.decorator = FlowLayout(win.view.bounds, 10@10);
-		win.view.decorator.gap=10@5;
-		win.view.respondsTo(\minWidth_).if({
-			win.view.minWidth_(180);
+		view = iview ? View(nil,500@600); //Window(nil, 500@600).name_("Communication").view;
+		view.background_(color);
+		//view.decorator = FlowLayout(view.bounds, 10@10);
+		//view.decorator.gap=10@5;
+		view.respondsTo(\minWidth_).if({
+			view.minWidth_(180);
 		});
-		win.view.respondsTo(\minHeight_).if({
-			win.view.minHeight_(130);
+		view.respondsTo(\minHeight_).if({
+			view.minHeight_(130);
 		});
 
-		view = CompositeView(win, 480 @ 300);
-		view.resize_(5);
+		// So instead of having fixed numbers it's maths based off of with and height
+		//top bounds = 480 @ 300;
+		//bounds = Point((view.bounds.width - (view.decorator.gap.x *2)),
+		//	view.bounds.height - (30 + (view.decorator.gap.y * 2)) );
+		//bounds.debug(this);
+		//top = CompositeView(view, bounds);
+		//top.resize_(5);
 
-		disp = TextView(view,Rect(0,0, 380,300))
-		.editable = false;
+		// disp bounds = Rect(0, 0, 380, 300);
+		//bounds = Rect(0, 0, bounds.x - 100, bounds.y);
+		//bounds.debug(this);
+		//disp = TextView(top,bounds)
+		disp = TextView().editable = false;
 		disp.resize_(5);
 		//.focus(true);
 		disp.hasVerticalScroller = true;
 		disp.autohidesScrollers_(true);
 		//disp.autoScrolls = true;
 
-		user_list = PopUpMenu(view,Rect(390,0,90, 30));
-		user_list.resize_(3);
+		// user_list bounds =  Rect(390,0,90, 30)
+		//bounds = Rect(bounds.width + view.decorator.gap.x, 0, 90, 30);
+		//"user list %".format(bounds).debug(this);
+		user_list = PopUpMenu(); //(top,bounds);
+		user_list.resize_(3).maxWidth_(90);
 
 		user_update_action = {
 			var user_names;
-			(win.isClosed.not && exists).if({
+			(view.isClosed.not && exists).if({
 				AppClock.sched(0, {
 					user_names = api.colleagues.keys.collect({|k| k});
 
@@ -273,7 +285,7 @@ BileChat {
 
 			list = list.collect({|a| a.asString});
 			api_methods.items = list.asArray;
-			win.isClosed.not.if({
+			view.isClosed.not.if({
 				AppClock.sched(0, {
 					api_methods.refresh;
 					nil;
@@ -281,11 +293,13 @@ BileChat {
 			})
 		};
 
-		api_methods = ListView(view ,Rect(390,40,90,260));
+		// api_method bounds = Rect(390,40,90,260)
+		//bounds = Rect(bounds.left, bounds.height + view.decorator.gap, bounds.width, top.bounds.height - (bounds.height + view.decorator.gap));
+		api_methods = ListView();//(top ,bounds);
 		api_methods.items = (["API Methods"] ++ api.functionNames
 			++ api.remote_functions.keys).
 		collect({|a| a.asString});
-		api_methods.resize_(6);
+		api_methods.resize_(6).maxWidth_(90);
 		/*
 		update_action = {
 		//"remote_action_update_listener_fucked_your_mom".postln;
@@ -351,7 +365,7 @@ BileChat {
 		api.add('msg', { arg user, blah;
 
 			AppClock.sched(0, {
-				(win.isClosed.not && exists).if ({
+				(view.isClosed.not && exists).if ({
 					//disp.string = disp.string ++ "\n buh?";
 					//disp.string = disp.string ++ "\n" + user ++">"+ blah;
 					//string = disp.string;
@@ -366,11 +380,13 @@ BileChat {
 			});
 		}, "For chatting. Usage: msg, nick, text");
 
-		win.view.decorator.nextLine;
-		inputWidget = TextView(win.view,480@30)
+		//view.decorator.nextLine;
+		// input bounds = 480*300
+		//bounds = Point(top.bounds.width, 30);
+		inputWidget = TextView()//(view,480@30)
 		.focus(true)
 		.autohidesScrollers_(true);
-		inputWidget.resize_(8);
+		inputWidget.resize_(8).maxHeight_(30);
 
 		inputWidget.keyDownAction_({ arg view, char, modifiers, unicode, keycode;
 
@@ -392,21 +408,30 @@ BileChat {
 			inputWidget.keyDownAction(view, char, modifiers, unicode, keycode);
 		});
 
-		show.if ({
-			win.front;
-		});
+		//show.if ({
+			//view.front;
+		//});
 
-		win.onClose_({
+		view.layout = VLayout(
+			[HLayout([disp, s:5], VLayout(user_list, api_methods)), s:5],
+			inputWidget
+		);
+
+
+		this.show(show);
+
+		view.onClose_({
 			api.remove('msg');
 			api.remove_user_update_listener(this);
 			disp = nil;
-			win = nil;
+			view = nil;
 			this.release;
 			"should be gone".postln;
 			exists = false;
 		});
 
-
+		//view.onResize_({arg ...args; "resize %".format(args).debug(this)});
+		view.resizeToBounds(view.bounds);
 
 	}
 
@@ -414,7 +439,8 @@ BileChat {
 	show { |doit = true|
 
 		if (doit, {
-			win.front;
+			//view.front;
+			this.win.front;
 		});
 	}
 
@@ -497,14 +523,45 @@ BileChat {
 	}
 
 	name_{|name|
+
 		name.notNil.if({
-			win.name = name.asString;
+			//win.name = name.asString;
+			this.win.name = name.asString;
 		});
+	}
+
+	win { // get the top level View
+		var lineage = view.parents;
+
+		lineage.isNil.if({
+			^this
+		});
+		^lineage.last;
 	}
 
 	title_{|title|
 		this.name_(title);
 	}
+
+	asView {
+		^view
+	}
+
+	isClosed{
+		^view.isClosed
+	}
+
+	front { arg ...args;
+		^view.front(*args);
+	}
+
+	//doesNotUnderstand {arg selector ... args;
+	//	if(view.respondsTo(selector), {
+	//		^view.perform(selector, *args);
+	//	});
+	//	//DoesNotUnderstandError.new(this, selector, args).throw;
+	//}
+
 
 }
 
