@@ -29,7 +29,7 @@ SplitHPanel : View {
 		leftPanel = View().layout_(VLayout(left));//left? View();
 		rightPanel = View().layout_(VLayout(right));//right? View();
 		splitter = View().background_(Color.gray(1, 0.5)).maxWidth_(4).minWidth_(4);
-		this.layout = HLayout(leftPanel, splitter, rightPanel);
+		this.layout = HLayout(leftPanel, splitter, rightPanel).spacing_(5).margins_(2);
 
 		//rightPanel.dump;
 		//leftPanel.dump;
@@ -56,14 +56,14 @@ SplitHPanel : View {
 			splitter.mouseMoveAction = rightResize;
 		});
 
-		this.toFrontAction = { "Something should have happened".postln};
+		//this.toFrontAction = { "Something should have happened".postln};
 
 		//this.dump;
 
 
 	}
 
-	/*
+
 	leftPanel_ {|left|
 		left.fixedWidth = leftPanel.bounds.width;
 		leftPanel = left;
@@ -122,7 +122,7 @@ SplitHPanel : View {
 	//maxWidth_{|width|
 	//	view.maxWidth = width;
 	//}
-	*/
+
 }
 
 /*
@@ -534,7 +534,7 @@ BileChat {
 		var lineage = view.parents;
 
 		lineage.isNil.if({
-			^this
+			^view
 		});
 		^lineage.last;
 	}
