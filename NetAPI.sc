@@ -127,7 +127,7 @@ NetAPI {
 
 		nick = username;
 
-		"path is %".format(path).debug(this);
+		//"path is %".format(path).debug(this);
 
 		((path == \broadcast) || (path == "broadcast")).if({
 
@@ -504,6 +504,9 @@ NetAPI {
 
 	// defining
 	add { arg selector,func, desc;
+
+		//"add %".format(selector).debug(this);
+
 		functions.put(selector.asSymbol, [func, desc]);
 		client.addResp(this.pr_formatTag(selector).asSymbol, { arg time, resp, msg;
 			var result,returnAddr,returnPath;
@@ -512,6 +515,7 @@ NetAPI {
 			//# returnAddr,returnPath = API.prResponsePath(addr);
 			//returnAddr.sendMsg(*([returnPath] ++ result));
 			//msg.postln;
+
 		});
 		this.advertise(selector, desc);
 	}
@@ -556,18 +560,23 @@ NetAPI {
 	call { arg selector ... args;
 		var m, ret;
 
-		//[selector, args].postln;
+		//"call % %".format(selector, args).debug(this);
 
 		m = functions[selector.asSymbol];
 
 		m.notNil.if({
+			//"call m not nil".debug(this);
 			m = m.first;
-			//args.postln;
+			//args.debug(this);
 			^m.valueArray(args);
 			//ret = true;
 		}, {
+
+			// we no longer throw an error because it was crashing the interpretter
+
 			//ret = false;
-			^DoesNotUnderstandError(this, selector, args);
+			//"throwing an error".debug(this);
+			//^DoesNotUnderstandError(this, selector, args);
 		});
 		// , {
 		//	(remote_functions.includes(selector)). if ({
@@ -721,6 +730,7 @@ NetAPI {
 		client.sendMsg(*sym);
 		//sym.postln;
 		client.echo.not.if({
+			//"call %".format(msg).debug(this);
 			this.call(*msg)
 		});
 

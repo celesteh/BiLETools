@@ -29,10 +29,10 @@ BileUser {
 		("[a-z]".matchRegexp(addr, 0, addr.size) ||
 			"[A-Z]".matchRegexp(addr, 0, addr.size)).not.if({
 
-			"no letters".postln;
+			//"no letters".postln;
 			netAddr = NetAddr(addr, port.asString);
 		}, {
-			"letters".postln;
+			//"letters".postln;
 		});
 	}
 
@@ -67,7 +67,7 @@ BileUser {
 
 		//"key % desc %\n".postf(key.asSymbol, desc);
 		api.put(key.asSymbol, desc);
-		api.keys.postln;
+		//api.keys.postln;
 	}
 
 	callableFunctions{

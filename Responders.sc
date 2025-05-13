@@ -29,7 +29,7 @@ OscGroupClientResponder {
 
 
 	join { |action|
-		"join - OscGroupClientResponder".postln;
+		//"join - OscGroupClientResponder".postln;
 		client.join;//(action);
 		action.value;
 	}
@@ -109,9 +109,9 @@ BroadcastResponder {
 	}
 
 
-	*new {|port|
+	*new {|port, ip|
 
-		^super.new.init(port);
+		^super.new.init(port, ip);
 
 	}
 
@@ -132,6 +132,8 @@ BroadcastResponder {
 
 		echo = true;
 		canChangeName = true;
+
+		//"init".debug(this);
 	}
 
 
@@ -247,4 +249,13 @@ IndividualResponder : BroadcastResponder {
 
 }
 
+DummyResponder : BroadcastResponder{
+	//Does nothing. Here for testingpurposes
 
+	echo_{|e|
+		echo = e
+	}
+
+	sendMsg{  arg ... msg;
+	}
+}

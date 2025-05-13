@@ -546,6 +546,8 @@ BtNumGui : BtGui{
 		//view.layout.gap_(0.0 @ 0.0)
 		//this.layout = slLayout;
 
+
+
 	}
 
 	pr_sliderInit {|value|
@@ -625,14 +627,19 @@ BtNumGui : BtGui{
 	}
 
 	unitWidth {
-		^units.bounds.width;
+		units.notNil.if({
+			^units.bounds.width;
+		});
+
+		^0
 	}
 
 	unitWidth_ {|width|
 		var bounds;
 
+		units.notNil.if({
 		//pr_isBlank(units).not.if({
-			"unitWidth_".postln;
+			//"unitWidth_".postln;
 			//this.bounds.width.postln;
 			//width.postln;
 			// get the bounds, change only the width, re-set the bounds
@@ -645,6 +652,7 @@ BtNumGui : BtGui{
 			units.fixedWidth = width;
 		//units.resizeTo(width, bounds.height);
 		//})
+		});
 		this.resizeToGreatest;
 	}
 
@@ -667,9 +675,9 @@ BtNumGui : BtGui{
 		//	super.maxWidth = width + sliderView.bounds.width;
 		//});
 		//numberView.resizeTo(width, bounds.height);
-		"numberWidth_( % ) % % hint %".format(width, numberView.bounds.width, this.bounds.width,
-			this.sizeHint.width
-		).postln;
+		//"numberWidth_( % ) % % hint %".format(width, numberView.bounds.width, this.bounds.width,
+		//	this.sizeHint.width
+		//).postln;
 		this.resizeToGreatest;
 		//this.refresh;
 	}
@@ -679,7 +687,7 @@ BtNumGui : BtGui{
 
 	width{|w|
 
-		"width!!--------------------------------------------------".postln;
+		//"width!!--------------------------------------------------".postln;
 		^super.width_(w)
 	}
 
@@ -725,6 +733,81 @@ BtNumGui : BtGui{
 
 }
 
+BTNumber : BtNumGui {
+	//var <numberView,<>units, <>round = 0.001;
+
+	*new { arg label, controlSpec, action, initVal,
+		initAction=false, viewUnits=false;
+
+		^super.new.init(label, controlSpec, action, initVal,
+			initAction, viewUnits);
+	}
+
+
+
+	init { arg argLabel, argControlSpec, argAction, initVal, initAction, viewUnits;
+		var numberStep, unitText;
+
+		var layoutArr;
+
+		//"init".debug(this);
+
+		super.init(argLabel, argControlSpec, argAction, initVal, initAction, viewUnits);
+		initVal = initVal ? controlSpec.default;
+		sliderView = nil; //View();//Knob();
+
+		labelView.resize = 0;
+		numberView.resize = 2;
+		numberView.maxWidth = inf;
+		units.resize = 0;
+		layoutArr = [
+			[labelView, align:\center],
+			View().fixedWidth_(1),
+			[numberView, s:20, align:\center]
+		];
+
+		viewUnits.if({
+			layoutArr = layoutArr.add([units, align:\center]);
+		});
+
+		slLayout = HLayout(*layoutArr);
+
+		//this.pr_sliderInit(initVal);
+
+		this.layout = slLayout;
+
+
+
+	}
+
+
+
+
+	pr_sliderInit {|value|
+	    ^nil;//View();
+	}
+
+	numberWidth_{}
+
+	greatestWidth {
+
+		//^super.greatestWidth.max(numberView.bounds.width);
+		^inf;
+	}
+
+	greatestHeight {
+
+		^super.greatestHeight.max(numberView.bounds.height);
+		//^inf;
+	}
+
+	doAction { this.action.value(this) }
+
+
+
+
+
+}
 
 BtText : BtGui {
 
@@ -801,6 +884,9 @@ BtText : BtGui {
 		});
 
 	}
+
+	numberWidth_{}
+	numberWidth { ^0 }
 
 
 }

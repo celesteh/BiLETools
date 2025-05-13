@@ -5,7 +5,7 @@ NetworkGui : Environment {
 	var <players, synthDefs;
 	var <copyRemote, <mountRemote;
 	var changed, major_change;
-	var <win, view, <name, <>color, <>light_color;
+	var win, view, <name, <color, <>light_color;
 	var <>redrawRate, clock;
 	var <>gui_items; // not used
 	var keys;
@@ -19,6 +19,23 @@ NetworkGui : Environment {
 		guitypes = IdentityDictionary.new;
 		guitypes.putPairs([
 
+
+			\number, {|cv, view, key, netgui, sub = 10, bgcolor|
+				var spec;
+
+
+				spec = cv.spec ? key.asSymbol.asSpec;
+				bgcolor = bgcolor ? BileTools.light_colour;
+
+				BTNumber(
+					key.asString,
+					spec,
+					{|ez| cv.value_(ez.value, netgui)},
+					cv.value,
+					false,
+					true
+				).background_(bgcolor);
+			},
 
 			\slider, {|cv, view, key, netgui, sub = 10, bgcolor|
 				var spec;
@@ -117,7 +134,8 @@ NetworkGui : Environment {
 					\vert,
 					true
 				).background_(bgcolor);
-			}//,
+			},
+			\none, {|cv, view, key, netgui, sub=10, bgcolor| nil; }   //,
 			/*
 			\knob,	{|cv, view, key, netgui| EZKnob(
 			view,
@@ -283,11 +301,11 @@ NetworkGui : Environment {
 		color = color ? BileTools.colour;
 		light_color = light_color ? BileTools.light_colour;
 
-		win = w;
+		//win = w;
 
-		win.isNil.if({
-			win = Window(name);
-			win.background_(color);
+		//win.isNil.if({
+		//	win = Window(name);
+		//	win.background_(color);
 			//view = win.view;
 			//view.isNil.if({ view = win});
 			//}, {
@@ -295,9 +313,17 @@ NetworkGui : Environment {
 			//		 win.view.decorator = FlowLayout(win.view.bounds);
 			//	});
 			//	view = CompositeView(win, (win.view.bounds.width - 2) @ 30);
-		});
+		//});
 		//view.postln;
-		view = view ? win;
+		//view = view ? win;
+
+		w.notNil.if({ view = w.asView });
+		view.isNil.if({
+			//"looping?".debug(this);
+			view = View();
+			view.background_(color);
+			this.vTitle = name;
+		});
 
 		//view.decorator = FlowLayout(view.bounds);
 		//view.decorator.gap=2@2;
@@ -392,7 +418,7 @@ NetworkGui : Environment {
 		startButton.resizeToHint;
 		startButton.resize = 1;
 
-		^HLayout([startButton, stretch:0], nil);
+		^HLayout([startButton, stretch:0], StaticText().string_(name), nil);
 
 	}
 
@@ -400,7 +426,7 @@ NetworkGui : Environment {
 
 		var bounds, widgets, widget;
 
-		win.isNil.if({
+		view.isNil.if({
 
 			this.pr_makegui; // we don't have a gui
 		} , {
@@ -412,7 +438,8 @@ NetworkGui : Environment {
 			major_change = false;
 
 			name.notNil.if({
-				win.name = name.asString;
+				//win.name = name.asString;
+				this.vTitle_(name.asString);
 			});
 
 			layout.isNil.if({ // if you set your own layout, this is your problem
@@ -423,32 +450,23 @@ NetworkGui : Environment {
 				widgets = keys.collect({|key|
 
 					widget = this.getWidget(key);
-					view.layout.add(widget);
-					view.layout.setStretch(widget, 0);
+					widget.notNil.if({
+						view.layout.add(widget);
+						view.layout.setStretch(widget, 0);
+					});
 					//widgets = widgets ++ widget;
 					widget;
 
 				});
 
-				/*
-				"Equalise widths".postln;
-				// make all the labels the same width
-				biggest =widgets.maxItem({|w| w.labelWidth });
-				biggest.postln;
-				widgets.do({|w| w.labelWidth = biggest.labelWidth });
-
-				// make all units the same width
-				biggest =widgets.maxItem({|w| w.unitWidth });
-				biggest.postln;
-				widgets.do({|w| w.unitWidth = biggest.unitWidth });
-				*/
+				widgets = widgets.reject({|w| w.isNil }).asList;
 
 				this.class.equalise(widgets);
 				widgets.do( _.resizeToHint);
 
 			}, { /*"own layout".postln;*/ });
 
-			bounds = win.bounds;
+			bounds = view.bounds;//win.bounds;
 			//bounds.height = win.view.decorator.top + 35;
 			//bounds.width = 442;
 			//win.bounds_(bounds);
@@ -457,6 +475,43 @@ NetworkGui : Environment {
 
 		});
 	}
+
+	asView {
+		view.isNil.if({ this.pr_makegui });
+		^view
+	}
+
+	color_ {|c|
+		color = c;
+		this.asView.background_(color);
+	}
+
+
+	//show { |doit = true|
+
+	//	if (doit, {
+	//		//view.front;
+	//		this.win.front;
+	//	});
+	//}
+
+	win { // get the top level View
+		var lineage = this.asView.parents;
+
+		lineage.isNil.if({
+			^view
+		});
+		^lineage.last;
+	}
+
+	vTitle_{|name|
+		name.notNil.if({
+			//win.name = name.asString;
+			this.win.name = name.asString;
+		});
+	}
+
+
 
 	keys {
 		^keys.flatten;
@@ -472,7 +527,7 @@ NetworkGui : Environment {
 		user_layout = newlayout;
 
 		view.notNil.if({
-			"immediately live".postln;
+			//"immediately live".postln;
 			view.layout= mylayout;
 		});
 
@@ -482,15 +537,15 @@ NetworkGui : Environment {
 
 	addWidget{|widget, regenerate=true|
 
-		"add a widget";
+		//"add a widget";
 
 		user_layout.notNil.if({
-			"add to layout".postln;
+			//"add to layout".postln;
 			user_layout.add(widget);
 			user_layout.setStretch(widget, 0);
 		}, {
 			regenerate.not.if({
-				"add to view".postln;
+				//"add to view".postln;
 				view.notNil.if({
 					widget.isKindOf(SharedCV).if({
 						widget = widget.widget;
@@ -499,7 +554,7 @@ NetworkGui : Environment {
 					view.layout.setStretch(widget, 0);
 				});
 			}, {
-				"push it off".postln;
+				//"push it off".postln;
 				major_change = true;
 			});
 		});
@@ -509,24 +564,34 @@ NetworkGui : Environment {
 
 		var biggest;
 
-		"Equalise widths".postln;
+		//"Equalise widths".postln;
 		// make all the labels the same width
-		biggest =widgets.maxItem({|w| w.respondsTo(\labelWidth).if ({w.labelWidth.postln; w.labelWidth}, {0}) });
-		//biggest.controlSpec.postln;
-		widgets.do({|w| w.respondsTo(\labelWidth_).if({ w.labelWidth = biggest.labelWidth })});
-		//widgets.do({|w| w.respondsTo(\labelWidth_).if({ w.labelWidth = 50 })});
+		biggest =widgets.maxItem({|w| w.respondsTo(\labelWidth).if ({w.labelWidth}, {0}) });
+
+		//"biggest is %".format(biggest).debug(this);
+
+		biggest.respondsTo(\labelWidth).if ({
+			//biggest.controlSpec.postln;
+			widgets.do({|w| w.respondsTo(\labelWidth_).if({ w.labelWidth = biggest.labelWidth })});
+			//widgets.do({|w| w.respondsTo(\labelWidth_).if({ w.labelWidth = 50 })});
+		});
 
 		// make all units the same width
-		biggest =widgets.maxItem({|w| w.respondsTo(\unitWidth).if  ({w.unitWidth.postln; w.unitWidth}, {0}) });
+		biggest =widgets.maxItem({|w| w.respondsTo(\unitWidth).if  ({w.unitWidth}, {0}) });
 		//biggest.controlSpec.postln;
-		widgets.do({|w| w.respondsTo(\unitWidth_).if({w.unitWidth = biggest.unitWidth })});
+
+		biggest .respondsTo(\unitWidth_).if({
+			widgets.do({|w| w.respondsTo(\unitWidth_).if({w.unitWidth = biggest.unitWidth })});
+		});
 		//widgets.do({|w| w.respondsTo(\unitWidth_).if({w.unitWidth = 100 })});
 		//widgets.do({|w| w.respondsTo(\unitWidth_).if({ w.unitWidth_(100) })});
 
-		biggest =widgets.maxItem({|w| w.respondsTo(\numberWidth).if  ({w.numberWidth.postln; w.numberWidth}, {0}) });
+		biggest =widgets.maxItem({|w| w.respondsTo(\numberWidth).if  ({w.numberWidth}, {0}) });
 		//biggest.controlSpec.postln;
-		"numberWidth".postln;
-		widgets.do({|w| w.respondsTo(\numberWidth_).if({w.numberWidth = biggest.numberWidth })});
+		//"numberWidth".postln;
+		biggest.respondsTo(\numberWidth_).if({
+			widgets.do({|w| w.respondsTo(\numberWidth_).if({w.numberWidth = biggest.numberWidth })});
+		});
 	}
 
 	// this.class.getCVWidget(cv, key, view, this, bgcolor);
@@ -597,7 +662,8 @@ NetworkGui : Environment {
 			//"getCVWidget args % % % % %".format(cv,key,view, this,bgcolor).postln;
 			guiWidget = this.class.getCVWidget(cv, key, view, this, bgcolor);
 
-			guiWidget.isNil.if ({ "no such item %".format(key.asString).warn; });
+			// We do nils on purpose now
+			//guiWidget.isNil.if ({ "no such item %".format(key.asString).warn; });
 
 
 		});
@@ -616,13 +682,13 @@ NetworkGui : Environment {
 		// this should only be called from the gui update loop
 		// we're just going to assume the window isn't nil
 
-		//"pr_gui_update".postln;
 
-		win.isClosed.not.if ({
+		//win.isClosed.not.if ({
+		view.isClosed.not.if ({
 			//"the win is open".postln;
 
 			major_change.if({
-				"major_change is true".postln;
+				//"major_change is true".postln;
 				this.pr_major_gui_update;
 			});
 
@@ -659,7 +725,8 @@ NetworkGui : Environment {
 			});
 
 
-			win.refresh;
+			//win.refresh;
+			view.refresh;
 
 			^redrawRate;
 		}, {
@@ -688,11 +755,11 @@ NetworkGui : Environment {
 
 		remote[tag].isNil.if({
 
-			"adding remote".postln;
+			//"adding remote".postln;
 
 			res = api.subscribe(tag);
 			res.action_(this, {this.update});
-			res.action_(api, {|val| "to api".postln; api.sendMsg(tag, val.value)}); // les just added update network
+			res.action_(api, {|val|  api.sendMsg(tag, val.value)});
 			//res.action_({"fuck yeah".postln}); // does the res action ever actually get called?   YES!!
 			rcv = SharedCV(this, res);
 			//if( cv.copy_spec, {rcv.spec = cv.spec});
@@ -773,6 +840,11 @@ NetworkGui : Environment {
 					spec = \symbol.asSpec;
 					item.guitype = \text;
 				};
+				if (item.value.isKindOf(SimpleNumber)) {
+					(item.value.abs > 1).if({
+						item.guitype = \number
+					})
+				};
 			};
 
 			item.spec = spec;
@@ -795,7 +867,7 @@ NetworkGui : Environment {
 			this.addWidget(this.class.getCVWidget(item, key, view, this, light_color));
 		});
 
-		item.value.postln;
+		//item.value.postln;
 
 		^item;
 	}
@@ -874,7 +946,7 @@ NetworkGui : Environment {
 		user_names = api.colleagues.keys.collect({|k| k});
 
 		if (copyRemote, {
-			"copyRemote".postln;
+			//"copyRemote".postln;
 			user_names.do({ |name|
 				//name.postln;
 				shared.keysValuesDo({|key, cv|
@@ -911,10 +983,10 @@ NetworkGui : Environment {
 		var user_names, tag, rcv, res, spec, split;
 
 
-		"remote update action".postln;
+		//"remote update action".postln;
 
 		if (mountRemote, {
-			"mountRemote".postln;
+			//"mountRemote".postln;
 			api.remote_shared.keys.do({|key|
 				tag = key.asSymbol;
 				//tag.postln;
@@ -1042,12 +1114,12 @@ NetworkGui : Environment {
 	show { |argwin|
 		var bounds;
 
-		win = argwin ? win;
+		//win = argwin ? win;
 
 		changed = false;
 		major_change = false;
 
-		this.pr_makegui(win);
+		this.pr_makegui(/*win*/argwin); // dont' reset the view unless necessary
 
 		(view.notNil && layout.notNil).if({
 			view.layout_(layout);
@@ -1057,7 +1129,7 @@ NetworkGui : Environment {
 		//bounds.height = this.win.view.decorator.top + 35;
 		//bounds.width = 442;
 		//this.win.bounds_(bounds);
-		BileTools.hintSize(this.win);
+		BileTools.hintSize(/*this.win*/view);
 		this.win.front;
 
 		//redrawRate.isNil.if({ redrawRate = 0.1});
@@ -1181,7 +1253,9 @@ SharedCV {
 
 
 			spec.notNil.if({
-				gui.controlSpec = spec;
+				gui.respondsTo(\controlSpec).if({
+					gui.controlSpec = spec;
+				});
 			});
 		});
 		widget = gui;

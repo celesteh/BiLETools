@@ -426,7 +426,7 @@ BileChat {
 			disp = nil;
 			view = nil;
 			this.release;
-			"should be gone".postln;
+			//"should be gone".postln;
 			exists = false;
 		});
 
@@ -683,9 +683,9 @@ BileClock {
 		);
 
 
-		view.bounds.size.postln;
+		//view.bounds.size.postln;
 		view.bounds.size_(Rect(0, 0, (spacing*2) @ (timeString.sizeHint.height *2)));
-		view.bounds.size.postln;
+		//view.bounds.size.postln;
 
 		win.front;
 		win.onClose_({this.pr_stop});
@@ -707,7 +707,7 @@ BileClock {
 		remFun = {this.pr_stop};
 		CmdPeriod.add(remFun);
 
-		("starting tempo" + tempo + "inc" + inc).postln;
+		//("starting tempo" + tempo + "inc" + inc).postln;
 
 		clock.sched(inc, {
 			//"tick".postln;
