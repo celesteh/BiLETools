@@ -312,7 +312,7 @@ NetAPI {
 			(username != nick.asString).if ({
 				username = username.asSymbol;
 				colleagues[username].isNil.if({
-					new_user = User.new(msg[2], msg[3], msg[1]);
+					new_user = BileUser.new(msg[2], msg[3], msg[1]);
 					this.addUser(new_user);
 					//("adding" + username + "to" + nick + [msg[2], msg[3], msg[1]]).postln;
 				})
