@@ -2,6 +2,10 @@ WebSocketResponder {
 
 	//classvar client;
 	//classvar <ip;
+	classvar <maxThreads;
+	//classvar threads;
+	classvar <threadSemaphore;
+
 	var port;
 	var <recvPort;
 	var responders;
@@ -11,6 +15,16 @@ WebSocketResponder {
 	var <jsResponder;
 	var webview;
 	var browser;
+
+	*initClass {
+		this.maxThreads = 5;
+	}
+
+	*maxThreads_{|count|
+		maxThreads = count;
+		threadSemaphore = Semaphore(maxThreads);
+	}
+
 
 
 	*pr_getPort {|requestedPort, maxTries=5|
@@ -125,14 +139,26 @@ WebSocketResponder {
 		jsResponder = {
 
 			AppClock.sched(0, {
+
+
+				var semaphore = this.class.threadSemaphore;
+
+				semaphore.wait;
+
 				//"getMesg".debug(WebSocketResponder);
 				webview.runJavaScript("getMesg()", {|res|
+					{
 					res.notNil.if({
 						//res.postln;
 						this.pr_dispatch(res, Process.elapsedTime);
 						jsResponder.value; // recurse until the queue is empty
 					});
+					}.try;
 				});
+
+				semaphore.signal;
+
+
 				nil;
 			});
 		};
@@ -144,15 +170,22 @@ WebSocketResponder {
 
 		webview.runJavaScript("join()", {});
 		webview.onJavaScriptMsg = { this.jsResponder.value };
-		action.value;
+		action.value(this);
 	}
+
+	disconnect {|action|
+		// stop doing anything in responce to console messages
+		webview.onJavaScriptMsg = nil;
+		action.value(this);
+	}
+
 
 
 	pr_dispatch {|input, time|
 
 		var key, func;
 
-		input.debug(this);
+		//input.debug(this);
 
 		input.isKindOf(Collection).if({
 			key = input[0];//input.removeAt(0);

@@ -86,11 +86,18 @@ NetAPI {
 	}
 
 	*other{|username, groupname, port, sendPort, path = \broadcast|
+
+		var ret;
+
 		groupname = groupname ? default_name;
 
-		^(all.at(groupname) ?? {
-			^super.new.init(path, nil, username, nil, groupname, port, sendPort);
+		ret = (all.at(groupname) ?? {
+			"super".debug(this);
+			super.new.init(path, nil, username, nil, groupname, port, sendPort);
 		});
+
+		ret.debug(this);
+		^ret;
 	}
 
 
@@ -197,6 +204,10 @@ NetAPI {
 
 		//api = API('bile');
 		//api.mountClient;
+
+		"end of init".debug(this);
+
+		^this;
 
 	}
 
