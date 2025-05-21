@@ -147,13 +147,13 @@ WebSocketResponder {
 
 				//"getMesg".debug(WebSocketResponder);
 				webview.runJavaScript("getMesg()", {|res|
-					{
+
 					res.notNil.if({
 						//res.postln;
 						this.pr_dispatch(res, Process.elapsedTime);
 						jsResponder.value; // recurse until the queue is empty
 					});
-					}.try;
+
 				});
 
 				semaphore.signal;
@@ -195,6 +195,14 @@ WebSocketResponder {
 
 		key = key.asSymbol;
 
+		input = input.collect({|item|
+
+			item.isKindOf(String).if({
+				item = this.unescapeString(item);
+			});
+			item;
+		});
+
 		func = responders.at(key);
 		func.notNil.if({
 			func.value(time, this, input);
@@ -225,15 +233,29 @@ WebSocketResponder {
 		OSCdef(key).free;
 	}
 
+	escapeString {|str|
+		str = str.replace("\"", "\\\"");
+		str = str.replace("\n", "\\\\n");
+		str = str.quote;
+		^str;
+	}
+
+	unescapeString {|str|
+		str = str.replace("\\\n", "\n");
+		^str;
+	}
+
 	sendMsg{  arg ... msg;
 
 		var str;
 
 		msg = msg.collect({|item|
 			(item.isKindOf(SimpleNumber).not && item.isKindOf(Boolean).not).if({
-				item = item.asString;
-				item = item.replace("\"", "\\\"");
-				item = item.quote;
+				//item = item.asString;
+				//item = item.replace("\"", "\\\"");
+				//item = item.replace("\n", "\\\n");
+				//item = item.quote;
+				item = this.escapeString(item.asString);
 			});
 			item;
 		});
