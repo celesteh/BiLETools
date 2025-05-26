@@ -261,6 +261,7 @@ WebSocketResponder {
 		});
 
 		AppClock.sched(0, {
+			//"sendMsg".debug(this);
 			webview.runJavaScript("sendMesg(%)".format(msg), {});
 		});
 	}

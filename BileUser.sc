@@ -1,6 +1,6 @@
 BileUser {
 
-	var <>netAddr, <>nick, <>requests, <>offers, api, shared;
+	var <>netAddr, <>nick, <>requests, <>offers, api, shared ,<>lastActive;
 
 
 	*new { arg addr, port, nick;

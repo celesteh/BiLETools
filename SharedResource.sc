@@ -249,14 +249,15 @@ SharedResource {
 	}
 	*/
 
-	mountAPI { |api, key, desc, broadcast=true, symbol|
+	mountAPI { |api, key, desc, broadcast=true, symbol, owned|
 
 		var remote;
 		//symbol = oSCsymbol;
 		//desc = description;
-		remote = SharedRemoteListeners(key, api, this, desc, broadcast, symbol);
+		remote = SharedRemoteListeners(key, api, this, desc, broadcast, symbol, owned);
 		//api.share(symbol, remote, desc);
-		//"api mounted".postln;
+		"api mounted % % %".format(key, symbol, owned).debug(this);
+		key.isNil.if({ Error("nil key").throw });
 		^remote;
 	}
 
@@ -267,12 +268,12 @@ SharedRemoteListeners {
 
 	var listeners, <shared, broadcast, api, <>key, <>desc, <n, count, tag;
 
-	*new{|key, api, shared, desc, broadcast = true, symbol|
+	*new{|key, api, shared, desc, broadcast = true, symbol, owned|
 
-		^super.new.init(key, api, shared, broadcast, symbol);
+		^super.new.init(key, api, shared, broadcast, symbol, owned:owned);
 	}
 
-	init { |symbol, netapi, sharedResource, description, tellAll = true, osc_tag|
+	init { |symbol, netapi, sharedResource, description, tellAll = true, osc_tag, owned|
 
 		broadcast = tellAll;  if((broadcast.isNil), {broadcast = true});
 		tag = osc_tag;
@@ -284,7 +285,7 @@ SharedRemoteListeners {
 		count = 0;
 		n = 1;
 		shared.action_(this, {|val| this.action(val) });
-		api.share(key, this, desc);
+		api.share(key, this, desc, owned);
 		//api.add(key, {|input| shared.value_(input, this)});
 	}
 

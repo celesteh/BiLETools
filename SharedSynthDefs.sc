@@ -389,6 +389,7 @@ SharedSynthDefs {
 
 
 		advertise.if({
+			"advertise".debug(this);
 			this.advertise(synthDef)
 		});
 
@@ -396,15 +397,16 @@ SharedSynthDefs {
 
 	advertise {|synthDef|
 
+		api.dump;
 		//api.sendMsg('msg', api.nick, blah)
-		api.sendMsq('synthDef', synthDef.asCompileString, api.nick);
+		api.sendMsg('synthDef', synthDef.asCompileString, api.nick);
 
 	}
 
 	prTweak {|synthDef, trust=false|
 
 		synthDef.isKindOf(SynthDef).not.if({
-			synthDef.isKindOf(UnTrustedSynthDef).not.if({
+			synthDef.isKindOf(UntrustedSynthDef).not.if({
 				synthDef = UntrustedSynthDef(nil, synthDef);
 			});
 

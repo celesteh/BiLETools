@@ -11,6 +11,8 @@ NetworkGui : Environment {
 	var keys;
 	var layout, user_layout;
 	var <>manyPlayers;
+	var <sharePlayers;
+	var <sharedfunc;
 
 	classvar guitypes;
 
@@ -262,6 +264,84 @@ NetworkGui : Environment {
 		});
 
 		^argList;
+	}
+
+	assignArgs { arg func;
+		var argList, size, names, argNames;
+
+		// Set this deinfitely before we make any widgets
+		light_color = light_color ? BileTools.light_colour;
+
+
+		size = func.def.argNames.size;
+		argList = Array(size);
+		//argNames = Array(size);
+		names = func.def.argNames;
+		argList = argList.add(this);
+		if (size > 1, {
+			// first arg is this, next args are local variables, then shared ones
+			1.forBy(size - 1, 1, { arg i;
+				name = names[i];
+				argList = argList.add(this.at(name));
+				//local.notNil.if({
+				//	local.includes(name).if({
+						//argNames = argNames.add(name);
+				//		argList = argList.add(this.addLocal(name))
+				//	} , {
+				//		argList = argList.add(this.addShared(name));
+				//	});
+				//}, {
+				//	argList = argList.add(this.addShared(name));
+				//});
+				//gui_items = gui_items.add(name);
+			});
+		});
+
+		^argList;
+	}
+
+
+	code {|func, changer|
+		var arg_list, funcstr;
+
+		changer = changer ? this;
+
+		func.notNil.if({
+			arg_list = this.assignArgs(func);
+			funcstr = func.asCompileString;
+			sharePlayers.notNil.if({
+				sharePlayers.if({
+					(changer == this).if({
+						// send this out
+						sharedfunc.isNil.if({
+							sharedfunc = SharedResource(funcstr);
+							sharedfunc.mountAPI(api, "code/%".format(name).asSymbol, "% code".format(name));
+							api.add("code/%".format(name).asSymbol, {|newfuncstr, nick|
+								newfuncstr.debug(nick);
+								(nick != api.nick).if({
+									sharedfunc.value_(newfuncstr, nick);
+								});
+							});
+						} , {
+							sharedfunc.value_(funcstr, changer);
+							api.sendMsg("code/%".format(name).asSymbol, funcstr, api.nick);
+						});
+					});
+				});
+			});
+			func.value(*arg_list)
+		});
+	}
+
+	sharePlayers_ {|bool|
+
+		sharePlayers = bool;
+		sharePlayers.if({
+			// start listening
+			sharedfunc = SharedResource("");
+			sharedfunc.mountAPI(api, "code/%".format(name).asSymbol, "% code".format(name));
+			sharedfunc.action = { "% code changed".format(name).postln; }
+		});
 	}
 
 
@@ -742,10 +822,13 @@ NetworkGui : Environment {
 	}
 
 
-	addShared {|key, item, redraw_all|
-		^this.pr_add(key, item, false, redraw_all);
+	addShared {|key, item, redraw_all, owned|
+		^this.pr_add(key, item, false, redraw_all, owned);
 	}
 
+	addUnsigned{|key, item, redraw_all|
+
+	}
 
 	addRemote {|key, redraw_all|
 
@@ -787,8 +870,10 @@ NetworkGui : Environment {
 	}
 
 
-	pr_add {|key, item, is_local, redraw_all|
+	pr_add {|key, item, is_local, redraw_all, owned|
 		var spec;
+
+		"pr_add key %".format(key).debug(this);
 
 		item.notNil.if({
 
@@ -800,26 +885,26 @@ NetworkGui : Environment {
 
 				item.isKindOf(SharedResource).if({
 					is_local.if({
-						item = SharedCV.local(this, item, api);
+						item = SharedCV.local(this, item, api, key);
 					}, {
-						item = SharedCV.shared(this, item, api);
+						item = SharedCV.shared(this, item, api, key, owned:owned);
 					});
 					item.action_(this, {this.update});
 
 				} , {
 					is_local.if({
-						item = SharedCV.local(this, SharedResource(item), api);
+						item = SharedCV.local(this, SharedResource(item), api, key);
 					}, {
-						item = SharedCV.shared(this, SharedResource(item), api);
+						item = SharedCV.shared(this, SharedResource(item), api, key, owned:owned);
 					});
 					item.action_(this, {this.update});
 			})});
 
 		} , {
 			is_local.if({
-				item = SharedCV.local(this, SharedResource(0), api);
+				item = SharedCV.local(this, SharedResource(0), api, key);
 			} , {
-				item = SharedCV.shared(this, SharedResource(0), api);
+				item = SharedCV.shared(this, SharedResource(0), api, key, owned:owned);
 			});
 
 			item.action_(this, {this.update});
@@ -841,6 +926,11 @@ NetworkGui : Environment {
 					item.guitype = \text;
 				};
 				if (item.value.isKindOf(SimpleNumber)) {
+					(item.value.abs > 1).if({
+						item.guitype = \number
+					})
+				};
+				if (item.value.isKindOf(Boolean)) {
 					(item.value.abs > 1).if({
 						item.guitype = \number
 					})
@@ -1146,7 +1236,7 @@ SharedCV {
 
 	var <shared, <network, <spec, <widget, <container, <copy_spec, <tag, <>guitype, bus;
 
-	*new {|container, shared, network, key|
+	*new {|container, shared, network, key, owned|
 		^super.new.init(container, shared, network, key);
 	}
 
@@ -1155,8 +1245,8 @@ SharedCV {
 		^super.new.init(container, shared)
 	}
 
-	*shared { |container, shared, api, key|
-		^super.new.init(container, shared, shared.mountAPI(api, key, "slider input range is 0-1"))
+	*shared { |container, shared, api, key, owned|
+		^super.new.init(container, shared, shared.mountAPI(api, key, "slider input range is 0-1", owned:owned))
 	}
 
 	init { |gui, sr, net, key|
@@ -1357,10 +1447,12 @@ EmptySpec : Spec {
 		// This is dodgy, but I get a circular dependancy otherwise
 		Warp.warps.put(\empty, Warp);
 		Warp.warps.put(\symbol, SymbolWarp);
+		Warp.warps.put(\bool, BooleanWarp);
 
 		specs = specs.addAll([
 			\string -> EmptySpec(\empty, ""),
-			\symbol -> EmptySpec(\symbol, "".asSymbol)
+			\symbol -> EmptySpec(\symbol, "".asSymbol),
+			\bool -> EmptySpec(\bool, true)
 		]);
 	}
 
@@ -1382,6 +1474,34 @@ SymbolWarp : Warp {
 		^value.asString.asSymbol;
 	}
 }
+
+BooleanWarp : Warp {
+
+	map {|value|
+		value.isKindOf(Boolean).if({
+			^value
+		});
+
+		value.isKindOf(SimpleNumber).if({
+			^(value != 0) ;   // 0 is false, everything else is true
+		});
+
+		value.isKindOf(Symbol).if({
+			value = value.asSting;
+		});
+
+		value.isKindOf(String).if({
+			^value.asBoolean;
+		});
+
+	}
+
+	unmap {|value|
+		^value
+	}
+
+}
+
 
 
 

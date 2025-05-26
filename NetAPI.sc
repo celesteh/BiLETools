@@ -85,7 +85,7 @@ NetAPI {
 		});
 	}
 
-	*other{|username, groupname, port, sendPort, path = \broadcast|
+	*other{|username, groupname, port, sendPort, path = \broadcast, joinAction|
 
 		var ret;
 
@@ -93,7 +93,7 @@ NetAPI {
 
 		ret = (all.at(groupname) ?? {
 			"super".debug(this);
-			super.new.init(path, nil, username, nil, groupname, port, sendPort);
+			super.new.init(path, nil, username, nil, groupname, port, sendPort, joinAction);
 		});
 
 		ret.debug(this);
@@ -113,7 +113,7 @@ NetAPI {
 		});
 	}
 
-	init { |path = \broadcast, serveraddress, username, userpass, groupname, grouppass, port, sendPort|
+	init { |path = \broadcast, serveraddress, username, userpass, groupname, grouppass, port, sendPort, joinAction|
 
 		var filePath;
 
@@ -195,7 +195,8 @@ NetAPI {
 				this.identify;
 				(1 + 1.0.rand).wait;
 				this.remote_query;
-
+				(1 + 1.0.rand).wait;
+				joinAction.value(this);
 			}).play;
 
 		});
@@ -255,11 +256,9 @@ NetAPI {
 					})});
 					this.advertise(key, desc, nick);
 
-					0.1.rand.wait;
-				})
-			}).play;
+					0.5.rand.wait;
+				});
 
-			Task({ // pause between sending keys
 				shared.notNil.if({
 					shared.keysValuesDo({ |key, dat|
 						/*
@@ -272,7 +271,7 @@ NetAPI {
 						*/
 						this.advertiseShared(key, dat.desc);
 
-						0.1.rand.wait;
+						0.5.rand.wait;
 					})
 				})
 			}).play;
@@ -315,18 +314,22 @@ NetAPI {
 		});
 
 		client.addResp(("/" ++ name ++ "/API/ID").asSymbol,  { arg time, resp, msg;
-			var new_user, username, my_nick;
+			var new_user, username, my_nick, otherUser;
 
 			my_nick = nick.asString.replace(" ", "");
 			username = msg[1].asString.replace(" ", "");
 
 			(username != nick.asString).if ({
 				username = username.asSymbol;
-				colleagues[username].isNil.if({
+				otherUser = colleagues[username];
+				otherUser.isNil.if({
 					new_user = BileUser.new(msg[2], msg[3], msg[1]);
+					new_user.lastActive = Date.getDate;
 					this.addUser(new_user);
 					//("adding" + username + "to" + nick + [msg[2], msg[3], msg[1]]).postln;
-				})
+				} , {
+					otherUser.lastActive = Date.getDate;
+				});
 			});
 		});
 
@@ -412,7 +415,7 @@ NetAPI {
 			sym = symbol;
 
 			(symbol.containsStringAt(0, "/"++name++"/")).if ({
-				symbol = symbol[6..];
+				symbol = symbol[("/"++name++"/").size..];
 
 				(symbol.containsStringAt(0, nick.asString++"/")).if ({
 
@@ -737,14 +740,15 @@ NetAPI {
 		sym.postln;
 		});
 		*/
-		sym = this.pr_formatMsg(*msg);
-		client.sendMsg(*sym);
-		//sym.postln;
-		client.echo.not.if({
-			//"call %".format(msg).debug(this);
-			this.call(*msg)
+		silence.not.if({
+			sym = this.pr_formatMsg(*msg);
+			client.sendMsg(*sym);
+			//sym.postln;
+			client.echo.not.if({
+				//"call %".format(msg).debug(this);
+				this.call(*msg)
+			});
 		});
-
 
 	}
 
@@ -759,12 +763,14 @@ NetAPI {
 	}
 
 	remote_query {
-		Task({
-			this.sendMsg('API/IDQuery');
-			//"done IDQuery".postln;
-			0.2.wait;
-			this.sendMsg('API/Query');
-		}).play;
+		silence.not.if({
+			Task({
+				this.sendMsg('API/IDQuery');
+				//"done IDQuery".postln;
+				0.2.wait;
+				this.sendMsg('API/Query');
+			}).play;
+		});
 	}
 
 	advertise { | selector, desc = ""|
@@ -778,13 +784,26 @@ NetAPI {
 	}
 
 
-	share { |selector, data, desc|
+	share { |selector, data, desc, owned=true|
+
+		owned = owned ? true;
 
 		shared.isNil.if({
 			this.init_sharing
 		});
 
-		selector = this.pr_sharedFormat(selector);
+		owned.if({
+			selector = this.pr_sharedFormat(selector);
+		} , {
+			//selector = selector.asString;
+			//(selector[0] != $/).if({
+			//	selector = "/" ++ selector;
+			//});
+			//selector = selector.asSymbol;
+			selector = this.pr_formatTag(selector);
+			"selector %".format(selector).debug(this);
+		});
+
 		//data.symbol = selector; // make sure they're the same
 		//data.desc = desc; // ditto
 		data.key = selector;
@@ -800,7 +819,8 @@ NetAPI {
 		silence.not.if({
 			//"advertising".debug(this);
 
-			this.sendMsg('API/Shared', this.pr_sharedFormat(selector), desc);
+			//this.sendMsg('API/Shared', this.pr_sharedFormat(selector), desc);
+			this.sendMsg('API/Shared', selector, desc);
 		}, {
 			//"not advertising".debug(this);
 		});
