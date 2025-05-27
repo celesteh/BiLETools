@@ -56,6 +56,22 @@ SharedResource {
 		this.deprecated(thisMethod, BileChat.class.findMethod(\spec_));
 	}
 
+
+	silentValue_ { arg newValue, theChanger ... moreArgs;
+		semaphore.notNil.if({
+			//"ready to wait".postln;
+			semaphore.wait;
+
+			value = newValue.value(value);
+
+			//"notify".postln;
+			semaphore.signal;
+		}, {
+
+			value = newValue.value(value);
+		});
+	}
+
 	pr_doValue { arg newValue, theChanger ... moreArgs;
 
 		var changed, result;
@@ -339,6 +355,11 @@ SharedRemoteListeners {
 	value_ {|...args|
 		shared.value_(*args);
 	}
+
+	silentValue_ {|...args|
+		shared.silentValue_(*args);
+	}
+
 
 	n_ { |new|
 

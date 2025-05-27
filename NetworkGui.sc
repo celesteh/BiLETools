@@ -1316,6 +1316,13 @@ SharedCV {
 
 	}
 
+
+	silentValue_{|val, changer ... moreArgs|
+
+		//"cv changed".postln;
+		shared.silentValue_(val, changer, moreArgs);
+	}
+
 	value {
 
 		^shared.value
