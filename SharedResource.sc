@@ -4,14 +4,17 @@ SharedResource {
 	var value, <signed_actions, unsigned_actions, semaphore, spec;
 	//var <>symbol, remote_listeners, api, <>desc;
 	var <>changeFunc, lastAdvertised, has_ever_changed;
+	var <>silent;
 
-	*new {arg value, threadSafe = false, changeFunc;
-		^super.new.init(value, threadSafe, changeFunc);
+	*new {arg value, threadSafe = false, changeFunc, silent=true;
+		^super.new.init(value, threadSafe, changeFunc, silent);
 	}
 
-	init { arg item, threadSafe = false, changed;
+	init { arg item, threadSafe = false, changed, isSilent=true;
 
+		threadSafe = threadSafe ? false;
 		value = item;
+		silent = isSilent;
 
 		threadSafe.if({
 			semaphore = Semaphore(1);
@@ -122,54 +125,60 @@ SharedResource {
 
 		var changed, result;
 
-		"in value_".debug(this);
 
-		changed = false;
+		silent.if({
+			this.silentValue_(newValue, theChanger, *moreArgs);
+		} , {
 
-		semaphore.notNil.if({
-			"ready to wait".debug(this);
-			semaphore.wait;
+			"in value_".debug(this);
 
-			changed = this.pr_doValue(newValue, theChanger, *moreArgs);
+			changed = false;
 
-			"notify".debug(this);
-			semaphore.signal;
-		}, {
+			semaphore.notNil.if({
+				"ready to wait".debug(this);
+				semaphore.wait;
 
-			changed = this.pr_doValue(newValue, theChanger, *moreArgs);
-		});
+				changed = this.pr_doValue(newValue, theChanger, *moreArgs);
 
+				"notify".debug(this);
+				semaphore.signal;
+			}, {
 
-		changed.if({
-
-			"changed".debug(this);
-			has_ever_changed = true;
-
-			// notify others
-			dependantsDictionary.at(this).copy.do({ arg dep;
-				(dep === theChanger).not.if({
-					"notify".debug(this);
-					dep.update(this, theChanger, *moreArgs);
-				}, {
-					"don't notify %".format(dep).debug(this);
-				});
+				changed = this.pr_doValue(newValue, theChanger, *moreArgs);
 			});
-			signed_actions.notNil.if({
-				signed_actions.keysDo({ |key|
-					(key === theChanger).not.if({
-						signed_actions[key].value(this, theChanger, *moreArgs);
-						(""++ theChanger + "is notifying"+ key).debug(this);
+
+
+			changed.if({
+
+				"changed".debug(this);
+				has_ever_changed = true;
+
+				// notify others
+				dependantsDictionary.at(this).copy.do({ arg dep;
+					(dep === theChanger).not.if({
+						"notify".debug(this);
+						dep.update(this, theChanger, *moreArgs);
 					}, {
-						(""++ theChanger + "is not notifying"+ key).debug(this);
+						"don't notify %".format(dep).debug(this);
 					});
 				});
-			});
-			unsigned_actions.notNil.if({
-				unsigned_actions.do({|action|
-					action.value(this, theChanger, *moreArgs);
+				signed_actions.notNil.if({
+					signed_actions.keysDo({ |key|
+						(key === theChanger).not.if({
+							signed_actions[key].value(this, theChanger, *moreArgs);
+							(""++ theChanger + "is notifying"+ key).debug(this);
+						}, {
+							(""++ theChanger + "is not notifying"+ key).debug(this);
+						});
+					});
 				});
-			});
-		}, { /*"no change".postln;*/});
+				unsigned_actions.notNil.if({
+					unsigned_actions.do({|action|
+						action.value(this, theChanger, *moreArgs);
+					});
+				});
+			}, { /*"no change".postln;*/});
+		});
 	}
 
 	changeAction_ { |arg1, arg2|
