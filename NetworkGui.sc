@@ -870,7 +870,7 @@ NetworkGui : Environment {
 	}
 
 
-	pr_add {|key, item, is_local, redraw_all, owned|
+	pr_add {|key, item, is_local, redraw_all, owned, silent=true|
 		var spec;
 
 		"pr_add key %".format(key).debug(this);
@@ -887,7 +887,7 @@ NetworkGui : Environment {
 					is_local.if({
 						item = SharedCV.local(this, item, api, key);
 					}, {
-						item = SharedCV.shared(this, item, api, key, owned:owned);
+						item = SharedCV.shared(this, item, api, key, owned:owned, silent:silent);
 					});
 					item.action_(this, {this.update});
 
@@ -895,7 +895,7 @@ NetworkGui : Environment {
 					is_local.if({
 						item = SharedCV.local(this, SharedResource(item), api, key);
 					}, {
-						item = SharedCV.shared(this, SharedResource(item), api, key, owned:owned);
+						item = SharedCV.shared(this, SharedResource(item, silent:silent), api, key, owned:owned);
 					});
 					item.action_(this, {this.update});
 			})});
@@ -904,7 +904,7 @@ NetworkGui : Environment {
 			is_local.if({
 				item = SharedCV.local(this, SharedResource(0), api, key);
 			} , {
-				item = SharedCV.shared(this, SharedResource(0), api, key, owned:owned);
+				item = SharedCV.shared(this, SharedResource(0, silent:silent), api, key, owned:owned);
 			});
 
 			item.action_(this, {this.update});
@@ -960,6 +960,12 @@ NetworkGui : Environment {
 		//item.value.postln;
 
 		^item;
+	}
+
+	unsilence {
+		shared.keys.do({|k|
+			shared.at(k).silent= false;
+		});
 	}
 
 	pr_getActivePlayers{

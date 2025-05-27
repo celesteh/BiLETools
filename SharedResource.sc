@@ -14,7 +14,7 @@ SharedResource {
 
 		threadSafe = threadSafe ? false;
 		value = item;
-		silent = isSilent;
+		silent = isSilent ? true;
 
 		threadSafe.if({
 			semaphore = Semaphore(1);
