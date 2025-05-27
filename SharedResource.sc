@@ -61,6 +61,9 @@ SharedResource {
 
 
 	silentValue_ { arg newValue, theChanger ... moreArgs;
+
+		"silent value".debug(this);
+
 		semaphore.notNil.if({
 			//"ready to wait".postln;
 			semaphore.wait;
