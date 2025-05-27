@@ -1316,6 +1316,11 @@ SharedCV {
 
 	}
 
+	silent_{|bool|
+		shared.silent_(bool);
+	}
+
+	slient { ^shared.bool }
 
 	silentValue_{|val, changer ... moreArgs|
 
