@@ -1307,8 +1307,8 @@ SharedCV {
 
 	value_{|val, changer ... moreArgs|
 
-		//"cv changed".postln;
-		shared.value_(val, changer, moreArgs);
+		"cv changed".debug(this);
+		shared.value_(val, changer, *moreArgs);
 		widget.notNil.if({
 			// save it for the redraw loop!
 			//widget.value = val

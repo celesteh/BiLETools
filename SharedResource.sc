@@ -76,11 +76,15 @@ SharedResource {
 
 		var changed, result;
 
+		"pr_doValue".debug(this);
+
 		changed = false;
 
 		result = newValue.value(value);// what that's doing there is letting people
 			// write a mathematic function like
 			// { |old| old + 1 }
+
+		"result %".format(result).debug(this);
 
 		changeFunc.value(lastAdvertised, result).if({ // here we're letting people
 			// set their own thresholds and metrics, so they can write a boolean like
@@ -92,6 +96,8 @@ SharedResource {
 		});
 
 		value = result;
+
+		"changed %".format(changed).debug(this);
 
 		^changed;
 	}
@@ -116,17 +122,17 @@ SharedResource {
 
 		var changed, result;
 
-		//"in value".postln;
+		"in value_".debug(this);
 
 		changed = false;
 
 		semaphore.notNil.if({
-			//"ready to wait".postln;
+			"ready to wait".debug(this);
 			semaphore.wait;
 
 			changed = this.pr_doValue(newValue, theChanger, *moreArgs);
 
-			//"notify".postln;
+			"notify".debug(this);
 			semaphore.signal;
 		}, {
 
@@ -136,23 +142,25 @@ SharedResource {
 
 		changed.if({
 
-			//"changed".postln;
+			"changed".debug(this);
 			has_ever_changed = true;
 
 			// notify others
 			dependantsDictionary.at(this).copy.do({ arg dep;
 				(dep === theChanger).not.if({
-
+					"notify".debug(this);
 					dep.update(this, theChanger, *moreArgs);
+				}, {
+					"don't notify %".format(dep).debug(this);
 				});
 			});
 			signed_actions.notNil.if({
 				signed_actions.keysDo({ |key|
 					(key === theChanger).not.if({
 						signed_actions[key].value(this, theChanger, *moreArgs);
-						//(""++ theChanger + "is notifying"+ key).postln;
+						(""++ theChanger + "is notifying"+ key).debug(this);
 					}, {
-						//(""++ theChanger + "is not notifying"+ key).postln;
+						(""++ theChanger + "is not notifying"+ key).debug(this);
 					});
 				});
 			});
