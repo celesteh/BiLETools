@@ -817,13 +817,13 @@ NetworkGui : Environment {
 		^redrawRate;
 	}
 
-	addLocal {|key, item, redraw_all|
-		^this.pr_add(key, item, true, redraw_all);
+	addLocal {|key, item, redraw_all, silent = false|
+		^this.pr_add(key, item, true, redraw_all, silent:silent);
 	}
 
 
-	addShared {|key, item, redraw_all, owned|
-		^this.pr_add(key, item, false, redraw_all, owned);
+	addShared {|key, item, redraw_all, owned, silent = false|
+		^this.pr_add(key, item, false, redraw_all, owned, silent:silent);
 	}
 
 	addUnsigned{|key, item, redraw_all|
@@ -872,6 +872,8 @@ NetworkGui : Environment {
 
 	pr_add {|key, item, is_local, redraw_all, owned, silent=true|
 		var spec;
+
+		silent = silent ? true;
 
 		"pr_add key %".format(key).debug(this);
 
