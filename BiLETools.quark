@@ -1,9 +1,9 @@
 (
   name: "BiLETools",
   summary: "The Networking Tools developed by BiLE",
-  version: "1.0.0",
+  version: "1.1",
   schelp: "BiLETools",
   dependencies: ["OscGroupClient"],
   license: "GPL",
-  copyright: "Charles Hutchins, Holger Balweg, Jonas Hummel 2011-2024"
+  copyright: "Charles Hutchins, Holger Balweg, Jonas Hummel 2011-2025"
 )
