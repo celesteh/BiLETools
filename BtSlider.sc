@@ -723,6 +723,8 @@ BtNumGui : BtGui{
 
 	font_{ arg font;
 
+		super.font_(font);
+
 		labelView.notNil.if{labelView.font=font};
 		numberView.font=font;
 		units.font = font;
@@ -887,6 +889,51 @@ BtText : BtGui {
 
 	numberWidth_{}
 	numberWidth { ^0 }
+
+	font_ {|font|
+		super.font_(font);
+		textField.font = font
+
+	}
+
+
+}
+
+BtListView : BtLists {
+
+	initViews{ arg label,argOrientation;
+		var labelBounds, listBounds, orientation;
+
+		orientation=argOrientation ? \vert;
+
+		labelView.maxHeight = this.labelMaxHeight;
+
+		widget = ListView.new;
+
+		slLayout  = VLayout(
+			[labelView, stretch:1],
+			[widget, stretch:4]
+		);
+
+		this.layout = slLayout;
+
+
+	}
+	menu {^ widget}
+
+	setColors{arg stringBackground, stringColor, menuBackground,  menuStringColor,background ;
+
+			stringBackground.notNil.if{
+				labelView.notNil.if{labelView.background_(stringBackground)};};
+			stringColor.notNil.if{
+				labelView.notNil.if{labelView.stringColor_(stringColor)};};
+			menuBackground.notNil.if{
+				this.menu.background_(menuBackground);};
+			menuStringColor.notNil.if{
+				this.menu.stringColor_(menuStringColor);};
+			background.notNil.if{
+				this.background=background;};
+	}
 
 
 }
@@ -1055,25 +1102,41 @@ BtGui : View {
 	}
 
 	labelWidth {
-		^labelView.bounds.width;
+		var width = 0;
+		labelView.notNil.if({
+			width = labelView.bounds.width;
+		});
+		^width
 	}
 
 	labelWidth_ {|width|
 		var bounds;
 
+		labelView.notNil.if({
 
-		// get the bounds, change only the width, re-set the bounds
-		bounds = labelView.bounds;
-		width = width ? bounds.width; // Unlikely to be nil, but whatevs
-		//bounds.width = width;
-		//labelView.bounds = bounds;
-		//labelView.fixedWidth = width;
-		labelView.resizeTo(width, bounds.height);
-		labelView.fixedWidth = width;
-		//labelView.background = Color.white;
-		//"labelWidth_( % ) % %".format(width, labelView.bounds.width, this.bounds.width).postln;
-		//labelView.refresh; this.refresh;
+			// get the bounds, change only the width, re-set the bounds
+			bounds = labelView.bounds;
+			width = width ? bounds.width; // Unlikely to be nil, but whatevs
+			//bounds.width = width;
+			//labelView.bounds = bounds;
+			//labelView.fixedWidth = width;
+			labelView.resizeTo(width, bounds.height);
+			labelView.fixedWidth = width;
+			//labelView.background = Color.white;
+			//"labelWidth_( % ) % %".format(width, labelView.bounds.width, this.bounds.width).postln;
+			//labelView.refresh; this.refresh;
+
+		});
 		this.resizeToGreatest;
+	}
+
+	labelMaxHeight {
+		var bounds = Rect(0,0,0,0);
+
+		labelView.notNil.if({
+			bounds = labelView.string.bounds(labelView.font)
+		});
+		^(bounds.height * 1.5);
 	}
 
 	valueAction_ { arg val;
@@ -1125,7 +1188,7 @@ BtGui : View {
 		^staticText
 	}
 
-	font_{}
+	font_{|font| labelView.notNil.if{labelView.font=font}; }
 
 	greatestWidth {
 
