@@ -1418,7 +1418,20 @@ SharedCV {
 		^In.kr( this.bus );
 	}
 
+	// debugging bullshit
+	guiClass {
 
+		^SharedCVDebugGUI; // thi is just for debugging
+	}
+
+}
+
+SharedCVDebugGUI : ObjectGui {
+
+	guiBody{  arg layout;
+
+		model.shared.value.gui(layout);
+	}
 }
 
 
@@ -1531,13 +1544,17 @@ BooleanWarp : Warp {
 
 BilePatternPlayer  {
 
-	var <>pattern, <>clock, <>event, <>quant, <eventStreamPlayer;
+	var <>clock, <>event, <>quant, <eventStreamPlayer, <>pattern;
 
 	*new { |pattern, clock, event, quant|
-		var pdef;
-		pdef = Pdef(this, pattern);
-		^super.newCopyArgs(pdef, clock ? TempoClock.default, event ? Event.default, quant ? 0)
+		^super.newCopyArgs(clock ? TempoClock.default, event ? Event.default, quant ? 0).bppInit(pattern);
 	}
+
+	bppInit {|pat|
+		pattern = Pdef(this, pat);
+	}
+
+
 
 	play { |argClock, argEvent, argQuant|
 		clock = argClock ? clock;
