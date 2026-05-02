@@ -394,6 +394,7 @@ BtSlider :BtNumGui {
 
 }
 
+
 BtKnob : BtNumGui {
 
 		*new { arg label, controlSpec, action, initVal,
@@ -734,6 +735,212 @@ BtNumGui : BtGui{
 
 
 }
+
+BtLevel : BtGui {
+
+	var <>sliderView;
+	var <>round = 0.001;
+	//var <view;
+	var slider_alt_scale;
+
+	*new { arg label, orientation=\horz;
+
+		^super.new.init(label, orientation);
+	}
+
+	init { arg argLabel, orientation;
+		var numberStep;
+
+		//super.init(argLabel, argControlSpec, argAction, initVal, initAction, viewUnits);
+		//initVal = initVal ? controlSpec.default;
+
+			labelView = this.pr_text(argLabel);
+
+		if(argLabel!=nil,{
+			this.name = argLabel;
+		});
+
+
+		zAction = {}; //the default zAction is to do nothing
+
+
+
+		sliderView = LevelIndicator().style_(\led);
+		//sliderView.value = controlSpec.unmap(controlSpec.default);
+		this.pr_orient(orientation);
+		//this.pr_sliderInit(initVal);
+
+		sliderView.drawsPeak = true;
+
+		this.layout = slLayout;
+
+	}
+
+	asView {/*^layout*/ ^this}
+	view {}
+
+
+	drawsPeak_{|bool|
+		sliderView.drawsPeak = bool;
+	}
+
+	peakLevel_{|val|
+		sliderView.peakLevel = val;
+	}
+	peak_{|val|
+		^this.peakLevel_(val);
+	}
+
+	value_{|val|
+		sliderView.value = val;
+	}
+
+	pr_orient{|orientation|
+
+		var vert, horz, long = 130, short, nboxWidth, maxWidth;
+
+		short = labelView.sizeHint.height;
+
+		vert = {
+
+
+			//sliderView.orientation= orientation = \vertical;
+			sliderView.maxWidth = short * 3;
+			//sliderView.fixedWidth = short;
+			//sliderView.height = long;
+
+
+			/*
+			maxWidth.postln;
+
+			//numberView.fixedWidth = maxWidth.ceil.max(nboxWidth);
+
+			super.maxWidth = short + maxWidth.ceil;
+
+			labelView.resize = 1;
+			sliderView.resize = 4;
+			numberView.resize = 7;
+			units.resize = 7;
+			*/
+
+			slLayout = VLayout(
+				[labelView, align:\center, stretch:1],
+				[sliderView, stretch:20],
+				//[labelView, s:1],
+				//[sliderView, s:4],
+				//[numberView, s:7],
+				//[units, s:7]
+			);
+			this.resize_(4);
+		};
+
+		horz = {
+
+			//sliderView.orientation = orientation = \horizontal;
+			//sliderView.height = short;
+			//sliderView.fixedHeight = short;
+			//sliderView.width = long;
+			//sliderView.bounds = Rect(0,0, long, short);
+
+			//numberView.maxWidth = numberView.sizeHint.width;
+			//numberView.minWidth = nboxWidth;
+			//numberView.bounds = numberView.bounds.size_(Size(numberView.sizeHint.width/2, numberView.sizeHint.height));
+			//super.maxHeight = numberView.sizeHint.height * 1.5;
+
+			/*
+			labelView.resize = 1;
+			sliderView.resize = 2;
+			numberView.resize_(3);
+			//numberView.asView.resize = 3;
+			units.resize = 3;
+*/
+			slLayout = HLayout(labelView,sliderView
+				//[labelView, s:1],
+				//[sliderView, s:2],
+				//[numberView, s:3],
+				//[units, s:3]
+			);
+
+			this.resize_(2);
+		};
+
+
+		switch(orientation,
+			\vert, vert,
+			\vertical, vert,
+			\horz, horz,
+			\horizontal, horz);
+
+	}
+
+
+
+	resizeToGreatest {
+		var width, height;
+		width = this.greatestWidth;
+		height = this.greatestHeight;
+
+		(width.notNil && (width != inf)).if ({
+
+			this.maxWidth = width + (labelView.bounds.height * 1.1);
+		});
+
+		(height.notNil && (height != inf)).if ({
+
+			this.maxHeight = height + (labelView.bounds.height * 1.5);
+		});
+
+	}
+
+	greatestWidth {
+
+		(sliderView.orientation == \vertical).if ({
+			^labelView.bounds.width;
+		}, {
+			^inf
+		})
+	}
+
+	greatestHeight {
+
+		(sliderView.orientation == \horizontal).if ({
+			^labelView.bounds.height;
+		}, {
+			^inf
+		})
+	}
+
+
+	setColors{arg stringBackground,stringColor,sliderBackground,numBackground,
+		numStringColor,numNormalColor,numTypingColor,knobColor,background;
+
+		stringBackground.notNil.if{
+			this.pr_set_if_visible(labelView, stringBackground);
+		};
+		stringColor.notNil.if{
+			labelView.notNil.if{labelView.stringColor_(stringColor)};
+		};
+		sliderBackground.notNil.if{
+			sliderView.background_(sliderBackground);};
+		//knobColor.notNil.if{
+		//	sliderView.knobColor_(knobColor);}; */
+		background.notNil.if{
+			this.background=background;};
+		//numberView.refresh;
+
+	}
+
+	font_{ arg font;
+
+		super.font_(font);
+
+		labelView.notNil.if{labelView.font=font};
+	}
+
+
+
+}
+
 
 BTNumber : BtNumGui {
 	//var <numberView,<>units, <>round = 0.001;
